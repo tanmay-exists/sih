@@ -3,7 +3,7 @@ import { Card, Button, Header, IconDownload, MetricCard, ListenButton } from "./
 import { SessionSummary } from "./SessionSummary";
 import useDemoStream from "./useDemoStream";
 import useFocusMode from "./useFocusMode";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { QuizGame } from "./QuizGame";
 
@@ -28,10 +28,19 @@ const IconTeacherModern = (props) => (
 
 const IconSettings = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-1.007 1.11-1.226.55-.22 1.156-.22 1.706 0 .55.22 1.02.684 1.11 1.226l.094.542c.063.372.363.633.742.742l.542.094c.542.09.94.56 1.226 1.11.22.55.22 1.156 0 1.706-.22.55-.684 1.02-1.226 1.11l-.542.094c-.372.063-.633.363-.742.742l-.094.542c-.09.542-.56 1.007-1.11 1.226-.55.22-1.156.22-1.706 0-.55-.22-1.02-.684-1.11-1.226l-.094-.542c-.063-.372-.363-.633-.742-.742l-.542-.094c-.542-.09-1.007-.56-1.226-1.11-.22-.55-.22-1.156 0-1.706.22-.55.684-1.02 1.226-1.11l.542-.094c.372-.063.633-.363.742-.742l.094-.542z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-1.007 1.11-1.226.55-.22 1.156-.22 1.706 0 .55.22 1.02.684 1.11 1.226l.094.542c.063.372.363.633.742.742l.542.094c.542.09.94.56 1.226 1.11.22.55.22 1.156 0 1.706-.22.55-.684 1.02-1.226 1.11l-.542.094c-.372.063-.633.363-.742.742l-.094.542c-.09.542-.56 1.007-1.11 1.226-.55.22-1.156.22-1.706 0-.55-.22-1.02-.684-1.11-1.226l-.094-.542c-.063-.372-.363-.633-.742-.742l-.542-.094c-.542-.09-1.007-.56-1.226-1.11-.22-.55-.22-1.156 0-1.706.22-.55.684 1.02 1.226 1.11l.542.094c.372-.063.633-.363.742-.742l.094-.542z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
 );
+
+// --- NEW ICON for the alert dialog ---
+const IconAlertTriangle = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+);
+
+
 
 // --- Data for the Study Content feature (Now with 3 pages per article) ---
 const STUDY_MATERIALS = {
@@ -172,6 +181,41 @@ function useClassDataStream() {
     return students;
 }
 
+
+
+// --- NEW: A modal dialog for the refocus quiz ---
+const RefocusQuizModal = ({ subject, onFinish, attention }) => {
+    return (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="w-full max-w-2xl"
+            >
+                <Card className="!border-theme-accent">
+                    <div className="text-center mb-4">
+                        <div className="flex justify-center items-center gap-3 text-theme-accent">
+                            <IconAlertTriangle className="w-8 h-8" />
+                            <h2 className="text-2xl font-bold">Attention is Low!</h2>
+                        </div>
+                        <p className="text-theme-text/80 mt-2">
+                            Let's take a quick break and sharpen your focus with a 5-question quiz.
+                        </p>
+                    </div>
+                    <QuizGame
+                        subject={subject}
+                        attention={attention}
+                        onFinish={onFinish}
+                        focusStats={() => null} 
+                    />
+                </Card>
+            </motion.div>
+        </div>
+    );
+};
+
+
 // --- NEW: Top-level App component to manage view state ---
 export const App = () => {
     const [view, setView] = useState('landing'); // landing, login, student, teacher
@@ -264,7 +308,10 @@ export const LoginPage = ({ onLogin }) => {
 export const StudentDashboard = ({ onLogout, accessibility }) => {
     const [sessionState, setSessionState] = useState('idle');
     const [sessionTime, setSessionTime] = useState(0);
-    const { attention, eegData, sessionEvents, focusStreak, attentionHistory } = useDemoStream(sessionState === 'active' || sessionState === 'quiz');
+    
+    // --- MODIFIED: Destructure the new setAttentionTarget function ---
+    const { attention, eegData, sessionEvents, focusStreak, attentionHistory, setAttentionTarget } = useDemoStream(sessionState === 'active');
+    
     const { isFocusMode, toggleFocusMode } = useFocusMode();
     const [history, setHistory] = useState(() => {
         try {
@@ -282,11 +329,19 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     const [studyContentType, setStudyContentType] = useState(null);
     const [selectedSubject, setSelectedSubject] = useState(null);
 
+    const [showRefocusQuiz, setShowRefocusQuiz] = useState(false);
+
     useEffect(() => {
         if (sessionState !== 'active') return;
         const timer = setInterval(() => setSessionTime(t => t + 1), 1000);
         return () => clearInterval(timer);
     }, [sessionState]);
+
+    useEffect(() => {
+        if (sessionState === 'active' && !showRefocusQuiz && attention > 0 && attention <= 49) {
+            setShowRefocusQuiz(true);
+        }
+    }, [attention, sessionState, showRefocusQuiz]);
 
     const endSession = () => setSessionState('finished');
 
@@ -294,6 +349,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         setStudySubject(null);
         setStudyContentType(null);
         setSelectedSubject(null);
+        setShowRefocusQuiz(false);
         setSessionState('idle');
     };
     
@@ -388,6 +444,22 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         return (
             <div className="min-h-screen pt-24 bg-theme-bg">
                 <Header user="Student" role="Learner" onLogout={onLogout} accessibility={accessibility} />
+                <AnimatePresence>
+                {showRefocusQuiz && (
+                    <RefocusQuizModal
+                        subject={studySubject || 'GK'}
+                        attention={attention}
+                        onFinish={(result) => {
+                            const withSubject = { ...result, subject: studySubject || 'GK' };
+                            saveHistory(prev => ({ ...prev, quizzes: [...prev.quizzes, withSubject] }));
+                            
+                            // --- FIX: Close the modal AND boost attention ---
+                            setShowRefocusQuiz(false);
+                            setAttentionTarget(75); // Reward with an attention boost to 75%
+                        }}
+                    />
+                )}
+            </AnimatePresence>
                 <main className="container mx-auto px-6 py-8 max-w-3xl">
                     <Card className="text-center">
                         <h2 className="text-2xl font-bold text-theme-primary mb-2">Choose Your Study Material</h2>
@@ -421,7 +493,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                                 </div>
                             </motion.div>
                         )}
-                         <Button onClick={restartSession} className="bg-theme-accent w-full mt-8 text-white hover:bg-theme-accent-dark">
+                         <Button onClick={restartSession} className="bg-theme-accent hover:bg-theme-accent/90 w-full mt-6 text-gray-800">
                             Cancel
                         </Button>
                     </Card>
@@ -510,6 +582,24 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     return (
         <div className="min-h-screen pt-24 bg-theme-bg">
             <Header user="Student" role="Learner" onLogout={onLogout} accessibility={accessibility} focusMode={{ isFocusMode, toggleFocusMode }} />
+            
+            {/* --- NEW: Render the refocus quiz modal when needed --- */}
+            <AnimatePresence>
+                {showRefocusQuiz && (
+                    <RefocusQuizModal
+                        subject={studySubject || 'GK'} // Default to a subject if none is chosen
+                        attention={attention}
+                        onFinish={(result) => {
+                            // Save the result of this refocus quiz to history
+                            const withSubject = { ...result, subject: studySubject || 'GK' };
+                            saveHistory(prev => ({ ...prev, quizzes: [...prev.quizzes, withSubject] }));
+                            // Close the modal and return to the session
+                            setShowRefocusQuiz(false);
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+            
             <main className="container mx-auto px-6 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <MetricCard title="Session Time" value={formatTime(sessionTime)} />
@@ -526,9 +616,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                     <StudyContent subject={studySubject} type={studyContentType} />
                 </div>
 
-                {/* --- FIX: Corrected grid layout for chart --- */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* This div now correctly spans 2 columns and allows the chart to grow */}
                     <div className="lg:col-span-2">
                         <EegStreamChart data={eegData} />
                     </div>
@@ -563,9 +651,7 @@ export const TeacherDashboard = ({ onLogout, accessibility }) => {
     );
 };
 
-// --- FIX: Improved EEG Stream Chart ---
 const EegStreamChart = ({ data }) => (
-    // The card can now grow and has a minimum height, ensuring it's never squeezed.
     <Card className="flex flex-col flex-grow min-h-[400px] h-full">
         <h2 className="text-2xl font-semibold mb-4 text-theme-primary shrink-0">Live Brain Activity (Beta Waves)</h2>
         <div className="flex-grow text-sm">
