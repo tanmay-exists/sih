@@ -166,10 +166,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                 // Don't decrease attention if the quiz is showing
                 if (showRefocusQuiz) return prevAttention;
 
-                // ✅ FIX 1: Attention now decreases by 1 instead of 2
+                // ✅ CORRECTED: Attention now decreases by 1 instead of 2
                 const newAttention = Math.max(0, prevAttention - 1);
                 
-                // Update Focus Streak
+                // Update Focus Streak (This was already correct: starts at 0, increments by 1)
                 setFocusStreak(currentStreak => {
                     if (newAttention >= 60) {
                         return currentStreak + 1;
@@ -239,6 +239,13 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
             <>
                 <Header user="Student" role="Learner" onLogout={onLogout} accessibility={accessibility} />
                 <div className="min-h-screen flex items-center justify-center bg-theme-bg">
+                    <img
+                        src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
+                        alt="Ready to Begin background"
+                        className="absolute inset-0 w-full h-full z-0 opacity-5 object-cover opacity-30 pointer-events-none"
+                    />
+
+
                     <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-5 gap-8 p-6">
                         <Card className="text-center lg:col-span-3 p-8 flex flex-col justify-center">
                             <h2 className="text-3xl font-bold text-theme-primary mb-4">Ready to Begin?</h2>
@@ -320,7 +327,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                         saveHistory(prev => ({ ...prev, quizzes: [...(prev.quizzes || []), withSubject] }));
                         restartSession();
                     }} 
-                    // ✅ FIX 2: Added missing prop to prevent crash
+                    // This prop was added in the previous fix to prevent a crash
                     focusStats={() => null} 
                     />
                 </main>
@@ -373,7 +380,14 @@ export const TeacherDashboard = ({ onLogout, accessibility }) => {
         <div className="min-h-screen pt-24 bg-theme-bg">
             <Header user="Teacher" role="Admin" onLogout={onLogout} accessibility={accessibility} />
             <main className="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="lg:col-span-2"><MetricCard title="Live Class Average Attention" value={avgAttention.toFixed(1)} unit="%" /></div>
+              <img
+                        src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
+                        alt="Ready to Begin background"
+                        className="absolute inset-0 w-full h-full z-0 opacity-5 object-cover opacity-30 pointer-events-none"
+                    />
+
+
+                <div className="lg:col-span-2 z-10"><MetricCard title="Live Class Average Attention" value={avgAttention.toFixed(1)} unit="%" /></div>
                 <ClassRoster students={students} /><ClassAttentionChart students={students} /><ModelSummary /><ExportTool />
             </main>
         </div>
