@@ -16,9 +16,6 @@ export default function useDemoStream(isStreaming = false) {
     if (!isStreaming) {
       console.log("Session ended. Final sessionEvents:", sessionEvents);
       console.log("Session ended. Final attentionHistory length:", attentionHistory.length, "data:", attentionHistory);
-      // **FIX:** Do NOT clear attentionHistory or sessionEvents here.
-      // They are needed for the SessionSummary component.
-      // They will be reset automatically when a new session starts.
       setFocusStreak(0);
       if (ws) {
         ws.close();
@@ -47,42 +44,54 @@ export default function useDemoStream(isStreaming = false) {
     websocket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        const { signal, status } = data;
+        const { eeg_buffer, current_focus_text } = data;
+
+        // Validate eeg_buffer
+        if (!eeg_buffer || !Array.isArray(eeg_buffer)) {
+          console.error("Invalid or missing eeg_buffer data:", eeg_buffer);
+          return;
+        }
 
         // Process EEG signal into multi-channel format
         const timestamp = Date.now();
+        // Scale beta values to be more visible (e.g., normalize to [0, 1])
+        const meanAbs = eeg_buffer.reduce((sum, val) => sum + Math.abs(val), 0) / eeg_buffer.length;
+        const scaledBeta = (meanAbs / 1000) * 0.5; // Adjust scaling factor as needed based on eeg_buffer range
+
         const newEegPoint = EEG_CHANNELS.reduce((acc, channel, index) => {
           const variation = 1 + (index * 0.05 - 0.05); // Slight scaling for Fp1, Fp2, Cz
           acc[channel] = {
-            beta: signal.reduce((sum, val) => sum + Math.abs(val), 0) / signal.length * variation,
+            beta: scaledBeta * variation,
           };
           return acc;
         }, { timestamp });
 
-        setEegData((prev) => [...prev.slice(-49), newEegPoint]);
+        setEegData((prev) => {
+          const newData = [...prev.slice(-49), newEegPoint];
+          console.log("Updated eegData:", newData[newData.length - 1]); // Log latest data point
+          return newData;
+        });
 
         // Calculate attention dynamically based on EEG data
         const frontalBeta = (newEegPoint.Fp1.beta + newEegPoint.Fp2.beta) / 2;
-        let currentAttention = Math.min(100, Math.max(0, frontalBeta * 50));
-        // Adjust attention based on status with variability
-        if (status === "FOCUSED") {
+        let currentAttention = Math.min(100, Math.max(0, frontalBeta * 100)); // Adjusted scaling
+        if (current_focus_text === "FOCUSED") {
           currentAttention = Math.min(90, Math.max(70, currentAttention + (Math.random() * 10 - 5))); // 70–90%
         } else {
-          currentAttention = Math.min(40, Math.max(20, currentAttention - (Math.random() * 10 - 5))); // 30–50%
+          currentAttention = Math.min(40, Math.max(20, currentAttention - (Math.random() * 10 - 5))); // 20–40%
         }
         setAttention(currentAttention);
 
         // Add to attention history every message for continuous graph
         setAttentionHistory((prev) => {
           const newHistory = [...prev, { timestamp, attention: Math.round(currentAttention) }];
-          // console.log("Attention history updated:", { timestamp, attention: Math.round(currentAttention), historyLength: newHistory.length });
           return newHistory.length > 600 ? newHistory.slice(-600) : newHistory; // Limit to last 600 points (~240s)
         });
         lastAttentionUpdateRef.current = timestamp;
 
         // Update focus streak
         setFocusStreak((prevStreak) => {
-          if (status === "FOCUSED") {
+          if (current_focus_text === "FOCUSED") {
             return prevStreak + 0.4; // Increment by 0.4s per chunk
           } else {
             if (prevStreak > 5) {
@@ -106,8 +115,8 @@ export default function useDemoStream(isStreaming = false) {
         // Log significant events every 10 seconds
         const now = Date.now();
         if (now - lastEventTimestampRef.current >= 10000) { // 10 seconds
-          if (status === "FOCUSED" || status === "NOT FOCUSED") {
-            const eventType = status === "FOCUSED" ? "Peak Focus" : "Major Distraction";
+          if (current_focus_text === "FOCUSED" || current_focus_text === "NOT FOCUSED") {
+            const eventType = current_focus_text === "FOCUSED" ? "Peak Focus" : "Major Distraction";
             setSessionEvents((prev) => {
               const newEvents = [
                 { timestamp, event: eventType, attention: Math.round(currentAttention) },
@@ -133,7 +142,7 @@ export default function useDemoStream(isStreaming = false) {
       console.error("WebSocket error:", error);
     };
 
-    // Fallback to simulate attention updates if WebSocket is slow
+    // Fallback to simulate EEG data if WebSocket is slow
     const interval = setInterval(() => {
       const now = Date.now();
       if (now - lastAttentionUpdateRef.current >= 1000) { // 1s without update
@@ -141,10 +150,22 @@ export default function useDemoStream(isStreaming = false) {
           const newAttention = Math.min(100, Math.max(0, prev + (Math.random() * 10 - 5)));
           setAttentionHistory((prevHistory) => {
             const newHistory = [...prevHistory, { timestamp: now, attention: Math.round(newAttention) }];
-            // console.log("Fallback attention update:", { timestamp: now, attention: Math.round(newAttention), historyLength: newHistory.length });
             return newHistory.length > 600 ? newHistory.slice(-600) : newHistory;
           });
           return newAttention;
+        });
+        // Add fallback EEG data
+        setEegData((prev) => {
+          const timestamp = now;
+          const fallbackBeta = Math.random() * 0.5; // Random value in [0, 0.5]
+          const newEegPoint = EEG_CHANNELS.reduce((acc, channel, index) => {
+            const variation = 1 + (index * 0.05 - 0.05);
+            acc[channel] = { beta: fallbackBeta * variation };
+            return acc;
+          }, { timestamp });
+          const newData = [...prev.slice(-49), newEegPoint];
+          console.log("Fallback EEG data:", newData[newData.length - 1]);
+          return newData;
         });
         lastAttentionUpdateRef.current = now;
       }
@@ -159,7 +180,7 @@ export default function useDemoStream(isStreaming = false) {
   const calculateAttention = useCallback((eegPoint) => {
     if (!eegPoint) return 50;
     const frontalBeta = (eegPoint.Fp1.beta + eegPoint.Fp2.beta) / 2;
-    return Math.min(100, Math.max(0, frontalBeta * 50));
+    return Math.min(100, Math.max(0, frontalBeta * 100)); // Adjusted scaling
   }, []);
 
   const latestAttention = useMemo(() => {
