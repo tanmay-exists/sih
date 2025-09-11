@@ -421,7 +421,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                                 </div>
                             </motion.div>
                         )}
-                         <Button onClick={restartSession} className="bg-theme-accent/70 hover:bg-theme-accent/90 w-full mt-8 text-gray-800">
+                         <Button onClick={restartSession} className="bg-theme-accent w-full mt-8 text-white hover:bg-theme-accent-dark">
                             Cancel
                         </Button>
                     </Card>
