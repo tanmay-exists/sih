@@ -49,7 +49,12 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-theme-bg">
-      <Card className="w-full max-w-4xl text-center">
+      <img
+                        src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
+                        alt="Ready to Begin background"
+                        className="absolute inset-0 w-full h-full opacity-5 object-cover opacity-30 pointer-events-none"
+                    />
+      <Card className="w-full max-w-4xl text-center z-20">
         <h2 className="text-3xl font-bold text-theme-primary mb-4">Focus Session Complete!</h2>
         <p className="text-xl text-theme-text/80 mb-6">Total Time: <strong>{formatTime(sessionTime)}</strong></p>
         

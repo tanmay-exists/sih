@@ -98,12 +98,12 @@ const StudyContent = ({ subject, type }) => {
     useEffect(() => {
         setCurrentPage(0);
     }, [subject]);
-    
+
     if (!subject || !type) return null;
 
     const material = STUDY_MATERIALS[subject];
     if (!material) return <Card><p>Content not found for this subject.</p></Card>;
-    
+
     const isArticle = type === 'article';
     const articlePages = isArticle ? material.article.content : [];
 
@@ -207,7 +207,7 @@ const RefocusQuizModal = ({ subject, onFinish, attention }) => {
                         subject={subject}
                         attention={attention}
                         onFinish={onFinish}
-                        focusStats={() => null} 
+                        focusStats={() => null}
                     />
                 </Card>
             </motion.div>
@@ -219,7 +219,7 @@ const RefocusQuizModal = ({ subject, onFinish, attention }) => {
 // --- NEW: Top-level App component to manage view state ---
 export const App = () => {
     const [view, setView] = useState('landing'); // landing, login, student, teacher
-    
+
     const handleLogin = (role) => {
         setView(role);
     };
@@ -235,7 +235,7 @@ export const App = () => {
     if (view === 'student') {
         return <StudentDashboard onLogout={handleLogout} />;
     }
-    
+
     if (view === 'teacher') {
         return <TeacherDashboard onLogout={handleLogout} />;
     }
@@ -308,10 +308,10 @@ export const LoginPage = ({ onLogin }) => {
 export const StudentDashboard = ({ onLogout, accessibility }) => {
     const [sessionState, setSessionState] = useState('idle');
     const [sessionTime, setSessionTime] = useState(0);
-    
+
     // --- MODIFIED: Destructure the new setAttentionTarget function ---
     const { attention, eegData, sessionEvents, focusStreak, attentionHistory, setAttentionTarget } = useDemoStream(sessionState === 'active');
-    
+
     const { isFocusMode, toggleFocusMode } = useFocusMode();
     const [history, setHistory] = useState(() => {
         try {
@@ -321,10 +321,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
             return { sessions: [], quizzes: [] };
         }
     });
-    
+
     const [quizSubject, setQuizSubject] = useState('Math');
     const [quizAttentionSamples, setQuizAttentionSamples] = useState([]);
-    
+
     const [studySubject, setStudySubject] = useState(null);
     const [studyContentType, setStudyContentType] = useState(null);
     const [selectedSubject, setSelectedSubject] = useState(null);
@@ -352,7 +352,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         setShowRefocusQuiz(false);
         setSessionState('idle');
     };
-    
+
     const startStudySession = (subject, type) => {
         setStudySubject(subject);
         setStudyContentType(type);
@@ -364,7 +364,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     const saveHistory = (updater) => {
         setHistory(prev => {
             const next = typeof updater === 'function' ? updater(prev) : updater;
-            try { localStorage.setItem('neurolearn_history', JSON.stringify(next)); } catch (_) {}
+            try { localStorage.setItem('neurolearn_history', JSON.stringify(next)); } catch (_) { }
             return next;
         });
     };
@@ -395,17 +395,31 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
             <>
                 <Header user="Student" role="Learner" onLogout={onLogout} accessibility={accessibility} />
                 <div className="min-h-screen flex items-center justify-center bg-theme-bg">
+                    <img
+                        src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
+                        alt="Ready to Begin background"
+                        className="absolute inset-0 w-full h-full z-10 opacity-5 object-cover opacity-30 pointer-events-none"
+                    />
                     {/* --- FIX: Increased max-width for more space --- */}
-                    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-5 gap-8 p-6">
-                        <Card className="text-center lg:col-span-3 p-8 flex flex-col justify-center">
-                            <h2 className="text-3xl font-bold text-theme-primary mb-4">Ready to Begin?</h2>
-                            <p className="text-theme-text/80 mb-6">Start a new session to track your attention while you study.</p>
-                            <div className="mt-6">
-                                <Button onClick={() => setSessionState('selecting-subject')} className="bg-theme-primary hover:bg-theme-primary/90 w-full max-w-xs mx-auto">
+                    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-5 gap-8 p-6 z-20">
+                        <Card className="text-center lg:col-span-3 p-8 flex flex-col justify-center bg-white min-h-[200px] relative overflow-hidden">
+                            <img
+                                src="https://i.pinimg.com/736x/c8/70/d7/c870d7d628184542c03211a327449c0a.jpg"
+                                alt="Ready to Begin background"
+                                className="absolute inset-0 w-full h-full opacity-20 object-cover opacity-30 pointer-events-none"
+                            />
+                            <h2 className="text-5xl font-bold text-theme-primary mb-4 relative z-10">Ready to Begin?</h2>
+                            <p className="text-theme-text/80 mb-6 font-semibold relative z-10">Start a new session to track your attention while you study.</p>
+                            <div className="mt-6 relative z-10">
+                                <Button
+                                    onClick={() => setSessionState('selecting-subject')}
+                                    className="bg-theme-primary hover:bg-theme-primary/90 w-full max-w-xs mx-auto"
+                                >
                                     Start Study Session
                                 </Button>
                             </div>
                         </Card>
+
                         {/* --- FIX: Wider, vertically scrollable history box --- */}
                         <Card className="lg:col-span-2 p-8 flex flex-col h-[450px]">
                             <h3 className="text-xl font-semibold text-theme-primary mb-4 shrink-0">Your History</h3>
@@ -437,7 +451,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
             </>
         );
     }
-    
+
     if (sessionState === 'selecting-subject') {
         const subjects = Object.keys(STUDY_MATERIALS);
 
@@ -445,26 +459,31 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
             <div className="min-h-screen pt-24 bg-theme-bg">
                 <Header user="Student" role="Learner" onLogout={onLogout} accessibility={accessibility} />
                 <AnimatePresence>
-                {showRefocusQuiz && (
-                    <RefocusQuizModal
-                        subject={studySubject || 'GK'}
-                        attention={attention}
-                        onFinish={(result) => {
-                            const withSubject = { ...result, subject: studySubject || 'GK' };
-                            saveHistory(prev => ({ ...prev, quizzes: [...prev.quizzes, withSubject] }));
-                            
-                            // --- FIX: Close the modal AND boost attention ---
-                            setShowRefocusQuiz(false);
-                            setAttentionTarget(75); // Reward with an attention boost to 75%
-                        }}
-                    />
-                )}
-            </AnimatePresence>
+                    {showRefocusQuiz && (
+                        <RefocusQuizModal
+                            subject={studySubject || 'GK'}
+                            attention={attention}
+                            onFinish={(result) => {
+                                const withSubject = { ...result, subject: studySubject || 'GK' };
+                                saveHistory(prev => ({ ...prev, quizzes: [...prev.quizzes, withSubject] }));
+
+                                // --- FIX: Close the modal AND boost attention ---
+                                setShowRefocusQuiz(false);
+                                setAttentionTarget(75); // Reward with an attention boost to 75%
+                            }}
+                        />
+                    )}
+                </AnimatePresence>
                 <main className="container mx-auto px-6 py-8 max-w-3xl">
-                    <Card className="text-center">
+                    <img
+                        src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
+                        alt="Ready to Begin background"
+                        className="absolute inset-0 w-full h-full z-0 opacity-5 object-cover opacity-30 pointer-events-none"
+                    />
+                    <Card className="text-center z-20">
                         <h2 className="text-2xl font-bold text-theme-primary mb-2">Choose Your Study Material</h2>
                         <p className="text-theme-text/80 mb-6">Select a subject and a format to begin your session.</p>
-                        
+
                         <div>
                             <p className="font-semibold text-theme-text mb-3">Step 1: Choose a Subject</p>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -493,7 +512,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                                 </div>
                             </motion.div>
                         )}
-                         <Button onClick={restartSession} className="bg-theme-accent hover:bg-theme-accent/90 w-full mt-6 text-gray-800">
+                        <Button onClick={restartSession} className="bg-theme-accent hover:bg-theme-accent/90 w-full mt-6 text-gray-800">
                             Cancel
                         </Button>
                     </Card>
@@ -581,8 +600,13 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
 
     return (
         <div className="min-h-screen pt-24 bg-theme-bg">
+            <img
+                        src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
+                        alt="Ready to Begin background"
+                        className="absolute inset-0 w-full h-full opacity-5  object-cover opacity-30 pointer-events-none"
+                    />
             <Header user="Student" role="Learner" onLogout={onLogout} accessibility={accessibility} focusMode={{ isFocusMode, toggleFocusMode }} />
-            
+
             {/* --- NEW: Render the refocus quiz modal when needed --- */}
             <AnimatePresence>
                 {showRefocusQuiz && (
@@ -599,8 +623,8 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                     />
                 )}
             </AnimatePresence>
-            
-            <main className="container mx-auto px-6 py-8">
+
+            <main className="container mx-auto px-6 py-8 z-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <MetricCard title="Session Time" value={formatTime(sessionTime)} />
                     <MetricCard title="Attention" value={attention.toFixed(0)} unit="%" />
@@ -611,7 +635,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
                         </Button>
                     </Card>
                 </div>
-                
+
                 <div className="mb-6">
                     <StudyContent subject={studySubject} type={studyContentType} />
                 </div>
@@ -637,8 +661,13 @@ export const TeacherDashboard = ({ onLogout, accessibility }) => {
 
     return (
         <div className="min-h-screen pt-24 bg-theme-bg">
+            <img
+                        src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
+                        alt="Ready to Begin background"
+                        className="absolute inset-0 w-full h-full z-10 opacity-5 object-cover opacity-30 pointer-events-none"
+                    />
             <Header user="Teacher" role="Admin" onLogout={onLogout} accessibility={accessibility} />
-            <main className="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <main className="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 z-20">
                 <div className="lg:col-span-2">
                     <MetricCard title="Live Class Average Attention" value={avgAttention.toFixed(1)} unit="%" />
                 </div>
@@ -658,7 +687,7 @@ const EegStreamChart = ({ data }) => (
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <XAxis dataKey="time" stroke="var(--color-text)" />
-                    <YAxis stroke="var(--color-text)" domain={[0, 1]}/>
+                    <YAxis stroke="var(--color-text)" domain={[0, 1]} />
                     <Tooltip contentStyle={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }} />
                     <Legend />
                     <Line type="monotone" dataKey="Fp1" stroke="var(--color-primary)" dot={false} strokeWidth={2} />
