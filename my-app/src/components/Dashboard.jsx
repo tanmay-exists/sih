@@ -494,7 +494,7 @@ const ClassAttentionChart = ({ students }) => (
 const ModelSummary = () => (
     <Card>
         <h2 className="text-2xl font-semibold mb-4 text-theme-primary">Model Performance</h2>
-        <p className="text-theme-text/90 leading-relaxed">Current Classifier: <strong>Random Forest</strong><br />Accuracy: <strong>82%</strong> | Recall: <strong>78%</strong></p>
+        <p className="text-theme-text/90 leading-relaxed">Current Classifier: <strong>SVM</strong><br />Accuracy: <strong>82%</strong> | Recall: <strong>78%</strong></p>
     </Card>
 );
 
