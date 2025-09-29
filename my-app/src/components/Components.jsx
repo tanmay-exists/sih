@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, Button, IconDownload, ListenButton } from "./Common"; // Adjust path as needed
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { motion } from "framer-motion";
@@ -135,13 +135,13 @@ export const ExportTool = () => (
 
 export const FocusAlert = ({ message, onClose }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.8 }}
+    initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 0.8 }}
+    exit={{ opacity: 0, scale: 0.9 }}
     transition={{ duration: 0.5 }}
-    className="fixed inset-0 flex items-center justify-center z-50 p-4"
+    className="fixed inset-0 flex items-center justify-center z-[1000] p-4"
   >
-    <div className="bg-theme-surface border border-theme-primary/50 rounded-lg shadow-xl p-6 max-w-md w-full backdrop-blur-sm">
+    <div className="bg-theme-surface border border-theme-primary/50 rounded-lg shadow-2xl p-6 max-w-md w-full backdrop-blur-sm">
       <h3 className="text-lg font-semibold text-theme-primary mb-2 text-center">Focus Alert</h3>
       <p className="text-theme-text/90 text-center mb-4">{message}</p>
       <div className="flex justify-center">
@@ -155,3 +155,41 @@ export const FocusAlert = ({ message, onClose }) => (
     </div>
   </motion.div>
 );
+
+
+export const HeadsetAlert = ({ onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => onClose(), 7000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+      className="fixed top-20 inset-x-0 flex justify-center z-[1000] px-4"
+      onClick={onClose}
+    >
+      <div className="bg-yellow-500 text-white rounded-full px-6 py-4 flex items-center justify-center gap-2 shadow-lg max-w-sm w-full sm:w-auto">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
+          />
+        </svg>
+        <span className="text-md font-medium">Ensure to connect headset</span>
+      </div>
+    </motion.div>
+  );
+};
+
