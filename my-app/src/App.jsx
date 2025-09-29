@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LoginPage, StudentDashboard, TeacherDashboard } from "./components/Dashboard";
+import { LoginPage } from "./components/LoginPage";
+import { StudentDashboard } from "./components/StudentDashboard";
+import { TeacherDashboard } from "./components/TeacherDashboard";
 import './App.css';
 
-export default function App() {
+function App() {
   const [page, setPage] = useState("login");
   const [role, setRole] = useState(null);
   
@@ -47,3 +49,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;

@@ -106,7 +106,7 @@ export const Header = ({ user, role, onLogout, accessibility, focusMode }) => {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-theme-text hidden sm:block text-lg">
-            Welcome, {user} ({role})
+            Welcome, {user}
           </span>
           {toggleFocusMode && (
             <motion.button onClick={toggleFocusMode} className={`p-2 rounded-full transition-colors ${isFocusMode ? 'bg-theme-primary/20 text-theme-primary' : 'hover:bg-theme-border/50'}`} aria-label="Toggle Focus Mode" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
