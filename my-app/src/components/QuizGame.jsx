@@ -180,7 +180,7 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
             ))}
             <Button
               onClick={handleSkip}
-              className="w-full bg-red-500 hover:bg-orange-500 text-white text-base rounded-lg hover:scale-105 transition-transform disabled:hover:scale-100"
+              className="w-full bg-red-500 hover:bg-red-600 text-white text-base rounded-lg hover:scale-105 transition-transform disabled:hover:scale-100"
               disabled={selectedAnswer !== null}
             >
               Skip Question
