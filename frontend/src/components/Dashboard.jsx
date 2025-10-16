@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card, Button, Header, IconDownload, MetricCard, ListenButton } from "./Common";
 import { SessionSummary } from "./SessionSummary";
-import useDemoStream from "./useDemoStream";
+import useWebSocketStream from "./useWebSocketStream"; // For live EEG/verdicts
 import useFocusMode from "./useFocusMode";
 import { motion, AnimatePresence } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { QuizGame } from "./QuizGame";
+import { FocusAlert, HeadsetAlert } from "./Components"; // For connection/focus alerts
+import { RefocusQuizModal } from "./RefocusQuizModal"; // For low-focus quiz
 
 // --- SVG ICONS ---
 const IconBrainCircuit = (props) => (
@@ -140,20 +142,6 @@ function useClassDataStream() {
   return students;
 }
 
-const RefocusQuizModal = ({ subject, onFinish, attention }) => (
-  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="w-full max-w-2xl">
-      <Card className="!border-theme-accent">
-        <div className="text-center mb-4">
-          <div className="flex justify-center items-center gap-3 text-theme-accent"><IconAlertTriangle className="w-8 h-8" /><h2 className="text-2xl font-bold">Attention is Low!</h2></div>
-          <p className="text-theme-text/80 mt-2">Let's take a quick break and sharpen your focus with a 5-question quiz.</p>
-        </div>
-        <QuizGame subject={subject} attention={attention} onFinish={onFinish} focusStats={() => null} />
-      </Card>
-    </motion.div>
-  </div>
-);
-
 export const App = () => {
   const [view, setView] = useState('landing');
   const handleLogin = (role) => { setView(role); };
@@ -185,29 +173,38 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   const [sessionState, setSessionState] = useState('idle');
   const [sessionTime, setSessionTime] = useState(0);
   const { isFocusMode, toggleFocusMode } = useFocusMode();
-
   const playerIframeRef = useRef(null);
-
-  // Real EEG data for the graph comes from the hook
-  const { eegData } = useDemoStream(sessionState === 'active' || sessionState === 'quiz');
-
-  // Hardcoded attention logic for metrics, logs, and quiz trigger
+   
+  // Use real WebSocket hook for EEG/verdicts/connection status
+  const { eegData, connectionStatus, latestVerdict } = useWebSocketStream(sessionState === 'active' || sessionState === 'quiz');
+   
+  // States for alerts
+  const [showRefocusQuiz, setShowRefocusQuiz] = useState(false);
+  const [showFocusAlert, setShowFocusAlert] = useState(null);
+  const [showHeadsetAlert, setShowHeadsetAlert] = useState(false);
+   
+  // Attention/focusStreak now from verdicts (beta proxy)
   const [attention, setAttention] = useState(95);
   const [focusStreak, setFocusStreak] = useState(0);
   const [sessionEvents, setSessionEvents] = useState([]);
   const [attentionHistory, setAttentionHistory] = useState([]);
-  const [showRefocusQuiz, setShowRefocusQuiz] = useState(false);
-
-  const [history, setHistory] = useState(() => { try { const r = localStorage.getItem('neurolearn_history'); return r ? JSON.parse(r) : { s: [], q: [] }; } catch (_) { return { s: [], q: [] }; } });
+  const [history, setHistory] = useState(() => { 
+    try { 
+      const r = localStorage.getItem('neurolearn_history'); 
+      const parsed = r ? JSON.parse(r) : { s: [], q: [] };
+      // Normalize keys to 'sessions'/'quizzes'
+      return { sessions: parsed.s || [], quizzes: parsed.q || [] }; 
+    } catch (_) { return { sessions: [], quizzes: [] }; } 
+  });
   const [quizSubject, setQuizSubject] = useState('Math');
   const [studySubject, setStudySubject] = useState(null);
   const [studyContentType, setStudyContentType] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const sessionTimeRef = useRef(0);
-
-  // Pause and exit fullscreen when quiz appears
+   
+  // Pause video for refocus quiz or focus alerts
   useEffect(() => {
-    if (showRefocusQuiz && playerIframeRef.current?.contentWindow) {
+    if ((showRefocusQuiz || showFocusAlert) && playerIframeRef.current?.contentWindow) {
       try {
         playerIframeRef.current.contentWindow.postMessage(
           JSON.stringify({ event: "command", func: "pauseVideo", args: [] }),
@@ -218,58 +215,84 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         document.exitFullscreen().catch(() => {});
       }
     }
-  }, [showRefocusQuiz]);
-
-  // Effect for managing the simulated attention flow
+  }, [showRefocusQuiz, showFocusAlert]);
+   
+  // Verdict-driven updates (replaces old simulation)
+  useEffect(() => {
+    if (latestVerdict) {
+      const isFocused = latestVerdict.state === 'FOCUSED';
+       
+      // Use beta activity as attention proxy (0-100%)
+      let newAttentionScore = 95;
+      if (latestVerdict.beta_activity !== 'N/A') {
+        try {
+          const betaPct = parseFloat(latestVerdict.beta_activity);
+          if (!isNaN(betaPct)) {
+            newAttentionScore = Math.min(100, Math.max(0, betaPct));
+          }
+        } catch {} // Fallback to defaults below
+      } else {
+        newAttentionScore = isFocused ? 90 : 50;
+      }
+      setAttention(newAttentionScore);
+      setAttentionHistory(prev => [...prev, { timestamp: Date.now(), attention: newAttentionScore }]);
+       
+      // Log event and trigger quiz on NOT FOCUSED
+      if (sessionState === 'active') {
+        const eventType = isFocused ? "FOCUSED (Verdict)" : "NOT FOCUSED (Verdict)";
+        setSessionEvents(prev => [{
+          timestamp: Date.now(),
+          event: eventType,
+          attention: Math.round(newAttentionScore),
+          verdict: latestVerdict.state
+        }, ...prev]);
+        if (!isFocused && !showRefocusQuiz) {
+          setShowRefocusQuiz(true);
+        }
+      }
+    }
+  }, [latestVerdict, sessionState, showRefocusQuiz]);
+   
+  // Connection status alerts
+  useEffect(() => {
+    if (connectionStatus === 'connecting') {
+      setShowHeadsetAlert(true);
+    } else if (connectionStatus === 'connected') {
+      setShowHeadsetAlert(false);
+      setShowFocusAlert(null);
+    } else if (connectionStatus === 'error' || connectionStatus === 'disconnected') {
+      if (sessionState !== 'idle') {
+        setShowFocusAlert('Connection Lost! Please ensure your EEG headset is plugged in and the backend is running.');
+      }
+      setShowHeadsetAlert(false);
+    }
+  }, [connectionStatus, sessionState]);
+   
+  // Session timer (no sim logic)
   useEffect(() => {
     if (sessionState !== 'active') return;
-
-    const interval = setInterval(() => {
-      setAttention(prevAttention => {
-        if (showRefocusQuiz) return prevAttention;
-        const newAttention = Math.max(0, prevAttention - 1);
-
-        setFocusStreak(currentStreak => {
-          if (newAttention >= 60) {
-            return currentStreak + 1;
-          } else {
-            if (currentStreak > 5) {
-              setSessionEvents(prev => [{ timestamp: Date.now(), event: `Focus Streak Lost (${currentStreak}s)`, attention: Math.round(newAttention) }, ...prev]);
-            }
-            return 0;
-          }
-        });
-
-        if (sessionTimeRef.current % 10 === 0 && sessionTimeRef.current > 0) {
-          const eventType = newAttention >= 75 ? "Peak Focus" : "Major Distraction";
-          setSessionEvents(prev => [{ timestamp: Date.now(), event: eventType, attention: Math.round(newAttention) }, ...prev]);
-        }
-
-        return newAttention;
-      });
-
-      setAttentionHistory(prev => [...prev, { timestamp: Date.now(), attention }]);
+    const timer = setInterval(() => {
       setSessionTime(t => t + 1);
       sessionTimeRef.current += 1;
     }, 1000);
-
-    return () => clearInterval(interval);
-  }, [sessionState, showRefocusQuiz, attention]);
-
-  // Effect to trigger the refocus quiz
-  useEffect(() => {
-    if (sessionState === 'active' && !showRefocusQuiz && attention < 50 && attention > 0) {
-      setShowRefocusQuiz(true);
-    }
-  }, [attention, sessionState, showRefocusQuiz]);
-
+    return () => clearInterval(timer);
+  }, [sessionState]);
+   
   const endSession = () => setSessionState('finished');
-
+  const handleRefocusQuizFinish = (result) => {
+    const withSubject = { ...result, subject: studySubject || 'GK' };
+    saveHistory(prev => ({ ...prev, quizzes: [...(prev.quizzes || []), withSubject] }));
+    setShowRefocusQuiz(false);
+    setAttention(85); // Boost after refocus
+    setShowFocusAlert(null); // Clear alerts
+  };
   const restartSession = () => {
     setStudySubject(null);
     setStudyContentType(null);
     setSelectedSubject(null);
     setShowRefocusQuiz(false);
+    setShowFocusAlert(null);
+    setShowHeadsetAlert(false);
     setSessionState('idle');
     setAttention(95);
     setFocusStreak(0);
@@ -278,7 +301,6 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     setSessionTime(0);
     sessionTimeRef.current = 0;
   };
-
   const startStudySession = (subject, type) => {
     restartSession();
     setStudySubject(subject);
@@ -287,17 +309,16 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     setSessionState('active');
     setSessionEvents([{ timestamp: Date.now(), event: "Session Started", attention: 95 }]);
   };
-
   const saveHistory = (updater) => {
     setHistory(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      try { localStorage.setItem('neurolearn_history', JSON.stringify(next)); } catch {}
+      try { localStorage.setItem('neurolearn_history', JSON.stringify({ s: next.sessions || [], q: next.quizzes || [] })); } catch {}
       return next;
     });
   };
   const formatTime = (seconds) => `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
   const formatDateTime = (timestamp) => { const d = new Date(timestamp); return `${d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}, ${d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}`; };
-
+   
   if (sessionState === 'idle') {
     return (
       <>
@@ -341,10 +362,14 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
             </Card>
           </div>
         </div>
+        <AnimatePresence>
+          {showHeadsetAlert && (
+            <HeadsetAlert onClose={() => setShowHeadsetAlert(false)} />
+          )}
+        </AnimatePresence>
       </>
     );
   }
-
   if (sessionState === 'selecting-subject') {
     const subjects = Object.keys(STUDY_MATERIALS);
     return (
@@ -379,7 +404,6 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       </div>
     );
   }
-
   if (sessionState === 'finished') {
     if (!history.__lastSavedFinishedAt || history.__lastSavedFinishedAt !== sessionTime) {
       saveHistory(prev => ({ ...prev, __lastSavedFinishedAt: sessionTime, sessions: [...(prev.sessions || []), { duration: sessionTime, endedAt: Date.now(), eventsCount: sessionEvents.length }] }));
@@ -408,7 +432,6 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       </>
     );
   }
-
   if (sessionState === 'quiz' || sessionState === 'quiz-subject') {
     return (
       <div className="min-h-screen pt-24 bg-theme-bg">
@@ -428,7 +451,6 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen pt-24 bg-theme-bg">
       <Header user="Student" role="Learner" onLogout={onLogout} accessibility={accessibility} focusMode={{ isFocusMode, toggleFocusMode }} />
@@ -437,13 +459,11 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
           <RefocusQuizModal
             subject={studySubject || 'GK'}
             attention={attention}
-            onFinish={(result) => {
-              const withSubject = { ...result, subject: studySubject || 'GK' };
-              saveHistory(prev => ({ ...prev, quizzes: [...(prev.quizzes || []), withSubject] }));
-              setShowRefocusQuiz(false);
-              setAttention(75);
-            }}
+            onFinish={handleRefocusQuizFinish}
           />
+        )}
+        {showFocusAlert && (
+          <FocusAlert message={showFocusAlert} onClose={() => setShowFocusAlert(null)} />
         )}
       </AnimatePresence>
       <main className="container mx-auto px-6 py-8">
@@ -474,15 +494,15 @@ export const TeacherDashboard = ({ onLogout, accessibility }) => {
   const students = useClassDataStream();
   const avgAttention = students.length > 0 ? students.reduce((acc, s) => acc + s.attention, 0) / students.length : 0;
   return (
-    <div className="min-h-screen pt-24 bg-theme-bg">
+    <div className="min-h-screen pt-24 bg-theme-bg relative">
       <Header user="Teacher" role="Admin" onLogout={onLogout} accessibility={accessibility} />
-      <main className="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
         <img
           src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
           alt="Ready to Begin background"
           className="absolute inset-0 w-full h-full z-0 opacity-5 object-cover opacity-30 pointer-events-none"
         />
-        <div className="lg:col-span-2 z-10">
+        <div className="lg:col-span-2">
           <MetricCard title="Live Class Average Attention" value={avgAttention.toFixed(1)} unit="%" />
         </div>
         <ClassRoster students={students} />
@@ -611,7 +631,7 @@ const ModelSummary = () => (
   <Card>
     <h2 className="text-2xl font-semibold mb-4 text-theme-primary">Model Performance</h2>
     <p className="text-theme-text/90 leading-relaxed">
-      Current Classifier: <strong>SVM</strong><br />
+      Current Classifier: <strong>CNN</strong><br />
       Accuracy: <strong>82%</strong> | Recall: <strong>78%</strong>
     </p>
   </Card>
