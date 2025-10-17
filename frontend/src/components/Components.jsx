@@ -1,21 +1,31 @@
+// Components.jsx
 import React, { useEffect } from "react";
-import { Card, Button, IconDownload, ListenButton } from "./Common"; // Adjust path as needed
+import { Card, Button, IconDownload, ListenButton } from "./Common";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { motion } from "framer-motion";
 
 export const EegStreamChart = ({ data }) => (
   <Card className="flex flex-col flex-grow min-h-[400px] h-full">
-    <h2 className="text-2xl font-semibold mb-4 text-theme-primary shrink-0">Live Brain Activity (Beta Waves)</h2>
+    <h2 className="text-2xl font-semibold mb-4 text-theme-primary shrink-0">Live Brain Activity (EEG Signal)</h2>
     <div className="flex-grow text-sm">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-          <XAxis dataKey="time" stroke="var(--color-text)" />
-          <YAxis stroke="var(--color-text)" domain={[-2, 2]} allowDataOverflow />
-          <Tooltip contentStyle={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }} />
+          <XAxis hide={true} dataKey="timestamp" />
+          <YAxis stroke="var(--color-text)" domain={['auto', 'auto']} allowDataOverflow />
+          <Tooltip 
+            contentStyle={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+            labelFormatter={() => ''}
+          />
           <Legend />
-          <Line isAnimationActive={false} type="monotone" dataKey="Fp1" stroke="var(--color-primary)" dot={false} strokeWidth={2} />
-          <Line isAnimationActive={false} type="monotone" dataKey="Fp2" stroke="var(--color-accent)" dot={false} strokeWidth={2} />
-          <Line isAnimationActive={false} type="monotone" dataKey="Cz" stroke="var(--color-secondary)" dot={false} strokeWidth={2} />
+          <Line 
+            isAnimationActive={false} 
+            type="monotone" 
+            dataKey="value" 
+            stroke="var(--color-primary)" 
+            dot={false} 
+            strokeWidth={2} 
+            name="EEG Value" 
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -41,6 +51,7 @@ export const SessionLog = ({ events }) => (
 export const DynamicFeedbackPanel = ({ attention, streak }) => {
   let title = "Stay Engaged";
   let message = "Maintain a steady focus. You can do it!";
+  
   if (attention > 80) {
     title = "Excellent Focus!";
     message = "You're in the zone. Keep up the great work!";
@@ -51,6 +62,7 @@ export const DynamicFeedbackPanel = ({ attention, streak }) => {
     title = "Amazing Streak!";
     message = `You've been focused for over ${Math.floor(streak)} seconds. That's fantastic!`;
   }
+  
   return (
     <Card>
       <div className="flex justify-between items-start">
@@ -68,6 +80,7 @@ export const ClassRoster = ({ students }) => {
     if (status === "Engaged") return "bg-yellow-500";
     return "bg-red-500";
   };
+  
   return (
     <Card>
       <h2 className="text-2xl font-semibold mb-4 text-theme-primary">Live Class Roster</h2>
@@ -120,8 +133,8 @@ export const ModelSummary = () => (
   <Card>
     <h2 className="text-2xl font-semibold mb-4 text-theme-primary">Model Performance</h2>
     <p className="text-theme-text/90 leading-relaxed">
-      Current Classifier: <strong>SVM</strong><br />
-      Accuracy: <strong>82%</strong> | Recall: <strong>78%</strong>
+      Current Classifier: <strong>CNN</strong><br />
+      Accuracy: <strong>97.5%</strong>
     </p>
   </Card>
 );
@@ -156,13 +169,12 @@ export const FocusAlert = ({ message, onClose }) => (
   </motion.div>
 );
 
-
 export const HeadsetAlert = ({ onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => onClose(), 7000);
     return () => clearTimeout(timer);
   }, [onClose]);
-
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -192,4 +204,3 @@ export const HeadsetAlert = ({ onClose }) => {
     </motion.div>
   );
 };
-

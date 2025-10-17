@@ -8,7 +8,6 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Ba
 import { QuizGame } from "./QuizGame";
 import { FocusAlert, HeadsetAlert } from "./Components"; // For connection/focus alerts
 import { RefocusQuizModal } from "./RefocusQuizModal"; // For low-focus quiz
-
 // --- SVG ICONS ---
 const IconBrainCircuit = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
@@ -22,7 +21,7 @@ const IconUserModern = (props) => (
 );
 const IconTeacherModern = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 0 00-6 2.292m0-14.25v14.25" />
   </svg>
 );
 const IconAlertTriangle = (props) => (
@@ -30,7 +29,6 @@ const IconAlertTriangle = (props) => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
   </svg>
 );
-
 // --- Data for the Study Content feature ---
 const STUDY_MATERIALS = {
   Math: {
@@ -78,7 +76,6 @@ const STUDY_MATERIALS = {
     }
   }
 };
-
 const StudyContent = ({ subject, type, videoRef }) => {
   const [currentPage, setCurrentPage] = useState(0);
   useEffect(() => { setCurrentPage(0); }, [subject]);
@@ -101,7 +98,7 @@ const StudyContent = ({ subject, type, videoRef }) => {
         </div>
       ) : (
         <div>
-          <h2 className="text-xl font-bold text-theme-primary mb-4">{material.article.title} (Video)</h2>
+          <h2 className="text-xl font-bold text-theme-primary mb-4">Math Fundamentals Video</h2>
           {/* Slightly smaller: constrain width and a modest min height */}
           <div className="aspect-video w-full">
             <iframe
@@ -119,7 +116,6 @@ const StudyContent = ({ subject, type, videoRef }) => {
     </Card>
   );
 };
-
 function useClassDataStream() {
   const [students, setStudents] = useState([
     { name: "Alice", attention: 76, status: "Focused" },
@@ -141,7 +137,6 @@ function useClassDataStream() {
   }, []);
   return students;
 }
-
 export const App = () => {
   const [view, setView] = useState('landing');
   const handleLogin = (role) => { setView(role); };
@@ -151,8 +146,8 @@ export const App = () => {
   if (view === 'teacher') { return <TeacherDashboard onLogout={handleLogout} />; }
   return null;
 };
-
 export const LoginPage = ({ onLogin }) => (
+
   <div className="min-h-screen w-full bg-theme-bg text-theme-text overflow-hidden">
     <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1620428268482-cf1851a36764?q=80&w=2832&auto=format&fit=crop')` }}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
@@ -168,40 +163,40 @@ export const LoginPage = ({ onLogin }) => (
     </div>
   </div>
 );
-
 export const StudentDashboard = ({ onLogout, accessibility }) => {
   const [sessionState, setSessionState] = useState('idle');
   const [sessionTime, setSessionTime] = useState(0);
   const { isFocusMode, toggleFocusMode } = useFocusMode();
   const playerIframeRef = useRef(null);
-   
+ 
   // Use real WebSocket hook for EEG/verdicts/connection status
   const { eegData, connectionStatus, latestVerdict } = useWebSocketStream(sessionState === 'active' || sessionState === 'quiz');
-   
+ 
   // States for alerts
   const [showRefocusQuiz, setShowRefocusQuiz] = useState(false);
   const [showFocusAlert, setShowFocusAlert] = useState(null);
   const [showHeadsetAlert, setShowHeadsetAlert] = useState(false);
-   
+ 
   // Attention/focusStreak now from verdicts (beta proxy)
   const [attention, setAttention] = useState(95);
   const [focusStreak, setFocusStreak] = useState(0);
   const [sessionEvents, setSessionEvents] = useState([]);
   const [attentionHistory, setAttentionHistory] = useState([]);
-  const [history, setHistory] = useState(() => { 
-    try { 
-      const r = localStorage.getItem('neurolearn_history'); 
+  const [history, setHistory] = useState(() => {
+    try {
+      const r = localStorage.getItem('neurolearn_history');
       const parsed = r ? JSON.parse(r) : { s: [], q: [] };
       // Normalize keys to 'sessions'/'quizzes'
-      return { sessions: parsed.s || [], quizzes: parsed.q || [] }; 
-    } catch (_) { return { sessions: [], quizzes: [] }; } 
+      return { sessions: parsed.s || [], quizzes: parsed.q || [] };
+    } catch (_) { return { sessions: [], quizzes: [] }; }
   });
   const [quizSubject, setQuizSubject] = useState('Math');
   const [studySubject, setStudySubject] = useState(null);
   const [studyContentType, setStudyContentType] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const sessionTimeRef = useRef(0);
-   
+  const lastVerdictTimeRef = useRef(Date.now()); // Track time for streak
+ 
   // Pause video for refocus quiz or focus alerts
   useEffect(() => {
     if ((showRefocusQuiz || showFocusAlert) && playerIframeRef.current?.contentWindow) {
@@ -216,12 +211,13 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       }
     }
   }, [showRefocusQuiz, showFocusAlert]);
-   
+ 
   // Verdict-driven updates (replaces old simulation)
   useEffect(() => {
     if (latestVerdict) {
       const isFocused = latestVerdict.state === 'FOCUSED';
-       
+      lastVerdictTimeRef.current = Date.now();
+     
       // Use beta activity as attention proxy (0-100%)
       let newAttentionScore = 95;
       if (latestVerdict.beta_activity !== 'N/A') {
@@ -236,7 +232,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       }
       setAttention(newAttentionScore);
       setAttentionHistory(prev => [...prev, { timestamp: Date.now(), attention: newAttentionScore }]);
-       
+     
       // Log event and trigger quiz on NOT FOCUSED
       if (sessionState === 'active') {
         const eventType = isFocused ? "FOCUSED (Verdict)" : "NOT FOCUSED (Verdict)";
@@ -252,7 +248,18 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       }
     }
   }, [latestVerdict, sessionState, showRefocusQuiz]);
-   
+ 
+  // Dynamic focus streak based on time since last NOT FOCUSED verdict
+  useEffect(() => {
+    if (sessionState !== 'active') return;
+    const interval = setInterval(() => {
+      const timeSinceVerdict = Date.now() - lastVerdictTimeRef.current;
+      const intervalSeconds = timeSinceVerdict / 1000;
+      setFocusStreak(Math.floor(intervalSeconds));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [sessionState]);
+ 
   // Connection status alerts
   useEffect(() => {
     if (connectionStatus === 'connecting') {
@@ -267,7 +274,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       setShowHeadsetAlert(false);
     }
   }, [connectionStatus, sessionState]);
-   
+ 
   // Session timer (no sim logic)
   useEffect(() => {
     if (sessionState !== 'active') return;
@@ -277,7 +284,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     }, 1000);
     return () => clearInterval(timer);
   }, [sessionState]);
-   
+ 
   const endSession = () => setSessionState('finished');
   const handleRefocusQuizFinish = (result) => {
     const withSubject = { ...result, subject: studySubject || 'GK' };
@@ -300,6 +307,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     setAttentionHistory([]);
     setSessionTime(0);
     sessionTimeRef.current = 0;
+    lastVerdictTimeRef.current = Date.now();
   };
   const startStudySession = (subject, type) => {
     restartSession();
@@ -318,7 +326,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   };
   const formatTime = (seconds) => `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
   const formatDateTime = (timestamp) => { const d = new Date(timestamp); return `${d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}, ${d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}`; };
-   
+ 
   if (sessionState === 'idle') {
     return (
       <>
@@ -489,7 +497,6 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     </div>
   );
 };
-
 export const TeacherDashboard = ({ onLogout, accessibility }) => {
   const students = useClassDataStream();
   const avgAttention = students.length > 0 ? students.reduce((acc, s) => acc + s.attention, 0) / students.length : 0;
@@ -513,26 +520,22 @@ export const TeacherDashboard = ({ onLogout, accessibility }) => {
     </div>
   );
 };
-
 const EegStreamChart = ({ data }) => (
   <Card className="flex flex-col flex-grow min-h-[400px] h-full">
-    <h2 className="text-2xl font-semibold mb-4 text-theme-primary shrink-0">Live Brain Activity (Beta Waves)</h2>
+    <h2 className="text-2xl font-semibold mb-4 text-theme-primary shrink-0">Live Brain Activity (EEG Signal)</h2>
     <div className="flex-grow text-sm">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-          <XAxis dataKey="time" stroke="var(--color-text)" />
-          <YAxis stroke="var(--color-text)" domain={[-2, 2]} allowDataOverflow />
+          <XAxis hide={true} axisLine={false} tickLine={false} tick={false} dataKey="timestamp" stroke="var(--color-text)" />
+          <YAxis stroke="var(--color-text)" domain={['auto', 'auto']} allowDataOverflow />
           <Tooltip contentStyle={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }} />
           <Legend />
-          <Line isAnimationActive={false} type="monotone" dataKey="Fp1" stroke="var(--color-primary)" dot={false} strokeWidth={2} />
-          <Line isAnimationActive={false} type="monotone" dataKey="Fp2" stroke="var(--color-accent)" dot={false} strokeWidth={2} />
-          <Line isAnimationActive={false} type="monotone" dataKey="Cz" stroke="var(--color-secondary)" dot={false} strokeWidth={2} />
+          <Line isAnimationActive={false} type="monotone" dataKey="value" stroke="var(--color-primary)" dot={false} strokeWidth={2} name="EEG Value" />
         </LineChart>
       </ResponsiveContainer>
     </div>
   </Card>
 );
-
 const SessionLog = ({ events }) => (
   <Card>
     <h2 className="text-xl font-semibold mb-4 text-theme-primary">Session Log</h2>
@@ -548,7 +551,6 @@ const SessionLog = ({ events }) => (
     </div>
   </Card>
 );
-
 const DynamicFeedbackPanel = ({ attention, streak }) => {
   let title = "Stay Engaged";
   let message = "Maintain a steady focus. You can do it!";
@@ -572,7 +574,6 @@ const DynamicFeedbackPanel = ({ attention, streak }) => {
     </Card>
   );
 };
-
 const ClassRoster = ({ students }) => {
   const getStatusColor = (status) => {
     if (status === "Focused") return "bg-green-500";
@@ -610,7 +611,6 @@ const ClassRoster = ({ students }) => {
     </Card>
   );
 };
-
 const ClassAttentionChart = ({ students }) => (
   <Card>
     <h2 className="text-2xl font-semibold mb-4 text-theme-primary">Class Attention Overview</h2>
@@ -626,17 +626,15 @@ const ClassAttentionChart = ({ students }) => (
     </div>
   </Card>
 );
-
 const ModelSummary = () => (
   <Card>
     <h2 className="text-2xl font-semibold mb-4 text-theme-primary">Model Performance</h2>
     <p className="text-theme-text/90 leading-relaxed">
       Current Classifier: <strong>CNN</strong><br />
-      Accuracy: <strong>82%</strong> | Recall: <strong>78%</strong>
+      Accuracy: <strong>97.5%</strong>
     </p>
   </Card>
 );
-
 const ExportTool = () => (
   <Card className="flex flex-col items-center justify-center">
     <h2 className="text-2xl font-semibold mb-4 text-theme-primary">Export Reports</h2>

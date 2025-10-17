@@ -34,7 +34,7 @@ FILENAME_1 = 'eeg_recording_file_1.csv'
 FILENAME_2 = 'eeg_recording_file_2.csv'
 
 # Model testing script
-MODEL_TEST_SCRIPT = 'predict.py'
+MODEL_TEST_SCRIPT = 'predict3.py'
 
 # Results log file
 RESULTS_LOG = 'classification_results_log.txt'

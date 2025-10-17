@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, Button, ListenButton } from './Common';
-
 const SUBJECT_QUESTION_BANK = {
   Math: [
     { question: "What is 5 + 7?", options: ["10", "11", "12", "13"], answer: "12" },
@@ -32,27 +31,23 @@ const SUBJECT_QUESTION_BANK = {
     { question: "National animal of India?", options: ["Lion", "Elephant", "Tiger", "Peacock"], answer: "Tiger" },
   ],
 };
-
 const transitionVariants = {
   initial: { opacity: 0, x: -20 },
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: 20 },
 };
-
 export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
-
+  const [isFinished, setIsFinished] = useState(false); // Track finish state to prevent multiple calls
   const questions = useMemo(() => SUBJECT_QUESTION_BANK[subject] || SUBJECT_QUESTION_BANK.Math, [subject]);
   const currentQuestion = useMemo(() => questions[currentQuestionIndex], [currentQuestionIndex, questions]);
   const isQuizFinished = currentQuestionIndex >= questions.length;
-
   useEffect(() => {
     console.log('QuizGame: isQuizFinished:', isQuizFinished, 'attention:', attention);
   }, [isQuizFinished, attention]);
-
   const handleAnswer = (option) => {
     if (selectedAnswer) return;
     setSelectedAnswer(option);
@@ -67,25 +62,22 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
       setCurrentQuestionIndex(i => i + 1);
     }, 1000);
   };
-
   const handleSkip = () => {
     setSelectedAnswer(null);
     setIsCorrect(null);
     setCurrentQuestionIndex(i => i + 1);
   };
-
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
     setScore(0);
+    setIsFinished(false);
   };
-
   const getButtonClass = (option) => {
     if (selectedAnswer === null) return 'bg-amber-400 hover:bg-amber-500 text-warmGray-800';
     if (option === currentQuestion.answer) return 'bg-green-500 text-white';
     if (option === selectedAnswer && !isCorrect) return 'bg-red-500 text-white';
     return 'bg-amber-200 opacity-50 text-warmGray-800';
   };
-
   const getPerformanceMessage = (score, total) => {
     const percentage = (score / total) * 100;
     if (percentage === 100) return "You aced it! Perfect score and laser-sharp focus! 🎉";
@@ -93,11 +85,15 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
     if (percentage >= 60) return "Well done! A solid performance. You're on the right track! 👍";
     return "Nice effort! Every quiz is a chance to learn. Review the material and try again. 🧠";
   };
-
+  const handleFinish = () => {
+    if (isFinished || !onFinish) return;
+    const calculatedFocusStats = focusStats ? focusStats() : null;
+    setIsFinished(true);
+    onFinish({ subject, score, total: questions.length, completedAt: Date.now(), focusStats: calculatedFocusStats });
+  };
   if (isQuizFinished) {
-    const calculatedFocusStats = focusStats();
+    const calculatedFocusStats = focusStats ? focusStats() : null;
     const performanceMessage = getPerformanceMessage(score, questions.length);
-
     return (
       <Card className="bg-amber-50 text-center p-8 rounded-xl shadow-lg border border-amber-200">
         <h2 className="text-3xl font-bold text-orange-800 mb-4">Quiz Complete!</h2>
@@ -106,7 +102,6 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
           Your Score: <span className="text-green-500">{score}</span> / {questions.length}
         </p>
         <p className="text-warmGray-700 mb-8 max-w-sm mx-auto">{performanceMessage}</p>
-
         {calculatedFocusStats && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left mb-8">
             <Card className="p-4 bg-amber-100 border border-amber-200 rounded-lg">
@@ -132,7 +127,6 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
             </Card>
           </div>
         )}
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Button
             onClick={restartQuiz}
@@ -141,8 +135,9 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
             Retake Quiz
           </Button>
           <Button
-            onClick={() => onFinish && onFinish({ subject, score, total: questions.length, completedAt: Date.now(), focusStats: calculatedFocusStats })}
-            className="bg-orange-500 hover:bg-orange-600 text-white w-full px-6 py-3 text-lg rounded-lg hover:scale-105 transition-transform"
+            onClick={handleFinish}
+            disabled={isFinished}
+            className="bg-orange-500 hover:bg-orange-600 text-white w-full px-6 py-3 text-lg rounded-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             Finish
           </Button>
@@ -150,7 +145,6 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
       </Card>
     );
   }
-
   return (
     <Card className="bg-amber-50 p-8 rounded-xl shadow-lg border border-amber-200">
       <div className="flex justify-between items-start mb-6">
@@ -188,7 +182,7 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
           </div>
         </motion.div>
       </AnimatePresence>
-      {typeof attention === 'number' && attention < 40 && !isQuizFinished && (
+      {typeof attention === 'number' && attention < 40 && !isQuizFinished && !isFinished && (
         <p className="text-center text-sm text-orange-600 mt-4">Attention is low. Take a deep breath and refocus.</p>
       )}
     </Card>

@@ -30,3 +30,572 @@
 [2025-10-16 22:06:50] ======================================================================
 [2025-10-16 22:06:50] EEG RECORDING AND CLASSIFICATION SESSION ENDED
 [2025-10-16 22:06:50] ======================================================================
+[2025-10-17 20:13:58] WebSocket server started on ws://localhost:8765
+[2025-10-17 20:13:59] ======================================================================
+[2025-10-17 20:13:59] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 20:13:59] ======================================================================
+[2025-10-17 20:13:59] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 20:13:59] ======================================================================
+[2025-10-17 20:13:59] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 20:13:59] ======================================================================
+[2025-10-17 20:16:50] WebSocket server started on ws://localhost:8765
+[2025-10-17 20:16:51] ======================================================================
+[2025-10-17 20:16:51] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 20:16:51] ======================================================================
+[2025-10-17 20:17:25] WebSocket client connected: ('127.0.0.1', 35594)
+[2025-10-17 20:18:33] Recording stopped by user
+[2025-10-17 20:18:33] ======================================================================
+[2025-10-17 20:18:33] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 20:18:33] ======================================================================
+[2025-10-17 20:18:51] WebSocket server started on ws://localhost:8765
+[2025-10-17 20:18:52] ======================================================================
+[2025-10-17 20:18:52] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 20:18:52] ======================================================================
+[2025-10-17 20:19:06] WebSocket client connected: ('127.0.0.1', 58742)
+[2025-10-17 20:22:30] Recording stopped by user
+[2025-10-17 20:22:30] ======================================================================
+[2025-10-17 20:22:30] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 20:22:30] ======================================================================
+[2025-10-17 21:59:49] WebSocket server started on ws://localhost:8765
+[2025-10-17 21:59:50] ======================================================================
+[2025-10-17 21:59:50] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 21:59:50] ======================================================================
+[2025-10-17 21:59:50] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 21:59:50] ======================================================================
+[2025-10-17 21:59:50] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 21:59:50] ======================================================================
+[2025-10-17 22:00:02] WebSocket server started on ws://localhost:8765
+[2025-10-17 22:00:03] ======================================================================
+[2025-10-17 22:00:03] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 22:00:03] ======================================================================
+[2025-10-17 22:00:03] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 22:00:03] ======================================================================
+[2025-10-17 22:00:03] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 22:00:03] ======================================================================
+[2025-10-17 22:04:52] WebSocket server started on ws://localhost:8765
+[2025-10-17 22:04:52] ======================================================================
+[2025-10-17 22:04:52] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 22:04:52] ======================================================================
+[2025-10-17 22:04:52] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 22:04:52] ======================================================================
+[2025-10-17 22:04:52] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 22:04:52] ======================================================================
+[2025-10-17 22:05:49] WebSocket server started on ws://localhost:8765
+[2025-10-17 22:05:50] ======================================================================
+[2025-10-17 22:05:50] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 22:05:50] ======================================================================
+[2025-10-17 22:06:17] WebSocket client connected: ('127.0.0.1', 59694)
+[2025-10-17 22:09:50] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 22:09:52] ======================================================================
+[2025-10-17 22:09:52] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 22:09:52] ======================================================================
+[2025-10-17 22:09:58] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 22:09:58] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:09:58] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:09:58]     Confidence: N/A
+[2025-10-17 22:09:58]     Beta Activity: N/A
+[2025-10-17 22:09:58]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:09:58]     Timestamp: 2025-10-17 22:09:52
+[2025-10-17 22:09:58] ======================================================================
+
+[2025-10-17 22:11:35] WebSocket client connected: ('127.0.0.1', 51722)
+[2025-10-17 22:13:50] Recording session #2 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-17 22:13:52] ======================================================================
+[2025-10-17 22:13:52] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-17 22:13:52] ======================================================================
+[2025-10-17 22:13:58] Analysis completed for eeg_recording_file_2.csv
+[2025-10-17 22:13:58] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:13:58] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:13:58]     Confidence: N/A
+[2025-10-17 22:13:58]     Beta Activity: N/A
+[2025-10-17 22:13:58]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:13:58]     Timestamp: 2025-10-17 22:13:52
+[2025-10-17 22:13:58] ======================================================================
+
+[2025-10-17 22:16:02] WebSocket client connected: ('127.0.0.1', 47630)
+[2025-10-17 22:17:50] Recording session #3 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 22:17:52] ======================================================================
+[2025-10-17 22:17:52] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 22:17:52] ======================================================================
+[2025-10-17 22:17:59] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 22:17:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:17:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:17:59]     Confidence: N/A
+[2025-10-17 22:17:59]     Beta Activity: N/A
+[2025-10-17 22:17:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:17:59]     Timestamp: 2025-10-17 22:17:52
+[2025-10-17 22:17:59] ======================================================================
+
+[2025-10-17 22:21:50] Recording session #4 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-17 22:21:52] ======================================================================
+[2025-10-17 22:21:52] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-17 22:21:52] ======================================================================
+[2025-10-17 22:21:59] Analysis completed for eeg_recording_file_2.csv
+[2025-10-17 22:21:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:21:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:21:59]     Confidence: N/A
+[2025-10-17 22:21:59]     Beta Activity: N/A
+[2025-10-17 22:21:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:21:59]     Timestamp: 2025-10-17 22:21:52
+[2025-10-17 22:21:59] ======================================================================
+
+[2025-10-17 22:25:50] Recording session #5 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 22:25:52] ======================================================================
+[2025-10-17 22:25:52] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 22:25:52] ======================================================================
+[2025-10-17 22:25:59] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 22:25:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:25:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:25:59]     Confidence: N/A
+[2025-10-17 22:25:59]     Beta Activity: N/A
+[2025-10-17 22:25:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:25:59]     Timestamp: 2025-10-17 22:25:52
+[2025-10-17 22:25:59] ======================================================================
+
+[2025-10-17 22:29:50] Recording session #6 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-17 22:29:52] ======================================================================
+[2025-10-17 22:29:52] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-17 22:29:52] ======================================================================
+[2025-10-17 22:29:59] Analysis completed for eeg_recording_file_2.csv
+[2025-10-17 22:29:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:29:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:29:59]     Confidence: N/A
+[2025-10-17 22:29:59]     Beta Activity: N/A
+[2025-10-17 22:29:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:29:59]     Timestamp: 2025-10-17 22:29:52
+[2025-10-17 22:29:59] ======================================================================
+
+[2025-10-17 22:31:28] WebSocket client connected: ('127.0.0.1', 44732)
+[2025-10-17 22:33:50] Recording session #7 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 22:33:52] ======================================================================
+[2025-10-17 22:33:52] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 22:33:52] ======================================================================
+[2025-10-17 22:33:59] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 22:33:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:33:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:33:59]     Confidence: N/A
+[2025-10-17 22:33:59]     Beta Activity: N/A
+[2025-10-17 22:33:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:33:59]     Timestamp: 2025-10-17 22:33:52
+[2025-10-17 22:33:59] ======================================================================
+
+[2025-10-17 22:37:06] WebSocket client connected: ('127.0.0.1', 39596)
+[2025-10-17 22:37:50] Recording session #8 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-17 22:37:52] ======================================================================
+[2025-10-17 22:37:52] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-17 22:37:52] ======================================================================
+[2025-10-17 22:37:59] Analysis completed for eeg_recording_file_2.csv
+[2025-10-17 22:37:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:37:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:37:59]     Confidence: N/A
+[2025-10-17 22:37:59]     Beta Activity: N/A
+[2025-10-17 22:37:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:37:59]     Timestamp: 2025-10-17 22:37:52
+[2025-10-17 22:37:59] ======================================================================
+
+[2025-10-17 22:41:50] Recording session #9 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 22:41:52] ======================================================================
+[2025-10-17 22:41:52] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 22:41:52] ======================================================================
+[2025-10-17 22:41:58] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 22:41:58] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:41:58] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:41:58]     Confidence: N/A
+[2025-10-17 22:41:58]     Beta Activity: N/A
+[2025-10-17 22:41:58]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:41:58]     Timestamp: 2025-10-17 22:41:52
+[2025-10-17 22:41:58] ======================================================================
+
+[2025-10-17 22:43:52] WebSocket client connected: ('127.0.0.1', 46212)
+[2025-10-17 22:45:50] Recording session #10 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-17 22:45:52] ======================================================================
+[2025-10-17 22:45:52] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-17 22:45:52] ======================================================================
+[2025-10-17 22:45:59] Analysis completed for eeg_recording_file_2.csv
+[2025-10-17 22:45:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:45:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:45:59]     Confidence: N/A
+[2025-10-17 22:45:59]     Beta Activity: N/A
+[2025-10-17 22:45:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:45:59]     Timestamp: 2025-10-17 22:45:52
+[2025-10-17 22:45:59] ======================================================================
+
+[2025-10-17 22:49:50] Recording session #11 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 22:49:52] ======================================================================
+[2025-10-17 22:49:52] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 22:49:52] ======================================================================
+[2025-10-17 22:49:58] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 22:49:58] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:49:58] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:49:58]     Confidence: N/A
+[2025-10-17 22:49:58]     Beta Activity: N/A
+[2025-10-17 22:49:58]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:49:58]     Timestamp: 2025-10-17 22:49:52
+[2025-10-17 22:49:58] ======================================================================
+
+[2025-10-17 22:50:56] WebSocket client connected: ('127.0.0.1', 57458)
+[2025-10-17 22:53:50] Recording session #12 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-17 22:53:52] ======================================================================
+[2025-10-17 22:53:52] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-17 22:53:52] ======================================================================
+[2025-10-17 22:53:59] Analysis completed for eeg_recording_file_2.csv
+[2025-10-17 22:53:59] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 22:53:59] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 22:53:59]     Confidence: N/A
+[2025-10-17 22:53:59]     Beta Activity: N/A
+[2025-10-17 22:53:59]     Analysis: Non-beta or low focus state detected
+[2025-10-17 22:53:59]     Timestamp: 2025-10-17 22:53:52
+[2025-10-17 22:53:59] ======================================================================
+
+[2025-10-17 22:54:51] WebSocket client connected: ('127.0.0.1', 44710)
+[2025-10-17 22:57:14] Recording stopped by user
+[2025-10-17 22:57:14] ======================================================================
+[2025-10-17 22:57:14] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 22:57:14] ======================================================================
+[2025-10-17 23:06:08] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:06:09] ======================================================================
+[2025-10-17 23:06:09] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:06:09] ======================================================================
+[2025-10-17 23:06:09] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 23:06:09] ======================================================================
+[2025-10-17 23:06:09] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:06:09] ======================================================================
+[2025-10-17 23:06:24] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:06:25] ======================================================================
+[2025-10-17 23:06:25] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:06:25] ======================================================================
+[2025-10-17 23:06:52] WebSocket client connected: ('127.0.0.1', 51996)
+[2025-10-17 23:10:25] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 23:10:27] ======================================================================
+[2025-10-17 23:10:27] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 23:10:27] ======================================================================
+[2025-10-17 23:10:35] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 23:10:35] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 23:10:35] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 23:10:35]     Confidence: N/A
+[2025-10-17 23:10:35]     Beta Activity: N/A
+[2025-10-17 23:10:35]     Analysis: Non-beta or low focus state detected
+[2025-10-17 23:10:35]     Timestamp: 2025-10-17 23:10:27
+[2025-10-17 23:10:35] ======================================================================
+
+[2025-10-17 23:10:48] Recording stopped by user
+[2025-10-17 23:10:48] ======================================================================
+[2025-10-17 23:10:48] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:10:48] ======================================================================
+[2025-10-17 23:15:23] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:15:24] ======================================================================
+[2025-10-17 23:15:24] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:15:24] ======================================================================
+[2025-10-17 23:15:24] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 23:15:24] ======================================================================
+[2025-10-17 23:15:24] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:15:24] ======================================================================
+[2025-10-17 23:15:40] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:15:41] ======================================================================
+[2025-10-17 23:15:41] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:15:41] ======================================================================
+[2025-10-17 23:15:58] WebSocket client connected: ('127.0.0.1', 42806)
+[2025-10-17 23:19:41] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 23:19:43] ======================================================================
+[2025-10-17 23:19:43] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 23:19:43] ======================================================================
+[2025-10-17 23:19:48] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 23:19:48] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 23:19:48] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 23:19:48]     Confidence: N/A
+[2025-10-17 23:19:48]     Beta Activity: N/A
+[2025-10-17 23:19:48]     Analysis: Non-beta or low focus state detected
+[2025-10-17 23:19:48]     Timestamp: 2025-10-17 23:19:43
+[2025-10-17 23:19:48] ======================================================================
+
+[2025-10-17 23:20:41] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-10-17 23:20:41] ======================================================================
+[2025-10-17 23:20:41] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:20:41] ======================================================================
+[2025-10-17 23:22:28] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:22:29] ======================================================================
+[2025-10-17 23:22:29] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:22:29] ======================================================================
+[2025-10-17 23:22:29] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 23:22:29] ======================================================================
+[2025-10-17 23:22:29] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:22:29] ======================================================================
+[2025-10-17 23:22:43] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:22:44] ======================================================================
+[2025-10-17 23:22:44] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:22:44] ======================================================================
+[2025-10-17 23:22:44] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-17 23:22:44] ======================================================================
+[2025-10-17 23:22:44] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:22:44] ======================================================================
+[2025-10-17 23:22:55] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:22:56] ======================================================================
+[2025-10-17 23:22:56] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:22:56] ======================================================================
+[2025-10-17 23:23:12] WebSocket client connected: ('127.0.0.1', 48728)
+[2025-10-17 23:23:53] Recording stopped by user
+[2025-10-17 23:23:53] ======================================================================
+[2025-10-17 23:23:53] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:23:53] ======================================================================
+[2025-10-17 23:35:51] WebSocket server started on ws://localhost:8765
+[2025-10-17 23:35:52] ======================================================================
+[2025-10-17 23:35:52] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-17 23:35:52] ======================================================================
+[2025-10-17 23:36:28] WebSocket client connected: ('127.0.0.1', 48508)
+[2025-10-17 23:39:52] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-17 23:39:54] ======================================================================
+[2025-10-17 23:39:54] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-17 23:39:54] ======================================================================
+[2025-10-17 23:40:02] Analysis completed for eeg_recording_file_1.csv
+[2025-10-17 23:40:02] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-17 23:40:02] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-17 23:40:02]     Confidence: N/A
+[2025-10-17 23:40:02]     Beta Activity: N/A
+[2025-10-17 23:40:02]     Analysis: Non-beta or low focus state detected
+[2025-10-17 23:40:02]     Timestamp: 2025-10-17 23:39:54
+[2025-10-17 23:40:02] ======================================================================
+
+[2025-10-17 23:42:39] Recording stopped by user
+[2025-10-17 23:42:39] ======================================================================
+[2025-10-17 23:42:39] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-17 23:42:39] ======================================================================
+[2025-10-18 00:10:02] WebSocket server started on ws://localhost:8765
+[2025-10-18 00:10:03] ======================================================================
+[2025-10-18 00:10:03] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 00:10:03] ======================================================================
+[2025-10-18 00:10:03] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-18 00:10:03] ======================================================================
+[2025-10-18 00:10:03] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 00:10:03] ======================================================================
+[2025-10-18 00:10:13] WebSocket server started on ws://localhost:8765
+[2025-10-18 00:10:14] ======================================================================
+[2025-10-18 00:10:14] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 00:10:14] ======================================================================
+[2025-10-18 00:10:39] WebSocket client connected: ('127.0.0.1', 48326)
+[2025-10-18 00:14:14] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 00:14:16] ======================================================================
+[2025-10-18 00:14:16] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 00:14:16] ======================================================================
+[2025-10-18 00:14:23] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 00:14:23] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 00:14:23] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 00:14:23]     Confidence: N/A
+[2025-10-18 00:14:23]     Beta Activity: N/A
+[2025-10-18 00:14:23]     Analysis: Non-beta or low focus state detected
+[2025-10-18 00:14:23]     Timestamp: 2025-10-18 00:14:16
+[2025-10-18 00:14:23] ======================================================================
+
+[2025-10-18 00:14:53] Recording stopped by user
+[2025-10-18 00:14:53] ======================================================================
+[2025-10-18 00:14:53] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 00:14:53] ======================================================================
+[2025-10-18 00:16:17] WebSocket server started on ws://localhost:8765
+[2025-10-18 00:16:18] ======================================================================
+[2025-10-18 00:16:18] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 00:16:18] ======================================================================
+[2025-10-18 00:16:18] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-18 00:16:18] ======================================================================
+[2025-10-18 00:16:18] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 00:16:18] ======================================================================
+[2025-10-18 00:16:27] WebSocket server started on ws://localhost:8765
+[2025-10-18 00:16:28] ======================================================================
+[2025-10-18 00:16:28] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 00:16:28] ======================================================================
+[2025-10-18 00:16:48] WebSocket client connected: ('127.0.0.1', 55406)
+[2025-10-18 00:17:20] WebSocket client connected: ('127.0.0.1', 51558)
+[2025-10-18 00:17:36] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-10-18 00:17:36] ======================================================================
+[2025-10-18 00:17:36] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 00:17:36] ======================================================================
+[2025-10-18 00:40:21] WebSocket server started on ws://localhost:8765
+[2025-10-18 00:40:21] ======================================================================
+[2025-10-18 00:40:21] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 00:40:21] ======================================================================
+[2025-10-18 00:40:21] CRITICAL Serial connection failure. Tried ports: ['COM3', 'COM4', '/dev/ttyUSB0', '/dev/ttyACM0', '/dev/tty.usbmodem1234']
+[2025-10-18 00:40:21] ======================================================================
+[2025-10-18 00:40:21] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 00:40:21] ======================================================================
+[2025-10-18 00:40:36] WebSocket server started on ws://localhost:8765
+[2025-10-18 00:40:37] ======================================================================
+[2025-10-18 00:40:37] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 00:40:37] ======================================================================
+[2025-10-18 00:40:54] WebSocket client connected: ('127.0.0.1', 37186)
+[2025-10-18 00:44:37] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 00:44:39] ======================================================================
+[2025-10-18 00:44:39] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 00:44:39] ======================================================================
+[2025-10-18 00:44:44] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 00:44:44] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 00:44:44] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 00:44:44]     Confidence: N/A
+[2025-10-18 00:44:44]     Beta Activity: N/A
+[2025-10-18 00:44:44]     Analysis: Non-beta or low focus state detected
+[2025-10-18 00:44:44]     Timestamp: 2025-10-18 00:44:39
+[2025-10-18 00:44:44] ======================================================================
+
+[2025-10-18 00:47:31] WebSocket client connected: ('127.0.0.1', 43612)
+[2025-10-18 00:48:37] Recording session #2 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 00:48:39] ======================================================================
+[2025-10-18 00:48:39] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 00:48:39] ======================================================================
+[2025-10-18 00:48:45] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 00:48:45] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 00:48:45] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 00:48:45]     Confidence: N/A
+[2025-10-18 00:48:45]     Beta Activity: N/A
+[2025-10-18 00:48:45]     Analysis: Non-beta or low focus state detected
+[2025-10-18 00:48:45]     Timestamp: 2025-10-18 00:48:39
+[2025-10-18 00:48:45] ======================================================================
+
+[2025-10-18 00:52:37] Recording session #3 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 00:52:39] ======================================================================
+[2025-10-18 00:52:39] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 00:52:39] ======================================================================
+[2025-10-18 00:52:43] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 00:52:43] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 00:52:43] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 00:52:43]     Confidence: N/A
+[2025-10-18 00:52:43]     Beta Activity: N/A
+[2025-10-18 00:52:43]     Analysis: Non-beta or low focus state detected
+[2025-10-18 00:52:43]     Timestamp: 2025-10-18 00:52:39
+[2025-10-18 00:52:43] ======================================================================
+
+[2025-10-18 00:55:44] WebSocket client connected: ('127.0.0.1', 40344)
+[2025-10-18 00:56:37] Recording session #4 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 00:56:39] ======================================================================
+[2025-10-18 00:56:39] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 00:56:39] ======================================================================
+[2025-10-18 00:56:46] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 00:56:46] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 00:56:46] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 00:56:46]     Confidence: N/A
+[2025-10-18 00:56:46]     Beta Activity: N/A
+[2025-10-18 00:56:46]     Analysis: Non-beta or low focus state detected
+[2025-10-18 00:56:46]     Timestamp: 2025-10-18 00:56:39
+[2025-10-18 00:56:46] ======================================================================
+
+[2025-10-18 00:57:19] WebSocket client connected: ('127.0.0.1', 53294)
+[2025-10-18 00:59:27] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-10-18 00:59:27] ======================================================================
+[2025-10-18 00:59:27] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 00:59:27] ======================================================================
+[2025-10-18 01:26:32] WebSocket server started on ws://localhost:8765
+[2025-10-18 01:26:33] ======================================================================
+[2025-10-18 01:26:33] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 01:26:33] ======================================================================
+[2025-10-18 01:26:51] WebSocket client connected: ('127.0.0.1', 56054)
+[2025-10-18 01:27:52] WebSocket client connected: ('127.0.0.1', 53266)
+[2025-10-18 01:30:33] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 01:30:35] ======================================================================
+[2025-10-18 01:30:35] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 01:30:35] ======================================================================
+[2025-10-18 01:30:41] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 01:30:41] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 01:30:41] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 01:30:41]     Confidence: N/A
+[2025-10-18 01:30:41]     Beta Activity: N/A
+[2025-10-18 01:30:41]     Analysis: Non-beta or low focus state detected
+[2025-10-18 01:30:41]     Timestamp: 2025-10-18 01:30:35
+[2025-10-18 01:30:41] ======================================================================
+
+[2025-10-18 01:34:33] Recording session #2 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 01:34:35] ======================================================================
+[2025-10-18 01:34:35] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 01:34:35] ======================================================================
+[2025-10-18 01:34:42] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 01:34:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 01:34:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 01:34:42]     Confidence: N/A
+[2025-10-18 01:34:42]     Beta Activity: N/A
+[2025-10-18 01:34:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 01:34:42]     Timestamp: 2025-10-18 01:34:35
+[2025-10-18 01:34:42] ======================================================================
+
