@@ -116,23 +116,22 @@ export const Header = ({ user, role, onLogout, accessibility, focusMode, attenti
           <span className="text-theme-text hidden sm:block text-lg">
             Welcome, {user}
           </span>
-          {toggleFocusMode && attention !== undefined && attention !== null && (
-            <motion.button 
-              onClick={toggleFocusMode} 
-              className={`p-2 rounded-full transition-colors ${
-                attention > 70 
-                  ? 'bg-green-500/20 text-green-500' 
-                  : attention > 40 
-                    ? 'bg-yellow-500/20 text-yellow-500' 
-                    : 'bg-red-500/20 text-red-500'
-              }`} 
-              aria-label="Toggle Focus Mode" 
-              whileHover={{ scale: 1.1 }} 
-              whileTap={{ scale: 0.9 }}
-            >
-              <IconFocus />
-            </motion.button>
-          )}
+          {/* {toggleFocusMode && attention !== undefined && attention !== null && ( */}
+          {/*   <motion.button  */}
+          {/*     onClick={toggleFocusMode}  */}
+          {/*     className={`p-2 rounded-full transition-colors ${ */}
+          {/*       attention > 70  */}
+          {/*         ? 'bg-green-500/20 text-green-500'  */}
+          {/*         : attention > 40  */}
+          {/*           ? 'bg-yellow-500/20 text-yellow-500'  */}
+          {/*           : 'bg-red-500/20 text-red-500' */}
+          {/*     }`}  */}
+          {/*     aria-label="Toggle Focus Mode"  */}
+          {/*     whileHover={{ scale: 1.1 }}  */}
+          {/*     whileTap={{ scale: 0.9 }} */}
+          {/*   > */}
+          {/*   </motion.button> */}
+          {/* )} */}
           {accessibility && (
             <div className="relative">
               <motion.button onClick={() => setIsSettingsOpen(!isSettingsOpen)} className="p-2 rounded-full hover:bg-theme-border/50 transition-colors" aria-label="Open accessibility settings" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>

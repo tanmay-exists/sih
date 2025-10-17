@@ -599,3 +599,304 @@ ERROR: Model not found at 'beta_classifier_best.pth'
 [2025-10-18 01:34:42]     Timestamp: 2025-10-18 01:34:35
 [2025-10-18 01:34:42] ======================================================================
 
+[2025-10-18 01:38:09] WebSocket client connected: ('127.0.0.1', 60822)
+[2025-10-18 01:38:33] Recording session #3 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 01:38:35] ======================================================================
+[2025-10-18 01:38:35] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 01:38:35] ======================================================================
+[2025-10-18 01:38:41] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 01:38:41] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 01:38:41] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 01:38:41]     Confidence: N/A
+[2025-10-18 01:38:41]     Beta Activity: N/A
+[2025-10-18 01:38:41]     Analysis: Non-beta or low focus state detected
+[2025-10-18 01:38:41]     Timestamp: 2025-10-18 01:38:35
+[2025-10-18 01:38:41] ======================================================================
+
+[2025-10-18 01:42:33] Recording session #4 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 01:42:35] ======================================================================
+[2025-10-18 01:42:35] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 01:42:35] ======================================================================
+[2025-10-18 01:42:40] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 01:42:40] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 01:42:40] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 01:42:40]     Confidence: N/A
+[2025-10-18 01:42:40]     Beta Activity: N/A
+[2025-10-18 01:42:40]     Analysis: Non-beta or low focus state detected
+[2025-10-18 01:42:40]     Timestamp: 2025-10-18 01:42:35
+[2025-10-18 01:42:40] ======================================================================
+
+[2025-10-18 01:43:42] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-10-18 01:43:42] ======================================================================
+[2025-10-18 01:43:42] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 01:43:42] ======================================================================
+[2025-10-18 02:09:33] WebSocket server started on ws://localhost:8765
+[2025-10-18 02:09:34] ======================================================================
+[2025-10-18 02:09:34] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 02:09:34] ======================================================================
+[2025-10-18 02:09:53] WebSocket client connected: ('127.0.0.1', 45250)
+[2025-10-18 02:13:34] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 02:13:36] ======================================================================
+[2025-10-18 02:13:36] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 02:13:36] ======================================================================
+[2025-10-18 02:13:42] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 02:13:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:13:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:13:42]     Confidence: N/A
+[2025-10-18 02:13:42]     Beta Activity: N/A
+[2025-10-18 02:13:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:13:42]     Timestamp: 2025-10-18 02:13:36
+[2025-10-18 02:13:42] ======================================================================
+
+[2025-10-18 02:16:21] WebSocket client connected: ('127.0.0.1', 33518)
+[2025-10-18 02:17:34] Recording session #2 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 02:17:36] ======================================================================
+[2025-10-18 02:17:36] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 02:17:36] ======================================================================
+[2025-10-18 02:17:42] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 02:17:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:17:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:17:42]     Confidence: N/A
+[2025-10-18 02:17:42]     Beta Activity: N/A
+[2025-10-18 02:17:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:17:42]     Timestamp: 2025-10-18 02:17:36
+[2025-10-18 02:17:42] ======================================================================
+
+[2025-10-18 02:20:28] WebSocket client connected: ('127.0.0.1', 40746)
+[2025-10-18 02:21:18] WebSocket client connected: ('127.0.0.1', 53956)
+[2025-10-18 02:21:34] Recording session #3 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 02:21:36] ======================================================================
+[2025-10-18 02:21:36] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 02:21:36] ======================================================================
+[2025-10-18 02:21:43] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 02:21:43] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:21:43] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:21:43]     Confidence: N/A
+[2025-10-18 02:21:43]     Beta Activity: N/A
+[2025-10-18 02:21:43]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:21:43]     Timestamp: 2025-10-18 02:21:36
+[2025-10-18 02:21:43] ======================================================================
+
+[2025-10-18 02:24:29] WebSocket client connected: ('127.0.0.1', 45028)
+[2025-10-18 02:25:34] Recording session #4 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 02:25:36] ======================================================================
+[2025-10-18 02:25:36] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 02:25:36] ======================================================================
+[2025-10-18 02:25:41] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 02:25:41] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:25:41] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:25:41]     Confidence: N/A
+[2025-10-18 02:25:41]     Beta Activity: N/A
+[2025-10-18 02:25:41]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:25:41]     Timestamp: 2025-10-18 02:25:36
+[2025-10-18 02:25:41] ======================================================================
+
+[2025-10-18 02:26:37] WebSocket client connected: ('127.0.0.1', 58844)
+[2025-10-18 02:27:54] WebSocket client connected: ('127.0.0.1', 40444)
+[2025-10-18 02:29:34] Recording session #5 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 02:29:36] ======================================================================
+[2025-10-18 02:29:36] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 02:29:36] ======================================================================
+[2025-10-18 02:29:42] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 02:29:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:29:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:29:42]     Confidence: N/A
+[2025-10-18 02:29:42]     Beta Activity: N/A
+[2025-10-18 02:29:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:29:42]     Timestamp: 2025-10-18 02:29:36
+[2025-10-18 02:29:42] ======================================================================
+
+[2025-10-18 02:32:18] WebSocket client connected: ('127.0.0.1', 35704)
+[2025-10-18 02:33:24] WebSocket client connected: ('127.0.0.1', 46082)
+[2025-10-18 02:33:34] Recording session #6 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 02:33:36] ======================================================================
+[2025-10-18 02:33:36] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 02:33:36] ======================================================================
+[2025-10-18 02:33:44] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 02:33:44] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:33:44] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:33:44]     Confidence: N/A
+[2025-10-18 02:33:44]     Beta Activity: N/A
+[2025-10-18 02:33:44]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:33:44]     Timestamp: 2025-10-18 02:33:36
+[2025-10-18 02:33:44] ======================================================================
+
+[2025-10-18 02:33:54] WebSocket client connected: ('127.0.0.1', 41002)
+[2025-10-18 02:37:34] Recording session #7 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 02:37:36] ======================================================================
+[2025-10-18 02:37:36] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 02:37:36] ======================================================================
+[2025-10-18 02:37:42] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 02:37:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:37:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:37:42]     Confidence: N/A
+[2025-10-18 02:37:42]     Beta Activity: N/A
+[2025-10-18 02:37:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:37:42]     Timestamp: 2025-10-18 02:37:36
+[2025-10-18 02:37:42] ======================================================================
+
+[2025-10-18 02:41:34] Recording session #8 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 02:41:36] ======================================================================
+[2025-10-18 02:41:36] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 02:41:36] ======================================================================
+[2025-10-18 02:41:43] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 02:41:43] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:41:43] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:41:43]     Confidence: N/A
+[2025-10-18 02:41:43]     Beta Activity: N/A
+[2025-10-18 02:41:43]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:41:43]     Timestamp: 2025-10-18 02:41:36
+[2025-10-18 02:41:43] ======================================================================
+
+[2025-10-18 02:45:34] Recording session #9 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 02:45:36] ======================================================================
+[2025-10-18 02:45:36] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 02:45:36] ======================================================================
+[2025-10-18 02:45:41] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 02:45:41] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:45:41] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:45:41]     Confidence: N/A
+[2025-10-18 02:45:41]     Beta Activity: N/A
+[2025-10-18 02:45:41]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:45:41]     Timestamp: 2025-10-18 02:45:36
+[2025-10-18 02:45:41] ======================================================================
+
+[2025-10-18 02:48:50] WebSocket client connected: ('127.0.0.1', 43564)
+[2025-10-18 02:49:33] WebSocket client connected: ('127.0.0.1', 56236)
+[2025-10-18 02:49:34] Recording session #10 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 02:49:36] ======================================================================
+[2025-10-18 02:49:36] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 02:49:36] ======================================================================
+[2025-10-18 02:49:40] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 02:49:40] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:49:40] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:49:40]     Confidence: N/A
+[2025-10-18 02:49:40]     Beta Activity: N/A
+[2025-10-18 02:49:40]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:49:40]     Timestamp: 2025-10-18 02:49:36
+[2025-10-18 02:49:40] ======================================================================
+
+[2025-10-18 02:52:29] WebSocket client connected: ('127.0.0.1', 40318)
+[2025-10-18 02:53:34] Recording session #11 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 02:53:36] ======================================================================
+[2025-10-18 02:53:36] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 02:53:36] ======================================================================
+[2025-10-18 02:53:42] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 02:53:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:53:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:53:42]     Confidence: N/A
+[2025-10-18 02:53:42]     Beta Activity: N/A
+[2025-10-18 02:53:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:53:42]     Timestamp: 2025-10-18 02:53:36
+[2025-10-18 02:53:42] ======================================================================
+
+[2025-10-18 02:57:34] Recording session #12 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 02:57:36] ======================================================================
+[2025-10-18 02:57:36] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 02:57:36] ======================================================================
+[2025-10-18 02:57:42] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 02:57:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 02:57:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 02:57:42]     Confidence: N/A
+[2025-10-18 02:57:42]     Beta Activity: N/A
+[2025-10-18 02:57:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 02:57:42]     Timestamp: 2025-10-18 02:57:36
+[2025-10-18 02:57:42] ======================================================================
+
+[2025-10-18 03:00:55] WebSocket client connected: ('127.0.0.1', 47928)
+[2025-10-18 03:01:34] Recording session #13 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 03:01:36] ======================================================================
+[2025-10-18 03:01:36] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 03:01:36] ======================================================================
+[2025-10-18 03:01:42] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 03:01:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 03:01:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 03:01:42]     Confidence: N/A
+[2025-10-18 03:01:42]     Beta Activity: N/A
+[2025-10-18 03:01:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 03:01:42]     Timestamp: 2025-10-18 03:01:36
+[2025-10-18 03:01:42] ======================================================================
+
+[2025-10-18 03:01:57] WebSocket client connected: ('127.0.0.1', 43764)
+[2025-10-18 03:05:34] Recording session #14 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-10-18 03:05:36] ======================================================================
+[2025-10-18 03:05:36] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-18 03:05:36] ======================================================================
+[2025-10-18 03:05:42] Analysis completed for eeg_recording_file_2.csv
+[2025-10-18 03:05:42] 
+Raw model output:
+ERROR: Model not found at 'beta_classifier_best.pth'
+
+[2025-10-18 03:05:42] 
+😴 FINAL VERDICT: NOT FOCUSED
+[2025-10-18 03:05:42]     Confidence: N/A
+[2025-10-18 03:05:42]     Beta Activity: N/A
+[2025-10-18 03:05:42]     Analysis: Non-beta or low focus state detected
+[2025-10-18 03:05:42]     Timestamp: 2025-10-18 03:05:36
+[2025-10-18 03:05:42] ======================================================================
+
+[2025-10-18 03:06:18] WebSocket client connected: ('127.0.0.1', 49604)
+[2025-10-18 03:07:06] Recording stopped by user
+[2025-10-18 03:07:06] ======================================================================
+[2025-10-18 03:07:06] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 03:07:06] ======================================================================

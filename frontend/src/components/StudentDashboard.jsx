@@ -109,49 +109,83 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         
     }, [eegData, sessionState]);
   
-    // --- VERDICT-BASED LOGIC (for refocus quiz trigger) ---
-    useEffect(() => {
-        if (latestVerdict && sessionState === 'active') {
-            const isFocused = latestVerdict.state === 'FOCUSED';
-            lastVerdictTimeRef.current = Date.now();
-            
-            // Trigger refocus quiz on NOT FOCUSED
-            if (!isFocused && !showRefocusQuiz) {
-                setShowRefocusQuiz(true);
-            }
+
+  // --- SHOW ALERT POPUP WHEN ATTENTION DROPS ---
+  useEffect(() => {
+    if (sessionState !== 'active') return;
+    if (attention !== null && attention < 50 && !showFocusAlert) {
+      setShowFocusAlert("Your attention dropped! Please refocus.");
+    } else if (attention >= 50 && showFocusAlert) {
+      setShowFocusAlert(null); // hide when attention recovers
+    }
+  }, [attention, sessionState, showFocusAlert]);
+
+
+    // // --- VERDICT-BASED LOGIC (for refocus quiz trigger) ---
+    // useEffect(() => {
+    //     if (latestVerdict && sessionState === 'active') {
+    //         const isFocused = latestVerdict.state === 'FOCUSED';
+    //         lastVerdictTimeRef.current = Date.now();
+    //
+    //         // Trigger refocus quiz on NOT FOCUSED
+    //         if (!isFocused && !showRefocusQuiz) {
+  //             setShowRefocusQuiz(true);
+  //         }
+  //     }
+  // }, [latestVerdict, sessionState, showRefocusQuiz]);
+
+
+  // --- TRIGGER REFOCUS QUIZ BASED ON MODEL PREDICTION ---
+  useEffect(() => {
+    if (sessionState !== 'active') return;
+    if (latestVerdict && latestVerdict.state !== 'FOCUSED' && !showRefocusQuiz) {
+      setShowRefocusQuiz(true);
+      setShowFocusAlert("Model detected low focus! Take a quick refocus quiz.");
+    }
+  }, [latestVerdict, sessionState, showRefocusQuiz]);
+
+
+  // --- 5-SECOND LOGGING TIMER + Focus streak reset logic ---
+
+  useEffect(() => {
+    if (sessionState !== 'active') return;
+
+    const logInterval = setInterval(() => {
+      const now = Date.now();
+      const timeSinceLastLog = now - lastLogTimeRef.current;
+
+      if (attention !== null) {
+        // --- Focus streak logic ---
+        if (attention < 50) {
+          setFocusStreak(0);
+          lastVerdictTimeRef.current = Date.now(); // reset streak base
+        } else {
+          const timeSinceVerdict = Date.now() - lastVerdictTimeRef.current;
+          setFocusStreak(Math.floor(timeSinceVerdict / 1000));
         }
-    }, [latestVerdict, sessionState, showRefocusQuiz]);
-  
-    // --- 10-SECOND LOGGING TIMER ---
-    useEffect(() => {
-        if (sessionState !== 'active') return;
-        
-        const logInterval = setInterval(() => {
-            const now = Date.now();
-            const timeSinceLastLog = now - lastLogTimeRef.current;
-            
-            // Log every 10 seconds
-            if (timeSinceLastLog >= 10000) {
-                const eventType = latestVerdict?.state === 'FOCUSED' 
-                    ? "FOCUSED (Verdict)" 
-                    : latestVerdict?.state === 'NOT FOCUSED'
-                        ? "NOT FOCUSED (Verdict)"
-                        : "Status Update";
-                        
-                setSessionEvents(prev => [{
-                    timestamp: now,
-                    event: eventType,
-                    attention: attention !== null ? Math.round(attention) : 0,
-                    verdict: latestVerdict?.state || 'N/A'
-                }, ...prev]);
-                
-                lastLogTimeRef.current = now;
-            }
-        }, 1000); // Check every second, but only log every 10 seconds
-        
-        return () => clearInterval(logInterval);
-    }, [sessionState, attention, latestVerdict]);
-  
+      }
+
+      if (timeSinceLastLog >= 5000) {
+        // Determine event based strictly on attention
+        const eventType = attention >= 50 ? "FOCUSED" : "NOT FOCUSED";
+
+        setSessionEvents(prev => [
+          {
+            timestamp: now,
+            event: eventType,
+            attention: attention !== null ? Math.round(attention) : 0,
+            verdict: eventType, // <-- use the same as attention-based
+          },
+          ...prev,
+        ]);
+
+        lastLogTimeRef.current = now;
+      }
+    }, 1000);
+
+    return () => clearInterval(logInterval);
+  }, [sessionState, attention]);
+
     // Dynamic focus streak based on time since last NOT FOCUSED verdict
     useEffect(() => {
         if (sessionState !== 'active') return;
@@ -200,13 +234,19 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         setSessionState('finished');
     };
     
-    const handleRefocusQuizFinish = (result) => {
-        const withSubject = { ...result, subject: studySubject || 'GK' };
-        saveHistory(prev => ({ ...prev, quizzes: [...(prev.quizzes || []), withSubject] }));
-        setShowRefocusQuiz(false);
-        setShowFocusAlert(null);
-    };
-    
+
+  const handleRefocusQuizFinish = (result) => {
+    const withSubject = { ...result, subject: studySubject || 'GK' };
+    saveHistory(prev => ({ ...prev, quizzes: [...(prev.quizzes || []), withSubject] }));
+    setShowRefocusQuiz(false);
+    setShowFocusAlert(null);
+
+    // Prevent immediate retrigger
+    setAttention(60); // safe attention value
+    lastVerdictTimeRef.current = Date.now();
+  };
+
+
     const restartSession = () => {
         setStudySubject(null);
         setStudyContentType(null);
