@@ -900,3 +900,89 @@ ERROR: Model not found at 'beta_classifier_best.pth'
 [2025-10-18 03:07:06] ======================================================================
 [2025-10-18 03:07:06] EEG RECORDING AND CLASSIFICATION SESSION ENDED
 [2025-10-18 03:07:06] ======================================================================
+[2025-10-18 09:26:17] WebSocket server started on ws://localhost:8765
+[2025-10-18 09:26:18] ======================================================================
+[2025-10-18 09:26:18] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 09:26:18] ======================================================================
+[2025-10-18 09:26:18] Serial connection error: [Errno 2] could not open port COM3: [Errno 2] No such file or directory: 'COM3'
+[2025-10-18 09:26:18] ======================================================================
+[2025-10-18 09:26:18] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 09:26:18] ======================================================================
+[2025-10-18 09:34:25] WebSocket server started on ws://localhost:8765
+[2025-10-18 09:34:26] ======================================================================
+[2025-10-18 09:34:26] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 09:34:26] ======================================================================
+[2025-10-18 09:34:26] Serial connection error: [Errno 2] could not open port COM3: [Errno 2] No such file or directory: 'COM3'
+[2025-10-18 09:34:26] ======================================================================
+[2025-10-18 09:34:26] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 09:34:26] ======================================================================
+[2025-10-18 09:35:42] WebSocket server started on ws://localhost:8765
+[2025-10-18 09:35:43] ======================================================================
+[2025-10-18 09:35:43] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 09:35:43] ======================================================================
+[2025-10-18 09:36:00] WebSocket client connected: ('127.0.0.1', 43288)
+[2025-10-18 09:39:43] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 09:39:45] ======================================================================
+[2025-10-18 09:39:45] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 09:39:45] ======================================================================
+[2025-10-18 09:39:53] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 09:39:53] 
+Raw model output:
+{"status": "error", "message": "Model not found at 'beta_classifier_best.pth'"}
+[2025-10-18 09:39:53] ERROR during analysis of eeg_recording_file_1.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-18 09:40:43] Recording stopped by user
+[2025-10-18 09:40:43] ======================================================================
+[2025-10-18 09:40:43] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 09:40:43] ======================================================================
+[2025-10-18 09:46:08] WebSocket server started on ws://localhost:8765
+[2025-10-18 09:46:09] ======================================================================
+[2025-10-18 09:46:09] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 09:46:09] ======================================================================
+[2025-10-18 09:46:09] Serial connection error: [Errno 2] could not open port /dev/ttyACM0: [Errno 2] No such file or directory: '/dev/ttyACM0'
+[2025-10-18 09:46:09] ======================================================================
+[2025-10-18 09:46:09] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 09:46:09] ======================================================================
+[2025-10-18 09:49:52] WebSocket server started on ws://localhost:8765
+[2025-10-18 09:49:53] ======================================================================
+[2025-10-18 09:49:53] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 09:49:53] ======================================================================
+[2025-10-18 09:50:13] WebSocket client connected: ('127.0.0.1', 48516)
+[2025-10-18 09:53:53] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 09:53:55] ======================================================================
+[2025-10-18 09:53:55] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 09:53:55] ======================================================================
+[2025-10-18 09:54:00] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 09:54:00] 
+Raw model output:
+{"status": "error", "message": "Model not found at 'beta_classifier_best.pth'"}
+[2025-10-18 09:54:00] ERROR during analysis of eeg_recording_file_1.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-18 09:54:32] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-10-18 09:54:32] ======================================================================
+[2025-10-18 09:54:32] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 09:54:32] ======================================================================
+[2025-10-18 11:17:04] WebSocket server started on ws://localhost:8765
+[2025-10-18 11:17:05] ======================================================================
+[2025-10-18 11:17:05] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-18 11:17:05] ======================================================================
+[2025-10-18 11:18:24] WebSocket client connected: ('127.0.0.1', 55358)
+[2025-10-18 11:21:05] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-10-18 11:21:07] ======================================================================
+[2025-10-18 11:21:07] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-18 11:21:07] ======================================================================
+[2025-10-18 11:21:17] Analysis completed for eeg_recording_file_1.csv
+[2025-10-18 11:21:17] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "56.5%", "beta_activity": "2.8%", "raw_probability": 0.564766526222229, "predicted_class": 1}
+[2025-10-18 11:21:17] ERROR during analysis of eeg_recording_file_1.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-18 11:22:54] Recording stopped by user
+[2025-10-18 11:22:54] ======================================================================
+[2025-10-18 11:22:54] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-18 11:22:54] ======================================================================
+[2025-10-24 22:06:14] WebSocket server started on ws://localhost:8765
+[2025-10-24 22:06:14] ======================================================================
+[2025-10-24 22:06:14] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-24 22:06:14] ======================================================================
+[2025-10-24 22:06:14] Serial connection error: [Errno 2] could not open port /dev/ttyACM0: [Errno 2] No such file or directory: '/dev/ttyACM0'
+[2025-10-24 22:06:14] ======================================================================
+[2025-10-24 22:06:14] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-24 22:06:14] ======================================================================
