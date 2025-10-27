@@ -986,3 +986,117 @@ Raw model output:
 [2025-10-24 22:06:14] ======================================================================
 [2025-10-24 22:06:14] EEG RECORDING AND CLASSIFICATION SESSION ENDED
 [2025-10-24 22:06:14] ======================================================================
+[2025-10-24 22:18:50] WebSocket server started on ws://localhost:8765
+[2025-10-24 22:18:51] ======================================================================
+[2025-10-24 22:18:51] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-24 22:18:51] ======================================================================
+[2025-10-24 22:18:52] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 1.4s)
+[2025-10-24 22:18:54] ======================================================================
+[2025-10-24 22:18:54] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-24 22:18:54] ======================================================================
+[2025-10-24 22:18:56] Recording session #2 completed: eeg_recording_file_2.csv (61440 samples in 1.4s)
+[2025-10-24 22:18:58] ======================================================================
+[2025-10-24 22:18:58] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-24 22:18:58] ======================================================================
+[2025-10-24 22:19:04] Recording session #3 completed: eeg_recording_file_1.csv (61440 samples in 6.1s)
+[2025-10-24 22:19:06] ======================================================================
+[2025-10-24 22:19:06] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-24 22:19:06] ======================================================================
+[2025-10-24 22:19:07] Analysis completed for eeg_recording_file_1.csv
+[2025-10-24 22:19:07] Analysis completed for eeg_recording_file_2.csv
+[2025-10-24 22:19:07] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "99.9%", "beta_activity": "11.5%", "raw_probability": 0.9994839429855347, "predicted_class": 1}
+[2025-10-24 22:19:07] ERROR during analysis of eeg_recording_file_1.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:19:07] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "100.0%", "beta_activity": "21.0%", "raw_probability": 0.9999998807907104, "predicted_class": 1}
+[2025-10-24 22:19:07] ERROR during analysis of eeg_recording_file_2.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:19:11] Analysis completed for eeg_recording_file_1.csv
+[2025-10-24 22:19:11] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "100.0%", "beta_activity": "11.1%", "raw_probability": 0.9999823570251465, "predicted_class": 1}
+[2025-10-24 22:19:11] ERROR during analysis of eeg_recording_file_1.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:19:12] Recording session #4 completed: eeg_recording_file_2.csv (61440 samples in 6.1s)
+[2025-10-24 22:19:14] ======================================================================
+[2025-10-24 22:19:14] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-24 22:19:14] ======================================================================
+[2025-10-24 22:19:14] Recording stopped by user
+[2025-10-24 22:19:14] Analysis completed for eeg_recording_file_2.csv
+[2025-10-24 22:19:14] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/predict4.py", line 1, in <module>
+    import numpy as np
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/numpy/__init__.py", line 181, in <module>
+    from . import lib
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/numpy/lib/__init__.py", line 23, in <module>
+    from . import _index_tricks_impl
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/numpy/lib/_index_tricks_impl.py", line 12, in <module>
+    import numpy.matrixlib as matrixlib
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/numpy/matrixlib/__init__.py", line 4, in <module>
+    from . import defmatrix
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/numpy/matrixlib/defmatrix.py", line 12, in <module>
+    from numpy.linalg import matrix_power
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/numpy/linalg/__init__.py", line 88, in <module>
+    from . import _linalg
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/numpy/linalg/_linalg.py", line 22, in <module>
+    from typing import NamedTuple, Any
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1022, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1155, in get_code
+  File "<frozen importlib._bootstrap_external>", line 786, in _compile_bytecode
+  File "<frozen importlib._bootstrap>", line 491, in _verbose_message
+KeyboardInterrupt
+[2025-10-24 22:19:14] ERROR during analysis of eeg_recording_file_2.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:19:14] ======================================================================
+[2025-10-24 22:19:14] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-24 22:19:14] ======================================================================
+[2025-10-24 22:20:22] WebSocket server started on ws://localhost:8765
+[2025-10-24 22:20:23] ======================================================================
+[2025-10-24 22:20:23] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-10-24 22:20:23] ======================================================================
+[2025-10-24 22:20:24] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 1.3s)
+[2025-10-24 22:20:26] ======================================================================
+[2025-10-24 22:20:26] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-24 22:20:26] ======================================================================
+[2025-10-24 22:20:32] WebSocket client connected: ('127.0.0.1', 44094)
+[2025-10-24 22:20:33] Recording session #2 completed: eeg_recording_file_2.csv (61440 samples in 6.3s)
+[2025-10-24 22:20:35] ======================================================================
+[2025-10-24 22:20:35] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-24 22:20:35] ======================================================================
+[2025-10-24 22:20:38] Analysis completed for eeg_recording_file_1.csv
+[2025-10-24 22:20:38] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "100.0%", "beta_activity": "21.8%", "raw_probability": 0.9999985694885254, "predicted_class": 1}
+[2025-10-24 22:20:38] ERROR during analysis of eeg_recording_file_1.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:20:40] Recording session #3 completed: eeg_recording_file_1.csv (61440 samples in 5.8s)
+[2025-10-24 22:20:41] Analysis completed for eeg_recording_file_2.csv
+[2025-10-24 22:20:41] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "100.0%", "beta_activity": "13.6%", "raw_probability": 0.9999949932098389, "predicted_class": 1}
+[2025-10-24 22:20:41] ERROR during analysis of eeg_recording_file_2.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:20:42] ======================================================================
+[2025-10-24 22:20:42] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-10-24 22:20:42] ======================================================================
+[2025-10-24 22:20:46] Recording session #4 completed: eeg_recording_file_2.csv (61440 samples in 3.6s)
+[2025-10-24 22:20:48] ======================================================================
+[2025-10-24 22:20:48] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-10-24 22:20:48] ======================================================================
+[2025-10-24 22:20:50] Analysis completed for eeg_recording_file_1.csv
+[2025-10-24 22:20:50] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "62.6%", "beta_activity": "10.1%", "raw_probability": 0.6256868243217468, "predicted_class": 1}
+[2025-10-24 22:20:50] ERROR during analysis of eeg_recording_file_1.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:20:54] Analysis completed for eeg_recording_file_2.csv
+[2025-10-24 22:20:54] 
+Raw model output:
+{"status": "success", "focus_state": "NOT FOCUSED", "confidence": "99.4%", "beta_activity": "6.5%", "raw_probability": 0.9936597943305969, "predicted_class": 1}
+[2025-10-24 22:20:54] ERROR during analysis of eeg_recording_file_2.csv: not enough values to unpack (expected 6, got 3)
+[2025-10-24 22:20:54] Recording session #5 completed: eeg_recording_file_1.csv (61440 samples in 5.6s)
+[2025-10-24 22:20:55] Recording stopped by user
+[2025-10-24 22:20:55] ======================================================================
+[2025-10-24 22:20:55] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-10-24 22:20:55] ======================================================================

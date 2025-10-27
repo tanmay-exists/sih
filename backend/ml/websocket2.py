@@ -21,6 +21,7 @@ DURATION_MIN = 4
 WEBSOCKET_HOST = 'localhost'
 WEBSOCKET_PORT = 8765
 EEG_SEND_RATE = 10  # Send EEG samples every 10 samples (25.6 Hz effective rate)
+SIMULATION_MODE = True  # Set True if no hardware connected
 
 # Calculate the total number of samples to record per file
 MAX_SAMPLES_PER_FILE = SAMPLE_RATE * DURATION_MIN * 60
@@ -368,11 +369,15 @@ try:
     log_result("="*70)
     
     # Establish Serial Connection
-    print(f"\n🔌 Attempting to connect to port {COM_PORT} at {BAUD_RATE} bps...")
-    ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
-    print("✓ Connection successful. Waiting for device initialization...")
-    time.sleep(2)
-    
+    if SIMULATION_MODE:
+        print("\n🧩 Simulation Mode ON - No hardware connected")
+        ser = None
+    else:
+        print(f"\n🔌 Attempting to connect to port {COM_PORT} at {BAUD_RATE} bps...")
+        ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
+        print("✓ Connection successful. Waiting for device initialization...")
+        time.sleep(2)
+
     print("\n" + "="*70)
     print("CONTINUOUS EEG MONITORING STARTED")
     print("="*70)
@@ -422,7 +427,14 @@ try:
             start_time = time.time()
             
             while samples_recorded < MAX_SAMPLES_PER_FILE:
-                line_bytes = ser.readline()
+                if SIMULATION_MODE:
+                    # Generate fake EEG-like values (random noise or sine wave)
+                    import math, random
+                    t = time.time()
+                    value = 500 * math.sin(2 * math.pi * 10 * (t % 1)) + random.uniform(-50, 50)
+                    line_bytes = f"{value}\n".encode('utf-8')
+                else:
+                    line_bytes = ser.readline()
                 
                 if line_bytes:
                     try:
