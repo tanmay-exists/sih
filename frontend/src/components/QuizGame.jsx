@@ -1,53 +1,22 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, Button, ListenButton } from './Common';
-const SUBJECT_QUESTION_BANK = {
-  Math: [
-    { question: "What is 5 + 7?", options: ["10", "11", "12", "13"], answer: "12" },
-    { question: "What is 9 - 4?", options: ["3", "4", "5", "6"], answer: "5" },
-    { question: "What is 6 × 7?", options: ["42", "36", "40", "49"], answer: "42" },
-    { question: "What is 56 ÷ 8?", options: ["6", "7", "8", "9"], answer: "7" },
-    { question: "What is 15 + 9?", options: ["23", "24", "25", "26"], answer: "24" },
-  ],
-  Science: [
-    { question: "Water freezes at what temperature (°C)?", options: ["-10", "0", "10", "32"], answer: "0" },
-    { question: "Which gas do plants absorb?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"], answer: "Carbon Dioxide" },
-    { question: "Earth is the ___ planet from the sun.", options: ["2nd", "3rd", "4th", "5th"], answer: "3rd" },
-    { question: "Humans breathe in?", options: ["Carbon Dioxide", "Oxygen", "Hydrogen", "Neon"], answer: "Oxygen" },
-    { question: "The boiling point of water at sea level (°C)?", options: ["50", "80", "100", "120"], answer: "100" },
-  ],
-  English: [
-    { question: "Choose the synonym of 'Happy'", options: ["Sad", "Joyful", "Angry", "Tired"], answer: "Joyful" },
-    { question: "Choose the antonym of 'Begin'", options: ["Start", "Commence", "End", "Open"], answer: "End" },
-    { question: "Fill in: She ___ to school.", options: ["go", "goes", "gone", "going"], answer: "goes" },
-    { question: "Plural of 'Child' is?", options: ["Childs", "Childes", "Children", "Childrens"], answer: "Children" },
-    { question: "Past tense of 'Eat' is?", options: ["Ate", "Eaten", "Eat", "Eating"], answer: "Ate" },
-  ],
-  GK: [
-    { question: "Capital of India?", options: ["Mumbai", "Delhi", "Kolkata", "Chennai"], answer: "Delhi" },
-    { question: "How many continents?", options: ["5", "6", "7", "8"], answer: "7" },
-    { question: "Largest ocean?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: "Pacific" },
-    { question: "Tallest mountain?", options: ["K2", "Everest", "Kangchenjunga", "Lhotse"], answer: "Everest" },
-    { question: "National animal of India?", options: ["Lion", "Elephant", "Tiger", "Peacock"], answer: "Tiger" },
-  ],
-};
+
 const transitionVariants = {
   initial: { opacity: 0, x: -20 },
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: 20 },
 };
-export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) => {
+
+export const QuizGame = ({ subject = 'Math', questions, onFinish, attention, focusStats }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
-  const [isFinished, setIsFinished] = useState(false); // Track finish state to prevent multiple calls
-  const questions = useMemo(() => SUBJECT_QUESTION_BANK[subject] || SUBJECT_QUESTION_BANK.Math, [subject]);
+  const [isFinished, setIsFinished] = useState(false);
   const currentQuestion = useMemo(() => questions[currentQuestionIndex], [currentQuestionIndex, questions]);
   const isQuizFinished = currentQuestionIndex >= questions.length;
-  useEffect(() => {
-    console.log('QuizGame: isQuizFinished:', isQuizFinished, 'attention:', attention);
-  }, [isQuizFinished, attention]);
+
   const handleAnswer = (option) => {
     if (selectedAnswer) return;
     setSelectedAnswer(option);
@@ -62,22 +31,26 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
       setCurrentQuestionIndex(i => i + 1);
     }, 1000);
   };
+
   const handleSkip = () => {
     setSelectedAnswer(null);
     setIsCorrect(null);
     setCurrentQuestionIndex(i => i + 1);
   };
+
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
     setScore(0);
     setIsFinished(false);
   };
+
   const getButtonClass = (option) => {
     if (selectedAnswer === null) return 'bg-amber-400 hover:bg-amber-500 text-warmGray-800';
     if (option === currentQuestion.answer) return 'bg-green-500 text-white';
     if (option === selectedAnswer && !isCorrect) return 'bg-red-500 text-white';
     return 'bg-amber-200 opacity-50 text-warmGray-800';
   };
+
   const getPerformanceMessage = (score, total) => {
     const percentage = (score / total) * 100;
     if (percentage === 100) return "You aced it! Perfect score and laser-sharp focus! 🎉";
@@ -85,12 +58,14 @@ export const QuizGame = ({ subject = 'Math', onFinish, attention, focusStats }) 
     if (percentage >= 60) return "Well done! A solid performance. You're on the right track! 👍";
     return "Nice effort! Every quiz is a chance to learn. Review the material and try again. 🧠";
   };
+
   const handleFinish = () => {
     if (isFinished || !onFinish) return;
     const calculatedFocusStats = focusStats ? focusStats() : null;
     setIsFinished(true);
     onFinish({ subject, score, total: questions.length, completedAt: Date.now(), focusStats: calculatedFocusStats });
   };
+
   if (isQuizFinished) {
     const calculatedFocusStats = focusStats ? focusStats() : null;
     const performanceMessage = getPerformanceMessage(score, questions.length);
