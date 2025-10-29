@@ -10,7 +10,7 @@ app = FastAPI(title="NeuroLearn Backend")
 # CORS for frontend (adjust origins)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8080"],  # Your frontend URL
+    allow_origins=["*"],  # Your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

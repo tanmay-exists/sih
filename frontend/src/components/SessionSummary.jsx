@@ -1,12 +1,11 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, Button } from './Common';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+
 export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNew, onTakeQuiz, attentionHistory, attention }) => {
   const formatTime = (seconds) => `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
   const analysis = useMemo(() => {
-    console.log("SessionSummary: attentionHistory length:", attentionHistory.length, "data:", attentionHistory);
     const validHistory = attentionHistory.filter(e => typeof e.attention === 'number' && !isNaN(e.attention));
-  
     const averageAttention = validHistory.length > 0
       ? validHistory.reduce((sum, point) => sum + point.attention, 0) / validHistory.length
       : (typeof attention === 'number' && !isNaN(attention) ? Math.round(attention) : 0);
@@ -15,25 +14,19 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
       attention: e.attention,
     }));
     if (attentionData.length === 0) {
-      // Enhanced Fallback: Simulate a realistic varied line based on session duration and final attention
-      // Start high (e.g., 80-95%), dip mid-session, end at actual attention (avoids flat/hardcoded look)
       const sessionStart = Date.now() - (sessionTime * 1000);
-      const numPoints = Math.max(10, Math.floor(sessionTime / 5)); // More points (every ~5s) for smoother curve
+      const numPoints = Math.max(10, Math.floor(sessionTime / 5));
       const baseAttention = typeof attention === 'number' && !isNaN(attention) ? attention : 50;
       attentionData = Array.from({ length: numPoints }, (_, i) => {
-        const progress = i / (numPoints - 1); // 0 to 1
+        const progress = i / (numPoints - 1);
         let simulatedAttention = baseAttention;
         if (progress < 0.3) {
-          // Start strong: High focus
           simulatedAttention = baseAttention + (20 * (1 - progress / 0.3));
         } else if (progress < 0.7) {
-          // Mid-session dip: Realistic variance
           simulatedAttention = baseAttention - (10 * Math.sin(progress * Math.PI));
         } else {
-          // End: Recover to final attention
           simulatedAttention = baseAttention + (10 * ((progress - 0.7) / 0.3));
         }
-        // Clamp 0-100
         simulatedAttention = Math.max(0, Math.min(100, simulatedAttention));
         return {
           time: new Date(sessionStart + (i * (sessionTime * 1000 / (numPoints - 1)))).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -41,7 +34,6 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
         };
       });
     }
-    console.log("SessionSummary: attentionData length:", attentionData.length, "data:", attentionData);
     let bestContentType = "You maintained a consistent and balanced focus. Well done!";
     if (averageAttention > 70) {
       bestContentType = "You excelled with interactive content. Quizzes and activities seem to boost your focus significantly!";
@@ -53,7 +45,7 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
     return { attentionData, bestContentType, averageAttention };
   }, [attentionHistory, attention, sessionTime]);
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-theme-bg">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-warmGray-100">
       <Card className="w-full max-w-4xl text-center bg-amber-50 p-8 rounded-xl shadow-lg border border-amber-200">
         <h2 className="text-3xl font-bold text-orange-800 mb-4">Focus Session Complete!</h2>
         <p className="text-xl text-warmGray-700 mb-6">Total Time: <strong>{formatTime(sessionTime)}</strong></p>

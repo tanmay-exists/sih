@@ -1,8 +1,8 @@
-import { Card } from "./Common";
+// Components.jsx
+import { Card, Button, ListenButton } from "./Common"; // <-- ListenButton added here
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
-import { Button } from "./Common";
+import { Download, AlertTriangle } from "lucide-react";
 import jsPDF from "jspdf";
 
 export const EegStreamChart = ({ data }) => (
@@ -136,9 +136,43 @@ export const ExportTool = () => {
   return (
     <Card className="flex flex-col items-center justify-center">
       <h2 className="text-2xl font-semibold mb-4 text-orange-800">Export Reports</h2>
-      <Button onClick={exportPDF} className="bg-orange-500 hover:bg-orange-600 text-white" icon={<Download />}>
+      <Button onClick={exportPDF} className="bg-orange-500 hover:bg-orange-600 text-white" icon={<Download className="h-6 w-6" />}>
         Download PDF Report
       </Button>
     </Card>
   );
 };
+
+export const FocusAlert = ({ message, onClose }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 20 }}
+    className="fixed bottom-4 right-4 bg-amber-50 border border-orange-500 rounded-lg p-4 shadow-lg max-w-sm z-50"
+  >
+    <div className="flex items-center gap-2">
+      <AlertTriangle className="h-6 w-6 text-orange-800" />
+      <p className="text-warmGray-700">{message}</p>
+    </div>
+    <Button onClick={onClose} className="mt-2 bg-red-500 hover:bg-red-600 text-white w-full">
+      Close
+    </Button>
+  </motion.div>
+);
+
+export const HeadsetAlert = ({ onClose }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 20 }}
+    className="fixed bottom-4 right-4 bg-amber-50 border border-orange-500 rounded-lg p-4 shadow-lg max-w-sm z-50"
+  >
+    <div className="flex items-center gap-2">
+      <AlertTriangle className="h-6 w-6 text-orange-800" />
+      <p className="text-warmGray-700">Connecting to EEG headset...</p>
+    </div>
+    <Button onClick={onClose} className="mt-2 bg-red-500 hover:bg-red-600 text-white w-full">
+      Close
+    </Button>
+  </motion.div>
+);

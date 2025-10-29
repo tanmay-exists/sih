@@ -3,7 +3,7 @@ from typing import List
 
 class Lesson(BaseModel):
     lessonId: str
-    title: str
+    lessonTitle: str
     videoUrl: str
     articleUrl: str
 
