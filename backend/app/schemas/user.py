@@ -1,7 +1,22 @@
+# schemas/user.py
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
 
+# New: Register form
+class RegisterForm(BaseModel):
+    email: EmailStr
+    firstName: str
+    lastName: str
+    password: str
+    class_: str  # e.g., "10"
+
+# New: Login form
+class LoginForm(BaseModel):
+    email: EmailStr
+    password: str
+
+# Existing models (kept for DB & Google flow)
 class Name(BaseModel):
     firstName: str
     lastName: str
@@ -10,11 +25,11 @@ class UserBase(BaseModel):
     username: str
     name: Name
     email: EmailStr
-    class_: str  # Renamed to avoid Python keyword conflict
+    class_: str
 
 class UserCreate(UserBase):
-    password: Optional[str] = None  # For email/password
-    googleId: Optional[str] = None  # For Google SSO
+    password: Optional[str] = None
+    googleId: Optional[str] = None
 
 class UserInDB(UserBase):
     userId: str
