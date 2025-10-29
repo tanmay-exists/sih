@@ -5,6 +5,9 @@
 
 # Optional: ignore Python cache and virtual environment
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 venv/
 .venv/
 
