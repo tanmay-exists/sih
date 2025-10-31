@@ -1,3 +1,4 @@
+# routers/tools.py
 from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies import get_db_client, get_current_user
 from app.schemas.curriculum import Lesson
@@ -40,9 +41,9 @@ async def fetch_article_content(article_url: str) -> str:
                 text = elem.get_text(strip=True)
                 if text:
                     content += text + " "
-        if not content:
-            for p in soup.select("p"):
-                content += p.get_text(strip=True) + " "
+            if not content:
+                for p in soup.select("p"):
+                    content += p.get_text(strip=True) + " "
         # Limit to ~4000 chars
         return content[:4000]
     except Exception as e:
@@ -51,15 +52,56 @@ async def fetch_article_content(article_url: str) -> str:
 @router.post("/chatbot")
 async def chatbot(request: ChatbotRequest, current_user=Depends(get_current_user), client=Depends(get_db_client)):
     """Chatbot to help understand lessons using Gemini."""
+    db = client["NLCurriculum"]
+    curriculum = await db["curriculum"].find_one({"class": current_user["class_"]})
+    
+    lesson = None
+    if curriculum:
+        for subject in curriculum["subjects"]:
+            for l in subject["lessons"]:
+                if l["lessonId"] == request.lesson_id:
+                    # Assuming Lesson is defined and can be used to validate/structure the dict
+                    from app.schemas.curriculum import Lesson
+                    lesson = Lesson(**l)
+                    break
+            if lesson:
+                break
+    
+    # 1. FETCH ARTICLE CONTENT
+    article_content = ""
+    if lesson:
+        try:
+            # Re-use the existing function to get context
+            article_content = await fetch_article_content(lesson.articleUrl)
+        except HTTPException:
+            # Silently fail fetching content if the URL is bad, and proceed with a general answer
+            pass
+
+    # 2. CONSTRUCT FOCUSED PROMPT
+    context = ""
+    if article_content:
+        # If we have content, explicitly tell the AI to use it
+        context = f"Based on the following article content: {article_content}\n\n"
+    elif lesson:
+        # If we don't have content but know the lesson title
+        context = f"The current lesson title is '{lesson.lessonTitle}'. "
+
+    
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel('gemini-2.0-flash-001')
+    
     try:
-        response = await model.generate_content_async(
-            f"You are a helpful tutor for students with ADHD. Provide clear, concise answers. Explain for lesson {request.lesson_id}: {request.query}",
-            generation_config={"max_output_tokens": 150}
+        # --- FIX: Inject the article content into the prompt for better focus ---
+        full_prompt = (
+            f"You are a helpful, expert tutor for students with ADHD. Provide clear, concise answers, using **bold text** and bullet points for key concepts. "
+            f"Explain for the lesson {request.lesson_id}: {context} The student's question is: {request.query}"
         )
+        
+        response = await model.generate_content_async(full_prompt)
+        # ------------------------------------------------------------------------
         return {"response": response.text}
     except Exception as e:
+        # ... (error handling remains the same) ...
         raise HTTPException(status_code=500, detail=f"Chatbot error: {str(e)}")
 
 @router.get("/summarize-and-quiz/{lesson_id}")
@@ -93,9 +135,11 @@ async def summarize_and_quiz(lesson_id: str, current_user=Depends(get_current_us
     
     # Generate summary
     try:
+        # --- CORRECTION 2: Removed generation_config for full summary ---
         summary_response = await model.generate_content_async(
-            f"Summarize the following article concisely (100-150 words) for a student with ADHD, focusing on key points: {article_content}"
+            f"Summarize the following article concisely (200-250 words) for a student with ADHD, focusing on key points: {article_content}. Also mention formulas if any."
         )
+        # -----------------------------------------------------------------
         summary = summary_response.text
         short_cues = summary[:200] + "..." if len(summary) > 200 else summary
     except Exception as e:
