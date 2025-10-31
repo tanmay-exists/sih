@@ -43,7 +43,6 @@ async def register(form: RegisterForm, client=Depends(get_db_client)):
         "email": form.email,
         "class_": form.class_,
         "password": hashed_password,
-        "googleId": None,
         "role": "student",
         "createdAt": datetime.utcnow(),
         "lastLogin": datetime.utcnow(),
