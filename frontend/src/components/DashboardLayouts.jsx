@@ -1,5 +1,5 @@
 // DashboardLayouts.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Card, Button, Header } from "./Common";
 import { SessionSummary } from "./SessionSummary";
 import { AnimatePresence } from "framer-motion";
@@ -16,7 +16,77 @@ const formatDateTime = (timestamp) => {
   })}`;
 };
 
-// --- Idle State Layout ---
+// --- Internal Component for History Tabs in IdleLayout ---
+const HistoryTabs = ({ history }) => {
+  const [activeTab, setActiveTab] = useState("quizzes"); // 'quizzes' or 'sessions'
+
+  const tabClasses = (tabName) =>
+    `px-4 py-2 text-sm font-medium rounded-t-lg transition-colors border-b-2 ${
+      activeTab === tabName
+        ? "bg-amber-100 text-orange-700 border-orange-500"
+        : "text-warmGray-500 hover:text-orange-700 border-transparent hover:border-amber-300"
+    }`;
+
+  // Data is already reversed in the main component logic, but we'll ensure it's latest-first here for clarity.
+  const sortedRecentQuizzes = history.recent_quizzes.slice(-10);
+  const sortedRecentSessions = history.recent_sessions.slice(-10);
+
+  return (
+    <div className="flex flex-col h-full">
+      <h3 className="text-2xl font-semibold text-orange-800 mb-4 shrink-0">Your History</h3>
+      <div className="flex border-b border-amber-200 shrink-0">
+        <button onClick={() => setActiveTab("quizzes")} className={tabClasses("quizzes")}>
+          Recent Quizzes
+        </button>
+        <button onClick={() => setActiveTab("sessions")} className={tabClasses("sessions")}>
+          Recent Sessions
+        </button>
+      </div>
+
+      <div className="flex-grow overflow-y-auto pt-4 pr-2">
+        {activeTab === "quizzes" && (
+          <div>
+            {sortedRecentQuizzes.length === 0 ? (
+              <p className="text-base text-warmGray-500 p-2">No quizzes yet.</p>
+            ) : (
+              sortedRecentQuizzes.map((q, i) => (
+                <div
+                  key={i}
+                  className="text-base flex justify-between bg-amber-100/50 px-4 py-3 rounded-lg border border-amber-200 mb-3"
+                >
+                  <span>{formatDateTime(q.timestamp)}</span>
+                  <span className="font-semibold">
+                    {q.subject}: {q.score}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === "sessions" && (
+          <div>
+            {sortedRecentSessions.length === 0 ? (
+              <p className="text-base text-warmGray-500 p-2">No sessions yet.</p>
+            ) : (
+              sortedRecentSessions.map((s, i) => (
+                <div
+                  key={i}
+                  className="text-base flex justify-between bg-amber-100/50 px-4 py-3 rounded-lg border border-amber-200 mb-3"
+                >
+                  <span>{formatDateTime(s.timestamp)}</span>
+                  <span className="font-semibold">{formatTime(s.duration)}</span>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// --- Idle State Layout (Updated to use HistoryTabs) ---
 export const IdleLayout = ({ onLogout, accessibility, errorMessage, subjects, history, setSessionState, setShowHeadsetAlert, showHeadsetAlert }) => (
   <>
     <Header
@@ -48,46 +118,9 @@ export const IdleLayout = ({ onLogout, accessibility, errorMessage, subjects, hi
             Start Study Session
           </Button>
         </Card>
-        <Card className="bg-amber-50 lg:col-span-2 p-10 flex flex-col h-[500px] rounded-xl shadow-lg border border-amber-200">
-          <h3 className="text-2xl font-semibold text-orange-800 mb-6 shrink-0">Your History</h3>
-          <div className="flex-grow space-y-6 overflow-y-auto pr-4">
-            <div>
-              <p className="text-base font-bold text-warmGray-600 mb-3">Recent Sessions</p>
-              {history.recent_sessions.length === 0 && <p className="text-base text-warmGray-500">No sessions yet.</p>}
-              {history.recent_sessions
-                .slice(-10)
-                .reverse()
-                .map((s, i) => (
-                  <div
-                    key={i}
-                    className="text-base flex justify-between bg-amber-100/50 px-4 py-3 rounded-lg border border-amber-200 mb-3"
-                  >
-                    <span>{formatDateTime(s.timestamp)}</span>
-                    <span className="font-semibold">{formatTime(s.duration)}</span>
-                  </div>
-                ))}
-            </div>
-            <div>
-              <p className="text-base font-bold text-warmGray-600 mb-3">Recent Quizzes</p>
-              {history.recent_quizzes.length === 0 && (
-                <p className="text-base text-warmGray-500">No quizzes yet.</p>
-              )}
-              {history.recent_quizzes
-                .slice(-10)
-                .reverse()
-                .map((q, i) => (
-                  <div
-                    key={i}
-                    className="text-base flex justify-between bg-amber-100/50 px-4 py-3 rounded-lg border border-amber-200 mb-3"
-                  >
-                    <span>{formatDateTime(q.timestamp)}</span>
-                    <span className="font-semibold">
-                      {q.subject}: {q.score}
-                    </span>
-                  </div>
-                ))}
-            </div>
-          </div>
+        {/* History Card with Tabs */}
+        <Card className="bg-amber-50 lg:col-span-2 p-6 flex flex-col h-[500px] rounded-xl shadow-lg border border-amber-200">
+          <HistoryTabs history={history} />
         </Card>
       </div>
       <AnimatePresence>{showHeadsetAlert && <HeadsetAlert onClose={() => setShowHeadsetAlert(false)} />}</AnimatePresence>
