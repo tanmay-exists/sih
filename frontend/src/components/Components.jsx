@@ -148,7 +148,7 @@ export const FocusAlert = ({ message, onClose }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: 20 }}
-    className="fixed bottom-4 right-4 bg-amber-50 border border-orange-500 rounded-lg p-4 shadow-lg max-w-sm z-50"
+    className="bg-amber-50 border border-orange-500 rounded-lg p-4 shadow-lg max-w-sm z-50"
   >
     <div className="flex items-center gap-2">
       <AlertTriangle className="h-6 w-6 text-orange-800" />

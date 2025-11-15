@@ -4,6 +4,7 @@ from app.routers import auth, users, curriculum, tools
 from app.dependencies import get_db_client
 from app.routers import history
 from app.routers import neuro
+import asyncio
 
 app = FastAPI(title="NeuroLearn Backend")
 
@@ -23,6 +24,11 @@ app.include_router(curriculum.router, prefix="/curriculum", tags=["curriculum"])
 app.include_router(tools.router, tags=["tools"])
 app.include_router(history.router)
 app.include_router(neuro.router)
+
+@app.on_event("startup")
+async def set_main_loop():
+    from app.routers import neuro
+    neuro.MAIN_LOOP = asyncio.get_running_loop()
 
 # Health check
 @app.get("/")

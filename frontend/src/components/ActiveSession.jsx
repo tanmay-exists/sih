@@ -59,7 +59,9 @@ export const ActiveSession = ({
           />
         )}
         {showFocusAlert && (
-          <FocusAlert message={showFocusAlert} onClose={() => setShowFocusAlert(null)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <FocusAlert message={showFocusAlert} onClose={() => setShowFocusAlert(null)} />
+          </div>
         )}
       </AnimatePresence>
 

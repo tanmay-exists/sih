@@ -12,15 +12,16 @@ import json
 from collections import deque
 
 # --- Configuration Parameters ---
-COM_PORT = '/dev/ttyACM0'  # <<< CHANGE THIS to your actual COM port
+COM_PORT = '/dev/ttyACM0'  
 BAUD_RATE = 115200
 SAMPLE_RATE = 256
 DURATION_MIN = 4
 
-# WebSocket Configuration
+# WebSocket Configuration - TWO SEPARATE PORTS
 WEBSOCKET_HOST = 'localhost'
-WEBSOCKET_PORT = 8765
-EEG_SEND_RATE = 10  # Send EEG samples every 10 samples (25.6 Hz effective rate)
+EEG_PORT = 8765        # Port for EEG signal values
+VERDICT_PORT = 8766    # Port for ML model verdicts
+EEG_SEND_RATE = 10     # Send EEG samples every 10 samples (25.6 Hz effective rate)
 
 # Calculate the total number of samples to record per file
 MAX_SAMPLES_PER_FILE = SAMPLE_RATE * DURATION_MIN * 60
@@ -35,10 +36,12 @@ MODEL_TEST_SCRIPT = 'predict4.py'
 # Results log file
 RESULTS_LOG = 'classification_results_log.txt'
 
-# Global WebSocket state
-websocket_clients = set()
+# Global WebSocket state - SEPARATE FOR EACH PORT
+eeg_clients = set()
+verdict_clients = set()
 eeg_sample_buffer = deque(maxlen=1000)
-websocket_loop = None
+eeg_loop = None
+verdict_loop = None
 latest_verdict = {
     'state': 'UNKNOWN',
     'confidence': 'N/A',
@@ -47,23 +50,23 @@ latest_verdict = {
     'session': 0
 }
 
-# --- WebSocket Server Functions ---
-async def handle_client(websocket):
-    """Handle WebSocket client connection"""
-    global websocket_clients
-    websocket_clients.add(websocket)
+# --- WebSocket Server Functions for EEG Signal ---
+async def handle_eeg_client(websocket):
+    """Handle WebSocket client connection for EEG signals"""
+    global eeg_clients
+    eeg_clients.add(websocket)
     client_address = websocket.remote_address
-    print(f"\n🌐 WebSocket client connected: {client_address}")
-    log_result(f"WebSocket client connected: {client_address}")
+    print(f"\n🌐 [EEG] Client connected: {client_address}")
+    log_result(f"EEG client connected: {client_address}")
     
     try:
         # Send initial state
         await websocket.send(json.dumps({
             'type': 'connection',
             'status': 'connected',
-            'message': 'Connected to EEG Monitor',
+            'message': 'Connected to EEG Signal Stream',
             'sample_rate': SAMPLE_RATE,
-            'verdict_interval': f'{DURATION_MIN} minutes'
+            'port_type': 'eeg_signal'
         }))
         
         # Keep connection alive and handle incoming messages
@@ -76,14 +79,14 @@ async def handle_client(websocket):
                 pass
                 
     except websockets.exceptions.ConnectionClosed:
-        print(f"\n🌐 WebSocket client disconnected: {client_address}")
-        log_result(f"WebSocket client disconnected: {client_address}")
+        print(f"\n🌐 [EEG] Client disconnected: {client_address}")
+        log_result(f"EEG client disconnected: {client_address}")
     finally:
-        websocket_clients.discard(websocket)
+        eeg_clients.discard(websocket)
 
 async def broadcast_eeg_sample(sample_data):
-    """Broadcast EEG sample to all connected clients"""
-    if websocket_clients:
+    """Broadcast EEG sample to all connected EEG clients"""
+    if eeg_clients:
         message = json.dumps({
             'type': 'eeg_sample',
             'timestamp': datetime.now().isoformat(),
@@ -91,18 +94,85 @@ async def broadcast_eeg_sample(sample_data):
         })
         
         disconnected = set()
-        for client in websocket_clients:
+        for client in eeg_clients:
             try:
                 await client.send(message)
             except:
                 disconnected.add(client)
         
         for client in disconnected:
-            websocket_clients.discard(client)
+            eeg_clients.discard(client)
+
+def start_eeg_websocket_server(loop):
+    """Start WebSocket server for EEG signals in the event loop"""
+    global eeg_loop
+    eeg_loop = loop
+    asyncio.set_event_loop(loop)
+    
+    async def start_server_async():
+        server = await websockets.serve(
+            handle_eeg_client, 
+            WEBSOCKET_HOST, 
+            EEG_PORT,
+            ping_interval=20,
+            ping_timeout=10
+        )
+        print(f"✓ EEG WebSocket server started on ws://{WEBSOCKET_HOST}:{EEG_PORT}")
+        log_result(f"EEG WebSocket server started on ws://{WEBSOCKET_HOST}:{EEG_PORT}")
+        return server
+    
+    loop.run_until_complete(start_server_async())
+    loop.run_forever()
+
+# --- WebSocket Server Functions for Verdict ---
+async def handle_verdict_client(websocket):
+    """Handle WebSocket client connection for ML verdicts"""
+    global verdict_clients
+    verdict_clients.add(websocket)
+    client_address = websocket.remote_address
+    print(f"\n🌐 [VERDICT] Client connected: {client_address}")
+    log_result(f"Verdict client connected: {client_address}")
+    
+    try:
+        # Send initial state
+        await websocket.send(json.dumps({
+            'type': 'connection',
+            'status': 'connected',
+            'message': 'Connected to ML Verdict Stream',
+            'verdict_interval': f'{DURATION_MIN} minutes',
+            'port_type': 'verdict'
+        }))
+        
+        # Send latest verdict if available
+        if latest_verdict['timestamp']:
+            await websocket.send(json.dumps({
+                'type': 'verdict',
+                'timestamp': datetime.now().isoformat(),
+                'focus_state': latest_verdict['state'],
+                'confidence': latest_verdict['confidence'],
+                'beta_activity': latest_verdict['beta_activity'],
+                'session': latest_verdict['session'],
+                'analysis_timestamp': latest_verdict['timestamp']
+            }))
+        
+        # Keep connection alive and handle incoming messages
+        async for message in websocket:
+            try:
+                data = json.loads(message)
+                if data.get('type') == 'ping':
+                    await websocket.send(json.dumps({'type': 'pong'}))
+            except:
+                pass
+                
+    except websockets.exceptions.ConnectionClosed:
+        print(f"\n🌐 [VERDICT] Client disconnected: {client_address}")
+        log_result(f"Verdict client disconnected: {client_address}")
+    finally:
+        verdict_clients.discard(websocket)
 
 async def broadcast_verdict(verdict_data):
-    """Broadcast focus verdict to all connected clients"""
-    if websocket_clients:
+    """Broadcast focus verdict to all connected verdict clients"""
+    if verdict_clients:
         message = json.dumps({
             'type': 'verdict',
             'timestamp': datetime.now().isoformat(),
@@ -114,36 +184,37 @@ async def broadcast_verdict(verdict_data):
         })
         
         disconnected = set()
-        for client in websocket_clients:
+        for client in verdict_clients:
             try:
                 await client.send(message)
             except:
                 disconnected.add(client)
         
         for client in disconnected:
-            websocket_clients.discard(client)
+            verdict_clients.discard(client)
 
-def start_websocket_server(loop):
-    """Start WebSocket server in the event loop"""
-    global websocket_loop
-    websocket_loop = loop
+def start_verdict_websocket_server(loop):
+    """Start WebSocket server for verdicts in the event loop"""
+    global verdict_loop
+    verdict_loop = loop
     asyncio.set_event_loop(loop)
     
     async def start_server_async():
         server = await websockets.serve(
-            handle_client,
-            WEBSOCKET_HOST,
-            WEBSOCKET_PORT,
+            handle_verdict_client, 
+            WEBSOCKET_HOST, 
+            VERDICT_PORT,
             ping_interval=20,
             ping_timeout=10
         )
-        print(f"✓ WebSocket server started on ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
-        log_result(f"WebSocket server started on ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
+        print(f"✓ Verdict WebSocket server started on ws://{WEBSOCKET_HOST}:{VERDICT_PORT}")
+        log_result(f"Verdict WebSocket server started on ws://{WEBSOCKET_HOST}:{VERDICT_PORT}")
         return server
     
     loop.run_until_complete(start_server_async())
     loop.run_forever()
 
+# --- Thread-safe communication functions ---
 def send_eeg_sample_sync(value):
     """Thread-safe way to send EEG sample"""
     try:
@@ -152,10 +223,10 @@ def send_eeg_sample_sync(value):
             'value': float(value)
         })
         
-        if websocket_clients and websocket_loop:
+        if eeg_clients and eeg_loop:
             asyncio.run_coroutine_threadsafe(
                 broadcast_eeg_sample(float(value)),
-                websocket_loop
+                eeg_loop
             )
     except Exception as e:
         pass
@@ -166,10 +237,10 @@ def send_verdict_sync(verdict_data):
     latest_verdict = verdict_data
     
     try:
-        if websocket_clients and websocket_loop:
+        if verdict_clients and verdict_loop:
             asyncio.run_coroutine_threadsafe(
                 broadcast_verdict(verdict_data),
-                websocket_loop
+                verdict_loop
             )
     except Exception as e:
         log_result(f"Error sending verdict via WebSocket: {e}")
@@ -222,13 +293,13 @@ def display_focus_notification(focus_state, confidence, beta_pct, filename, dura
     print(border)
     print("="*80)
     print("")
-    print(f" 📁 File Analyzed: {filename}")
-    print(f" ⏱️ Recording Duration: {duration_min} minutes")
-    print(f" 🎯 Confidence Level: {confidence}")
-    print(f" 🧠 Beta Wave Activity: {beta_pct}")
+    print(f"  📁 File Analyzed: {filename}")
+    print(f"  ⏱️  Recording Duration: {duration_min} minutes")
+    print(f"  🎯 Confidence Level: {confidence}")
+    print(f"  🧠 Beta Wave Activity: {beta_pct}")
     print("")
-    print(f" {advice}")
-    print(f" {recommendation}")
+    print(f"  {advice}")
+    print(f"  {recommendation}")
     print("")
     print(border)
     print("="*80)
@@ -281,19 +352,19 @@ def run_model_classification(filename, session_num):
         
         # Additional debug info
         print(f"DEBUG Parsed Results:")
-        print(f" Focus State: {focus_state}")
-        print(f" Confidence: {confidence}")
-        print(f" Beta Activity: {beta_pct}\n")
+        print(f"   Focus State: {focus_state}")
+        print(f"   Confidence: {confidence}")
+        print(f"   Beta Activity: {beta_pct}\n")
         
         # Display notification ONCE
         display_focus_notification(focus_state, confidence, beta_pct, filename, DURATION_MIN)
         
         log_result(f"\nFINAL VERDICT: {focus_state}")
-        log_result(f" Confidence: {confidence}")
-        log_result(f" Beta Activity: {beta_pct}")
-        log_result(f" Timestamp: {timestamp}")
+        log_result(f"   Confidence: {confidence}")
+        log_result(f"   Beta Activity: {beta_pct}")
+        log_result(f"   Timestamp: {timestamp}")
         
-        # Send verdict via WebSocket
+        # Send verdict via WebSocket (separate port)
         verdict_data = {
             'state': focus_state,
             'confidence': confidence,
@@ -303,15 +374,6 @@ def run_model_classification(filename, session_num):
         }
         send_verdict_sync(verdict_data)
         
-        # Log prediction once after 4 minutes
-        print("\n================= MODEL PREDICTION SUMMARY =================")
-        print(f"Session Number : {session_num}")
-        print(f"File Processed : {filename}")
-        print(f"Predicted State: {focus_state}")
-        print(f"Confidence : {confidence}")
-        print(f"Beta Activity : {beta_pct}")
-        print(f"Timestamp : {timestamp}")
-        print("=============================================================\n")
         log_result(f"{'='*70}\n")
         
     except subprocess.TimeoutExpired:
@@ -349,16 +411,28 @@ try:
         if response.lower() != 'y':
             exit()
     
-    # Start WebSocket server in background thread
-    print("\n🌐 Starting WebSocket server...")
-    ws_loop = asyncio.new_event_loop()
-    ws_thread = threading.Thread(
-        target=start_websocket_server,
-        args=(ws_loop,),
+    # Start BOTH WebSocket servers in background threads
+    print("\n🌐 Starting WebSocket servers...")
+    
+    # EEG Signal Server
+    eeg_ws_loop = asyncio.new_event_loop()
+    eeg_ws_thread = threading.Thread(
+        target=start_eeg_websocket_server,
+        args=(eeg_ws_loop,),
         daemon=True
     )
-    ws_thread.start()
-    time.sleep(1)  # Give server time to start
+    eeg_ws_thread.start()
+    
+    # Verdict Server
+    verdict_ws_loop = asyncio.new_event_loop()
+    verdict_ws_thread = threading.Thread(
+        target=start_verdict_websocket_server,
+        args=(verdict_ws_loop,),
+        daemon=True
+    )
+    verdict_ws_thread.start()
+    
+    time.sleep(1)  # Give servers time to start
     
     # Initialize results log
     log_result("="*70)
@@ -374,9 +448,10 @@ try:
     print("\n" + "="*70)
     print("CONTINUOUS EEG MONITORING STARTED")
     print("="*70)
-    print(f"⏱️ Analysis Interval: Every {DURATION_MIN} minutes")
+    print(f"⏱️  Analysis Interval: Every {DURATION_MIN} minutes")
     print(f"📊 Files alternating: {FILENAME_1} ↔ {FILENAME_2}")
-    print(f"🌐 WebSocket: ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
+    print(f"🌐 EEG Signal WebSocket: ws://{WEBSOCKET_HOST}:{EEG_PORT}")
+    print(f"🌐 Verdict WebSocket: ws://{WEBSOCKET_HOST}:{VERDICT_PORT}")
     print(f"🔄 Will run continuously until stopped (Ctrl+C)")
     print("="*70)
     
@@ -395,18 +470,18 @@ try:
         print(f"SESSION #{session_number} - CONTINUOUS MONITORING")
         print(f"{'='*70}")
         print(f"📝 Recording to: {active_filename}")
-        print(f"⏱️ Duration: {DURATION_MIN} minutes ({MAX_SAMPLES_PER_FILE} samples)")
+        print(f"⏱️  Duration: {DURATION_MIN} minutes ({MAX_SAMPLES_PER_FILE} samples)")
         
         if session_number > 1:
             print(f"\n🔍 Analyzing previous 4-minute recording: {previous_filename}")
-            print(f" (Analysis runs in background while recording continues)")
-            print(f" You will see the FINAL VERDICT shortly...")
+            print(f"   (Analysis runs in background while recording continues)")
+            print(f"   You will see the FINAL VERDICT shortly...")
             
             thread = classify_file_async(previous_filename, session_number - 1)
             active_threads.append(thread)
         else:
             print(f"\n📌 First session - no previous file to analyze yet")
-            print(f" Next session will analyze this file")
+            print(f"   Next session will analyze this file")
         
         print(f"\n📊 Recording started at {datetime.now().strftime('%H:%M:%S')}")
         print(f"{'='*70}\n")
@@ -431,7 +506,7 @@ try:
                         samples_recorded += 1
                         sample_counter += 1
                         
-                        # Send EEG sample via WebSocket periodically
+                        # Send EEG sample via WebSocket periodically (EEG port only)
                         if sample_counter % EEG_SEND_RATE == 0:
                             send_eeg_sample_sync(value)
                         
@@ -456,10 +531,10 @@ try:
         
         elapsed_time = time.time() - start_time
         print(f"\n\n✓ Recording complete!")
-        print(f" File: {active_filename}")
-        print(f" Samples recorded: {samples_recorded}")
-        print(f" Duration: {elapsed_time:.1f} seconds")
-        print(f" File size: {os.path.getsize(active_filename) / 1024:.1f} KB")
+        print(f"   File: {active_filename}")
+        print(f"   Samples recorded: {samples_recorded}")
+        print(f"   Duration: {elapsed_time:.1f} seconds")
+        print(f"   File size: {os.path.getsize(active_filename) / 1024:.1f} KB")
         
         log_result(f"Recording session #{session_number} completed: {active_filename} "
                   f"({samples_recorded} samples in {elapsed_time:.1f}s)")
@@ -467,21 +542,21 @@ try:
         current_file_index = 2 if current_file_index == 1 else 1
         
         print(f"\n⏳ Switching to next file in 2 seconds...")
-        print(f" Next recording: {'file_1' if current_file_index == 1 else 'file_2'}.csv")
+        print(f"   Next recording: {'file_1' if current_file_index == 1 else 'file_2'}.csv")
         time.sleep(2)
 
 except serial.SerialException as e:
     print(f"\n❌ Serial Error: Could not open port {COM_PORT}")
-    print(f" Details: {e}")
+    print(f"   Details: {e}")
     print("\n💡 Troubleshooting:")
-    print(" 1. Check if device is connected")
-    print(" 2. Verify correct COM port")
-    print(" 3. Close other programs using the port")
-    print(" 4. Try unplugging and reconnecting the device")
+    print("   1. Check if device is connected")
+    print("   2. Verify correct COM port")
+    print("   3. Close other programs using the port")
+    print("   4. Try unplugging and reconnecting the device")
     print("\n📋 Available COM ports:")
     ports = serial.tools.list_ports.comports()
     for port in ports:
-        print(f" - {port}")
+        print(f"   - {port}")
     log_result(f"Serial connection error: {e}")
 
 except KeyboardInterrupt:
@@ -507,17 +582,21 @@ finally:
         print(f"\n⏳ Waiting for {len(active_threads)} classification thread(s) to complete...")
         for i, thread in enumerate(active_threads, 1):
             if thread.is_alive():
-                print(f" Thread {i}: Waiting...")
+                print(f"   Thread {i}: Waiting...")
                 thread.join(timeout=10)
                 if thread.is_alive():
-                    print(f" Thread {i}: Timeout (still running in background)")
+                    print(f"   Thread {i}: Timeout (still running in background)")
                 else:
-                    print(f" Thread {i}: Completed")
+                    print(f"   Thread {i}: Completed")
     
-    # Clean up WebSocket server
-    if websocket_loop:
-        print("\n🌐 Shutting down WebSocket server...")
-        websocket_loop.call_soon_threadsafe(websocket_loop.stop)
+    # Clean up WebSocket servers
+    if eeg_loop:
+        print("\n🌐 Shutting down EEG WebSocket server...")
+        eeg_loop.call_soon_threadsafe(eeg_loop.stop)
+    
+    if verdict_loop:
+        print("🌐 Shutting down Verdict WebSocket server...")
+        verdict_loop.call_soon_threadsafe(verdict_loop.stop)
     
     log_result("="*70)
     log_result("EEG RECORDING AND CLASSIFICATION SESSION ENDED")
