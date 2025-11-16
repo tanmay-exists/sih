@@ -46,9 +46,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   const [chatHistory, setChatHistory] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
 
-  // New dedicated state for the fun fact modal
+  // Dedicated state for the fun fact modal
   const [showFunFact, setShowFunFact] = useState(false);
-  const [funFactContent, setFunFactContent] = useState(null);
+  // State to hold the pre-fetched fact
+  const [prefetchedFunFact, setPrefetchedFunFact] = useState(null);
 
   const selectedSubject = subjects.find((s) => s.subject === selectedSubjectName);
   const formatTime = (seconds) => `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
@@ -128,10 +129,28 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     lowFocusAlertCounterRef.current = 0;
     isAlertOpenRef.current = false;
     lastLowFocusTriggerRef.current = 0;
-
-    // Reset new states
+    
     setShowFunFact(false);
-    setFunFactContent(null);
+    // Reset pre-fetched fact
+    setPrefetchedFunFact(null);
+  };
+  
+  // New function to pre-fetch the fun fact
+  const prefetchFunFact = async (lessonId) => {
+    if (!lessonId) return;
+    try {
+      console.log("Pre-fetching fun fact...");
+      const response = await axios.get(
+        `http://localhost:8000/tools/fun-fact/${lessonId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setPrefetchedFunFact(response.data.fun_fact);
+      console.log("Fun fact pre-fetched!");
+    } catch (err) {
+      console.error("Error pre-fetching fun fact:", err);
+      // If it fails, we'll just show the fallback later
+      setPrefetchedFunFact("Couldn't fetch a fun fact, but please take a moment to refocus!");
+    }
   };
 
   const startStudySession = (lesson) => {
@@ -151,6 +170,9 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         content: `Hi! I'm ready to answer any questions about "${lesson.lessonTitle}". Just ask!`,
       },
     ]);
+    
+    // Call the pre-fetch function as soon as the session starts
+    prefetchFunFact(lesson.lessonId);
   };
 
   const handleChat = async () => {
@@ -207,31 +229,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     console.log(`Closing fun fact`);
     setShowFunFact(false);
     isAlertOpenRef.current = false;
-    setFunFactContent(null); // Reset content for next time
-  };
-
-  // This function now *only* fetches and sets content
-  const fetchFunFact = async () => {
-    if (!studyLesson || !studyLesson.lessonId) {
-      console.log("No lesson active, cannot fetch fun fact.");
-      return;
-    }
-
-    console.log("Fetching fun fact...");
-    setFunFactContent("Generating..."); // Set loading state
-
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/tools/fun-fact/${studyLesson.lessonId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setFunFactContent(response.data.fun_fact);
-      setErrorMessage(null);
-    } catch (err) {
-      console.error("Error fetching fun fact:", err);
-      setFunFactContent("Couldn't fetch a fun fact, but please take a moment to refocus!");
-      setErrorMessage("Failed to load fun fact.");
-    }
+    // We don't reset the content, in case it pops up again
   };
 
 
@@ -254,22 +252,27 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
 
     console.log(`Processing attention: ${attention}, Counter: ${lowFocusAlertCounterRef.current}, AlertOpen: ${isAlertOpenRef.current}, Quiz: ${showRefocusQuiz}`);
 
-    if (attention >= 50) {
-      // --- START OF FIX ---
-      // Focus is good, close any open alert or modal
+    // --- FIX 1: Set threshold to 75 ---
+    if (attention >= 75) {
+      // Focus is good
       if (showFocusAlert) {
         console.log("Focus regained, clearing alert");
         setShowFocusAlert(null);
-        isAlertOpenRef.current = false;
+        isAlertOpenRef.current = false; // Reset the flag
       }
-      // Add this check to close the fun fact modal
-      if (showFunFact) {
-        console.log("Focus regained, closing fun fact");
-        handleFunFactClose(); // Use the existing close function
+      
+      // --- FIX 2: Removed counter reset. Counter only resets after 4th warning. ---
+
+      // This is the key fix for the stuck flag
+      // If focus is good AND no modals are active, the ref MUST be false.
+      if (!showFunFact && !showFocusAlert && !showRefocusQuiz) {
+          if (isAlertOpenRef.current) {
+             console.log("Focus is good and no modals are open, resetting alert flag.");
+             isAlertOpenRef.current = false;
+          }
       }
-      // --- END OF FIX ---
     } else {
-      // Focus is low
+      // Focus is low ( < 75 )
       // Update check to include new showFunFact state
       if (isAlertOpenRef.current || showRefocusQuiz || showFunFact) {
         console.log("Alert, quiz, or fun fact modal already open, skipping");
@@ -285,7 +288,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       if (lowFocusAlertCounterRef.current >= 4) {
         console.log("Triggering fun fact, resetting counter to 0");
         setShowFunFact(true); // <-- Show the new modal
-        lowFocusAlertCounterRef.current = 0;
+        lowFocusAlertCounterRef.current = 0; // <-- Counter resets HERE, after triggering
         isAlertOpenRef.current = true; // Block other alerts
       } else {
         console.log(`Showing alert: Warning ${lowFocusAlertCounterRef.current}/3`);
@@ -295,8 +298,9 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         isAlertOpenRef.current = true;
       }
     }
-    // Update dependency array
+  // Update dependency array
   }, [attention, sessionState, showRefocusQuiz, showFunFact]);
+  // --- END MODIFIED ---
 
   // Logging and focus streak
   useEffect(() => {
@@ -305,7 +309,8 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       const now = Date.now();
       const timeSinceLastLog = now - lastLogTimeRef.current;
       if (attention !== null) {
-        if (attention < 50) {
+        // --- FIX 3: Set streak threshold to 75 ---
+        if (attention < 75) { 
           setFocusStreak(0);
           lastVerdictTimeRef.current = now;
         } else {
@@ -314,7 +319,8 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         }
       }
       if (timeSinceLastLog >= 5000) {
-        const eventType = attention >= 50 ? "FOCUSED" : "NOT FOCUSED";
+        // --- FIX 4: Set logging threshold to 75 ---
+        const eventType = attention >= 75 ? "FOCUSED" : "NOT FOCUSED";
         setSessionEvents((prev) => [
           {
             timestamp: now,
@@ -407,14 +413,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     fetchSummary();
   }, [sessionState, studyLesson, token]);
 
-  // New useEffect to fetch the fun fact *after* the modal opens
-  useEffect(() => {
-    // Only fetch if the modal is shown and we don't have content yet
-    if (showFunFact && funFactContent === null) {
-      fetchFunFact();
-    }
-  }, [showFunFact, funFactContent]); // Run when showFunFact changes
-
+  
+  // We no longer need the useEffect that fetched the fact when the modal opened.
+  // It is now pre-fetched.
+  
   // --- MODIFIED ATTENTION CALCULATION ---
   useEffect(() => {
     if (sessionState !== "active" || eegData.length === 0) return;
@@ -445,7 +447,8 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
 
   // --- MODIFIED IFRAME HANDLING ---
   useEffect(() => {
-    if ((showRefocusQuiz || showFocusAlert) && playerIframeRef.current?.contentWindow) {
+    // --- FIX 5: Added showFunFact to the check and dependency array ---
+    if ((showRefocusQuiz || showFocusAlert || showFunFact) && playerIframeRef.current?.contentWindow) {
       try {
         console.log("Attempting to pause video via postMessage");
         playerIframeRef.current.contentWindow.postMessage(
@@ -460,7 +463,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         document.exitFullscreen().catch((err) => console.error("Error exiting fullscreen:", err));
       }
     }
-  }, [showRefocusQuiz, showFocusAlert]);
+  }, [showRefocusQuiz, showFocusAlert, showFunFact]); // Added showFunFact
   // --- END MODIFIED ---
 
   // Render logic
@@ -589,7 +592,8 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         onCloseFocusAlert={handleFocusAlertClose}
         
         showFunFact={showFunFact}
-        funFactContent={funFactContent}
+        // Pass the pre-fetched fact. If it's not ready, show "Generating..."
+        funFactContent={prefetchedFunFact || "Generating..."}
         onCloseFunFact={handleFunFactClose}
 
         selectedSubjectName={selectedSubjectName}

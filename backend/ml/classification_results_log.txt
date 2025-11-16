@@ -1729,3 +1729,84 @@ Raw model output:
 [2025-11-16 15:19:55] ======================================================================
 [2025-11-16 15:19:55] EEG RECORDING AND CLASSIFICATION SESSION ENDED
 [2025-11-16 15:19:55] ======================================================================
+[2025-11-16 15:28:00] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 15:28:00] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 15:28:01] ======================================================================
+[2025-11-16 15:28:01] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 15:28:01] ======================================================================
+[2025-11-16 15:28:16] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-11-16 15:28:16] ======================================================================
+[2025-11-16 15:28:16] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 15:28:16] ======================================================================
+[2025-11-16 15:35:10] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 15:35:10] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 15:35:11] ======================================================================
+[2025-11-16 15:35:11] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 15:35:11] ======================================================================
+[2025-11-16 15:35:38] Recording stopped by user
+[2025-11-16 15:35:38] ======================================================================
+[2025-11-16 15:35:38] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 15:35:38] ======================================================================
+[2025-11-16 15:36:02] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 15:36:02] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 15:36:03] ======================================================================
+[2025-11-16 15:36:03] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 15:36:03] ======================================================================
+[2025-11-16 15:36:30] Recording stopped by user
+[2025-11-16 15:36:30] ======================================================================
+[2025-11-16 15:36:30] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 15:36:30] ======================================================================
+[2025-11-16 15:37:29] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 15:37:29] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 15:37:30] ======================================================================
+[2025-11-16 15:37:30] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 15:37:30] ======================================================================
+[2025-11-16 15:37:37] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-11-16 15:37:37] ======================================================================
+[2025-11-16 15:37:37] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 15:37:37] ======================================================================
+[2025-11-16 15:45:37] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 15:45:37] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 15:45:38] ======================================================================
+[2025-11-16 15:45:38] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 15:45:38] ======================================================================
+[2025-11-16 15:46:10] Recording stopped by user
+[2025-11-16 15:46:10] ======================================================================
+[2025-11-16 15:46:10] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 15:46:10] ======================================================================
+[2025-11-16 15:46:34] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 15:46:34] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 15:46:35] ======================================================================
+[2025-11-16 15:46:35] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 15:46:35] ======================================================================
+[2025-11-16 15:46:43] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-11-16 15:46:43] ======================================================================
+[2025-11-16 15:46:43] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 15:46:43] ======================================================================
+[2025-11-16 15:50:42] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 15:50:42] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 15:50:43] ======================================================================
+[2025-11-16 15:50:43] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 15:50:43] ======================================================================
+[2025-11-16 15:51:02] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-11-16 15:51:02] ======================================================================
+[2025-11-16 15:51:02] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 15:51:02] ======================================================================
+[2025-11-16 16:02:12] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 16:02:12] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 16:02:13] ======================================================================
+[2025-11-16 16:02:13] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 16:02:13] ======================================================================
+[2025-11-16 16:02:36] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-11-16 16:02:36] ======================================================================
+[2025-11-16 16:02:36] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 16:02:36] ======================================================================
+[2025-11-16 16:15:01] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-16 16:15:01] EEG WebSocket server started on ws://localhost:8765
+[2025-11-16 16:15:02] ======================================================================
+[2025-11-16 16:15:02] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-16 16:15:02] ======================================================================
+[2025-11-16 16:15:23] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-11-16 16:15:23] ======================================================================
+[2025-11-16 16:15:23] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-16 16:15:23] ======================================================================

@@ -2,7 +2,12 @@
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, Button, MetricCard, ListenButton } from "./Common";
-import { EegStreamChart, SessionLog, DynamicFeedbackPanel, FocusAlert } from "./Components";
+
+// --- START OF FIX 1 ---
+// Import FunFactModal from ./Components
+import { EegStreamChart, SessionLog, DynamicFeedbackPanel, FocusAlert, FunFactModal } from "./Components";
+// --- END OF FIX 1 ---
+
 import { StudyContent } from "./StudyContent";
 import { RefocusQuizModal } from "./RefocusQuizModal";
 import { MarkdownRenderer } from "./MarkdownRenderer"; // KEEP THIS IMPORT
@@ -27,11 +32,13 @@ export const ActiveSession = ({
   sessionTime, attention, focusStreak, endSession,
   summary, mcqs,
   showRefocusQuiz, showFocusAlert, handleRefocusQuizFinish,
-  // --- START OF FIX ---
-  // 1. Remove setShowFocusAlert and add onCloseFocusAlert
-  // setShowFocusAlert, // <-- REMOVE THIS PROP
-  onCloseFocusAlert, // <-- ADD THIS PROP
-  // --- END OF FIX ---
+  onCloseFocusAlert, // This prop is correct
+  
+  // --- START OF FIX 2 ---
+  // Add the new props for the fun fact modal
+  showFunFact, funFactContent, onCloseFunFact,
+  // --- END OF FIX 2 ---
+
   selectedSubjectName,
   eegData, sessionEvents,
   chatHistory, chatQuery, setChatQuery, isChatLoading, handleChat,
@@ -65,12 +72,20 @@ export const ActiveSession = ({
         )}
         {showFocusAlert && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-            {/* --- START OF FIX --- */}
-            {/* 2. Use the new prop in the onClose handler */}
             <FocusAlert message={showFocusAlert} onClose={onCloseFocusAlert} />
-            {/* --- END OF FIX --- */}
           </div>
         )}
+
+        {/* --- START OF FIX 3 --- */}
+        {/* Add this block to render the fun fact modal */}
+        {showFunFact && (
+          <FunFactModal
+            content={funFactContent}
+            onClose={onCloseFunFact}
+          />
+        )}
+        {/* --- END OF FIX 3 --- */}
+
       </AnimatePresence>
 
       <main className="container mx-auto px-8 py-10">
@@ -261,7 +276,7 @@ export const ActiveSession = ({
                     strokeLinejoin="round"
                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                   />
-                </svg>
+                </svg> 
               </Button>
             </div>
           </div>
