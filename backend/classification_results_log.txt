@@ -136,3 +136,230 @@ FileNotFoundError: [Errno 2] No such file or directory: '/home/tanmay-exits/Neur
 [2025-m-15 22:15:06] Finished recording session #1. Wrote 15940 samples.
 [2025-m-15 22:15:06] Serial port closed.
 [2025-m-15 22:15:06] EEG monitoring loop stopped.
+[2025-m-16 11:30:32] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:30:32] Serial connection successful.
+[2025-m-16 11:30:34] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 11:32:07] Finished recording session #1. Wrote 23995 samples.
+[2025-m-16 11:32:07] Serial port closed.
+[2025-m-16 11:32:07] EEG monitoring loop stopped.
+[2025-m-16 11:34:30] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:34:30] Serial connection successful.
+[2025-m-16 11:34:32] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 11:35:26] Finished recording session #1. Wrote 13863 samples.
+[2025-m-16 11:35:26] Serial port closed.
+[2025-m-16 11:35:26] EEG monitoring loop stopped.
+[2025-m-16 11:35:53] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:35:53] Serial connection successful.
+[2025-m-16 11:35:55] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 11:36:26] Finished recording session #1. Wrote 8681 samples.
+[2025-m-16 11:36:26] Serial port closed.
+[2025-m-16 11:36:26] EEG monitoring loop stopped.
+[2025-m-16 11:36:31] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:36:31] Serial connection successful.
+[2025-m-16 11:36:33] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 11:37:01] Finished recording session #1. Wrote 7754 samples.
+[2025-m-16 11:37:01] Serial port closed.
+[2025-m-16 11:37:01] EEG monitoring loop stopped.
+[2025-m-16 11:47:32] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:47:32] Serial connection successful.
+[2025-m-16 11:47:39] Serial port closed.
+[2025-m-16 11:47:39] EEG monitoring loop stopped.
+[2025-m-16 11:48:15] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:48:15] Serial connection successful.
+[2025-m-16 11:48:17] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 11:49:04] Finished recording session #1. Wrote 12072 samples.
+[2025-m-16 11:49:04] Serial port closed.
+[2025-m-16 11:49:04] EEG monitoring loop stopped.
+[2025-m-16 11:57:58] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:57:58] Serial connection successful.
+[2025-m-16 11:58:00] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 11:58:15] Finished recording session #1. Wrote 4399 samples.
+[2025-m-16 11:58:15] Serial port closed.
+[2025-m-16 11:58:15] EEG monitoring loop stopped.
+[2025-m-16 11:58:47] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 11:58:47] Serial connection successful.
+[2025-m-16 11:58:49] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 11:59:53] Finished recording session #1. Wrote 16315 samples.
+[2025-m-16 11:59:53] Serial port closed.
+[2025-m-16 11:59:53] EEG monitoring loop stopped.
+[2025-m-16 12:04:12] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 12:04:12] Serial connection successful.
+[2025-m-16 12:04:14] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 12:04:14] WARNING: ValueError. Could not convert '-2.4.' to float. Skipping.
+[2025-m-16 12:04:14] CRITICAL ERROR in serial loop: device reports readiness to read but returned no data (device disconnected or multiple access on port?). Raw bytes: b'-2.4.\n'
+[2025-m-16 12:04:14] CRITICAL ERROR in serial loop: device reports readiness to read but returned no data (device disconnected or multiple access on port?). Raw bytes: b'-2.4.\n'
+[2025-m-16 12:05:34] Finished recording session #1. Wrote 20605 samples.
+[2025-m-16 12:05:34] Serial port closed.
+[2025-m-16 12:05:34] EEG monitoring loop stopped.
+[2025-m-16 12:11:13] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 12:11:13] Serial connection successful.
+[2025-m-16 12:11:15] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 12:11:15] EEG monitoring error: cannot access local variable 'line_bytes' where it is not associated with a value
+[2025-m-16 12:11:15] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 167, in run_eeg_monitoring
+    line_bytes = ser.readline()
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/serial/serialposix.py", line 595, in read
+    raise SerialException(
+        'device reports readiness to read but returned no data '
+        '(device disconnected or multiple access on port?)')
+serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 192, in run_eeg_monitoring
+    log_result(f"CRITICAL ERROR in serial loop: {e}. Raw bytes: {line_bytes}")
+                                                                 ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'line_bytes' where it is not associated with a value
+
+[2025-m-16 12:11:15] Serial port closed.
+[2025-m-16 12:11:15] EEG monitoring loop stopped.
+[2025-m-16 12:11:47] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 12:11:47] Serial connection successful.
+[2025-m-16 12:11:49] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 12:12:19] Finished recording session #1. Wrote 7617 samples.
+[2025-m-16 12:12:19] Serial port closed.
+[2025-m-16 12:12:19] EEG monitoring loop stopped.
+[2025-m-16 12:19:05] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 12:19:05] Serial connection successful.
+[2025-m-16 12:19:07] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 12:19:07] EEG monitoring error: cannot access local variable 'line_bytes' where it is not associated with a value
+[2025-m-16 12:19:07] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 167, in run_eeg_monitoring
+    line_bytes = ser.readline()
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/serial/serialposix.py", line 595, in read
+    raise SerialException(
+        'device reports readiness to read but returned no data '
+        '(device disconnected or multiple access on port?)')
+serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 192, in run_eeg_monitoring
+    log_result(f"CRITICAL ERROR in serial loop: {e}. Raw bytes: {line_bytes}")
+                                                                 ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'line_bytes' where it is not associated with a value
+
+[2025-m-16 12:19:07] Serial port closed.
+[2025-m-16 12:19:07] EEG monitoring loop stopped.
+[2025-m-16 12:22:04] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 12:22:04] Serial connection successful.
+[2025-m-16 12:22:06] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 12:22:06] WARNING: ValueError. Could not convert '56113' to float. Skipping.
+[2025-m-16 12:23:58] Finished recording session #1. Wrote 28574 samples.
+[2025-m-16 12:23:58] Serial port closed.
+[2025-m-16 12:23:58] EEG monitoring loop stopped.
+[2025-m-16 12:34:05] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 12:34:05] Serial connection successful.
+[2025-m-16 12:34:07] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 12:36:35] Finished recording session #1. Wrote 38265 samples.
+[2025-m-16 12:36:35] Serial port closed.
+[2025-m-16 12:36:35] EEG monitoring loop stopped.
+[2025-m-16 12:49:18] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 12:49:18] Serial connection successful.
+[2025-m-16 12:49:20] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 12:51:58] Finished recording session #1. Wrote 40545 samples.
+[2025-m-16 12:51:58] Serial port closed.
+[2025-m-16 12:51:58] EEG monitoring loop stopped.
+[2025-m-16 15:01:38] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 15:01:38] Serial connection successful.
+[2025-m-16 15:01:40] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 15:05:40] Finished recording session #1. Wrote 61440 samples.
+[2025-m-16 15:05:40] Starting classification for eeg_recording_file_1.csv...
+[2025-m-16 15:05:40] Running model from directory: /home/tanmay-exits/NeuroLearn/backend/app/ml
+[2025-m-16 15:05:40] EEG monitoring error: [Errno 2] No such file or directory: '/home/tanmay-exits/NeuroLearn/backend/app/ml'
+[2025-m-16 15:05:40] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 108, in run_eeg_monitoring
+    result = subprocess.run(
+        ['python', MODEL_TEST_SCRIPT, previous_filename],
+    ...<2 lines>...
+        cwd=ML_DIR_ABSOLUTE  # <--- THIS IS THE FIX
+    )
+  File "/usr/lib64/python3.13/subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.13/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.13/subprocess.py", line 1972, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/tanmay-exits/NeuroLearn/backend/app/ml'
+
+[2025-m-16 15:05:40] Serial port closed.
+[2025-m-16 15:05:40] EEG monitoring loop stopped.
+[2025-m-16 15:06:47] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 15:06:47] Serial connection successful.
+[2025-m-16 15:06:49] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 15:06:56] Finished recording session #1. Wrote 2298 samples.
+[2025-m-16 15:06:56] Serial port closed.
+[2025-m-16 15:06:56] EEG monitoring loop stopped.
+[2025-m-16 15:12:29] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 15:12:29] Serial connection successful.
+[2025-m-16 15:12:31] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 15:12:31] EEG monitoring error: cannot access local variable 'line_bytes' where it is not associated with a value
+[2025-m-16 15:12:31] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 167, in run_eeg_monitoring
+    line_bytes = ser.readline()
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/serial/serialposix.py", line 595, in read
+    raise SerialException(
+        'device reports readiness to read but returned no data '
+        '(device disconnected or multiple access on port?)')
+serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 192, in run_eeg_monitoring
+    log_result(f"CRITICAL ERROR in serial loop: {e}. Raw bytes: {line_bytes}")
+                                                                 ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'line_bytes' where it is not associated with a value
+
+[2025-m-16 15:12:31] Serial port closed.
+[2025-m-16 15:12:31] EEG monitoring loop stopped.
+[2025-m-16 15:13:23] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 15:13:23] Serial connection successful.
+[2025-m-16 15:13:25] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 15:17:25] Finished recording session #1. Wrote 61440 samples.
+[2025-m-16 15:17:25] Starting classification for eeg_recording_file_1.csv...
+[2025-m-16 15:17:25] Running model from directory: /home/tanmay-exits/NeuroLearn/backend/app/ml
+[2025-m-16 15:17:25] EEG monitoring error: [Errno 2] No such file or directory: '/home/tanmay-exits/NeuroLearn/backend/app/ml'
+[2025-m-16 15:17:25] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 108, in run_eeg_monitoring
+    result = subprocess.run(
+        ['python', MODEL_TEST_SCRIPT, previous_filename],
+    ...<2 lines>...
+        cwd=ML_DIR_ABSOLUTE  # <--- THIS IS THE FIX
+    )
+  File "/usr/lib64/python3.13/subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.13/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.13/subprocess.py", line 1972, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/tanmay-exits/NeuroLearn/backend/app/ml'
+
+[2025-m-16 15:17:25] Serial port closed.
+[2025-m-16 15:17:25] EEG monitoring loop stopped.
+[2025-m-16 15:19:53] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-16 15:19:53] Serial connection successful.
+[2025-m-16 15:19:55] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-16 15:22:38] Finished recording session #1. Wrote 41694 samples.
+[2025-m-16 15:22:38] Serial port closed.
+[2025-m-16 15:22:38] EEG monitoring loop stopped.

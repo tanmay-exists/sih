@@ -1,4 +1,4 @@
-// ActiveSession.jsx (Final Corrected Version)
+// ActiveSession.jsx (Corrected with new prop)
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, Button, MetricCard, ListenButton } from "./Common";
@@ -26,7 +26,12 @@ export const ActiveSession = ({
   sessionState, studyLesson, studyContentType, setStudyContentType,
   sessionTime, attention, focusStreak, endSession,
   summary, mcqs,
-  showRefocusQuiz, showFocusAlert, handleRefocusQuizFinish, setShowFocusAlert,
+  showRefocusQuiz, showFocusAlert, handleRefocusQuizFinish,
+  // --- START OF FIX ---
+  // 1. Remove setShowFocusAlert and add onCloseFocusAlert
+  // setShowFocusAlert, // <-- REMOVE THIS PROP
+  onCloseFocusAlert, // <-- ADD THIS PROP
+  // --- END OF FIX ---
   selectedSubjectName,
   eegData, sessionEvents,
   chatHistory, chatQuery, setChatQuery, isChatLoading, handleChat,
@@ -60,7 +65,10 @@ export const ActiveSession = ({
         )}
         {showFocusAlert && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-            <FocusAlert message={showFocusAlert} onClose={() => setShowFocusAlert(null)} />
+            {/* --- START OF FIX --- */}
+            {/* 2. Use the new prop in the onClose handler */}
+            <FocusAlert message={showFocusAlert} onClose={onCloseFocusAlert} />
+            {/* --- END OF FIX --- */}
           </div>
         )}
       </AnimatePresence>

@@ -104,6 +104,52 @@ async def chatbot(request: ChatbotRequest, current_user=Depends(get_current_user
         # ... (error handling remains the same) ...
         raise HTTPException(status_code=500, detail=f"Chatbot error: {str(e)}")
 
+
+@router.get("/fun-fact/{lesson_id}")
+async def get_fun_fact(lesson_id: str, current_user=Depends(get_current_user), client=Depends(get_db_client)):
+    """Generates a fun, real-world fact about a lesson."""
+    db = client["NLCurriculum"]
+    curriculum = await db["curriculum"].find_one({"class": current_user["class_"]})
+    
+    lesson = None
+    if curriculum:
+        for subject in curriculum["subjects"]:
+            for l in subject["lessons"]:
+                if l["lessonId"] == lesson_id:
+                    lesson = Lesson(**l)
+                    break
+            if lesson:
+                break
+                
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+
+    article_content = ""
+    try:
+        article_content = await fetch_article_content(lesson.articleUrl)
+    except HTTPException:
+        pass # Continue without article content if fetch fails
+
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-2.0-flash-001') # Use a fast model
+    
+    prompt = (
+        f"You are a fun and engaging tutor. The student is studying '{lesson.lessonTitle}'. "
+        f"Provide one *short* (2-3 sentences) and *interesting* real-world application or fun fact about this topic. "
+        f"Make it surprising and engaging to help them refocus!"
+    )
+    
+    if article_content:
+        prompt += f"\n\nHere is some context from their lesson: {article_content[:1000]}"
+
+    try:
+        response = await model.generate_content_async(prompt)
+        return {"fun_fact": response.text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Fun fact generation error: {str(e)}")
+
+
+
 @router.get("/summarize-and-quiz/{lesson_id}")
 async def summarize_and_quiz(lesson_id: str, current_user=Depends(get_current_user), client=Depends(get_db_client)):
     """Fetch article, generate summary and 5 MCQs using Gemini."""

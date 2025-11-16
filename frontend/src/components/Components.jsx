@@ -2,7 +2,7 @@
 import { Card, Button, ListenButton } from "./Common"; // <-- ListenButton added here
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
 import { motion } from "framer-motion";
-import { Download, AlertTriangle } from "lucide-react";
+import { Download, AlertTriangle, Lightbulb } from "lucide-react";
 import jsPDF from "jspdf";
 
 export const EegStreamChart = ({ data }) => (
@@ -158,6 +158,48 @@ export const FocusAlert = ({ message, onClose }) => (
       Close
     </Button>
   </motion.div>
+);
+
+export const FunFactModal = ({ content, onClose }) => (
+  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      className="w-full max-w-md"
+    >
+      <Card className="!border-orange-500">
+        <div className="text-center mb-4">
+          <div className="flex justify-center items-center gap-3 text-orange-800">
+            <Lightbulb className="w-8 h-8" />
+            <h2 className="text-2xl font-bold">Refocus Fact!</h2>
+          </div>
+        </div>
+        
+        <div className="text-warmGray-700 mt-2 text-center min-h-[60px]">
+          {content === "Generating..." ? (
+            <div className="flex justify-center items-center h-full">
+              <div className="flex space-x-1">
+                <span className="h-2 w-2 bg-amber-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
+                <span className="h-2 w-2 bg-amber-400 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
+                <span className="h-2 w-2 bg-amber-400 rounded-full animate-pulse"></span>
+              </div>
+            </div>
+          ) : (
+            <p>{content}</p>
+          )}
+        </div>
+
+        <Button 
+          onClick={onClose} 
+          className="mt-4 bg-orange-500 hover:bg-orange-600 text-white w-full"
+          disabled={content === "Generating..."}
+        >
+          Got it!
+        </Button>
+      </Card>
+    </motion.div>
+  </div>
 );
 
 export const HeadsetAlert = ({ onClose }) => (
