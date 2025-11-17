@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+backend/venv-ml/
+backend/venv-app/
+venv*/
+

@@ -526,3 +526,85 @@ UnboundLocalError: cannot access local variable 'line_bytes' where it is not ass
 [2025-m-16 16:15:21] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
 [2025-m-16 16:15:21] Serial connection successful.
 [2025-m-16 16:15:23] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-17 13:17:59] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-17 13:17:59] Serial connection successful.
+[2025-m-17 13:18:01] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-17 13:18:01] EEG monitoring error: cannot access local variable 'line_bytes' where it is not associated with a value
+[2025-m-17 13:18:01] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 167, in run_eeg_monitoring
+    line_bytes = ser.readline()
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/serial/serialposix.py", line 595, in read
+    raise SerialException(
+        'device reports readiness to read but returned no data '
+        '(device disconnected or multiple access on port?)')
+serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 192, in run_eeg_monitoring
+    log_result(f"CRITICAL ERROR in serial loop: {e}. Raw bytes: {line_bytes}")
+                                                                 ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'line_bytes' where it is not associated with a value
+
+[2025-m-17 13:18:01] Serial port closed.
+[2025-m-17 13:18:01] EEG monitoring loop stopped.
+[2025-m-17 13:18:41] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-17 13:18:41] Serial connection successful.
+[2025-m-17 13:18:43] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-17 13:18:43] EEG monitoring error: cannot access local variable 'line_bytes' where it is not associated with a value
+[2025-m-17 13:18:43] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 167, in run_eeg_monitoring
+    line_bytes = ser.readline()
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/serial/serialposix.py", line 595, in read
+    raise SerialException(
+        'device reports readiness to read but returned no data '
+        '(device disconnected or multiple access on port?)')
+serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 192, in run_eeg_monitoring
+    log_result(f"CRITICAL ERROR in serial loop: {e}. Raw bytes: {line_bytes}")
+                                                                 ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'line_bytes' where it is not associated with a value
+
+[2025-m-17 13:18:43] Serial port closed.
+[2025-m-17 13:18:43] EEG monitoring loop stopped.
+[2025-m-17 13:19:24] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-17 13:19:24] Serial connection successful.
+[2025-m-17 13:19:26] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-17 13:19:26] EEG monitoring error: cannot access local variable 'line_bytes' where it is not associated with a value
+[2025-m-17 13:19:26] Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 167, in run_eeg_monitoring
+    line_bytes = ser.readline()
+  File "/home/tanmay-exits/.local/lib/python3.13/site-packages/serial/serialposix.py", line 595, in read
+    raise SerialException(
+        'device reports readiness to read but returned no data '
+        '(device disconnected or multiple access on port?)')
+serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/app/routers/neuro.py", line 192, in run_eeg_monitoring
+    log_result(f"CRITICAL ERROR in serial loop: {e}. Raw bytes: {line_bytes}")
+                                                                 ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'line_bytes' where it is not associated with a value
+
+[2025-m-17 13:19:26] Serial port closed.
+[2025-m-17 13:19:26] EEG monitoring loop stopped.
+[2025-m-17 13:20:54] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-17 13:20:54] Serial connection successful.
+[2025-m-17 13:20:56] Starting recording session #1 to eeg_recording_file_1.csv...
+[2025-m-17 13:20:56] CRITICAL ERROR in serial loop: device reports readiness to read but returned no data (device disconnected or multiple access on port?). Raw bytes: b'4.\n'
+[2025-m-17 13:20:56] CRITICAL ERROR in serial loop: device reports readiness to read but returned no data (device disconnected or multiple access on port?). Raw bytes: b'4.\n'
+[2025-m-17 13:20:56] CRITICAL ERROR in serial loop: device reports readiness to read but returned no data (device disconnected or multiple access on port?). Raw bytes: b'4.\n'
+[2025-m-17 13:20:56] CRITICAL ERROR in serial loop: device reports readiness to read but returned no data (device disconnected or multiple access on port?). Raw bytes: b'3.8\n'
+[2025-m-17 13:22:04] Finished recording session #1. Wrote 17313 samples.
+[2025-m-17 13:22:04] Serial port closed.
+[2025-m-17 13:22:04] EEG monitoring loop stopped.
+[2025-m-17 13:34:45] Attempting to connect to serial port /dev/ttyACM0 at 115200 bps...
+[2025-m-17 13:34:45] FATAL SERIAL ERROR: [Errno 2] could not open port /dev/ttyACM0: [Errno 2] No such file or directory: '/dev/ttyACM0'. Check port and connection.
+[2025-m-17 13:34:45] EEG monitoring loop stopped.

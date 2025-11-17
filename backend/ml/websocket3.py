@@ -1,3 +1,6 @@
+# backend/ml/websocket3.py
+# (Now includes EEG, ML Verdicts, and 2-Way Gaze)
+
 import serial
 import serial.tools.list_ports
 import time
@@ -11,17 +14,29 @@ import websockets
 import json
 from collections import deque
 
+# --- Eye-Tracking Imports ---
+import cv2
+import mediapipe as mp
+import numpy as np
+import base64
+
+# --- MediaPipe Global Initialization ---
+# We initialize this once to be thread-safe
+mp_face_mesh = mp.solutions.face_mesh
+
 # --- Configuration Parameters ---
 COM_PORT = '/dev/ttyACM0'  
 BAUD_RATE = 115200
 SAMPLE_RATE = 256
 DURATION_MIN = 4
 
-# WebSocket Configuration - TWO SEPARATE PORTS
+# WebSocket Configuration - THREE SEPARATE PORTS
 WEBSOCKET_HOST = 'localhost'
-EEG_PORT = 8765        # Port for EEG signal values
-VERDICT_PORT = 8766    # Port for ML model verdicts
-EEG_SEND_RATE = 10     # Send EEG samples every 10 samples (25.6 Hz effective rate)
+EEG_PORT = 8765       # Port for EEG signal values
+VERDICT_PORT = 8766   # Port for ML model verdicts
+GAZE_PORT = 8767      # --- NEW: 2-Way Port for Gaze data ---
+
+EEG_SEND_RATE = 10    # Send EEG samples every 10 samples (25.6 Hz effective rate)
 
 # Calculate the total number of samples to record per file
 MAX_SAMPLES_PER_FILE = SAMPLE_RATE * DURATION_MIN * 60
@@ -36,12 +51,15 @@ MODEL_TEST_SCRIPT = 'predict4.py'
 # Results log file
 RESULTS_LOG = 'classification_results_log.txt'
 
-# Global WebSocket state - SEPARATE FOR EACH PORT
+# --- Global WebSocket state ---
 eeg_clients = set()
 verdict_clients = set()
-eeg_sample_buffer = deque(maxlen=1000)
+gaze_clients = set()  # --- NEW ---
+
 eeg_loop = None
 verdict_loop = None
+gaze_loop = None      # --- NEW ---
+
 latest_verdict = {
     'state': 'UNKNOWN',
     'confidence': 'N/A',
@@ -49,8 +67,11 @@ latest_verdict = {
     'timestamp': None,
     'session': 0
 }
+latest_gaze = "STARTING" # --- NEW ---
 
-# --- WebSocket Server Functions for EEG Signal ---
+# -------------------------------------------------------------------
+# WebSocket Server Functions for EEG Signal (Port 8765)
+# -------------------------------------------------------------------
 async def handle_eeg_client(websocket):
     """Handle WebSocket client connection for EEG signals"""
     global eeg_clients
@@ -65,7 +86,6 @@ async def handle_eeg_client(websocket):
             'type': 'connection',
             'status': 'connected',
             'message': 'Connected to EEG Signal Stream',
-            'sample_rate': SAMPLE_RATE,
             'port_type': 'eeg_signal'
         }))
         
@@ -93,6 +113,7 @@ async def broadcast_eeg_sample(sample_data):
             'value': sample_data
         })
         
+        # Create a list of clients to iterate over, to avoid issues if set changes
         disconnected = set()
         for client in eeg_clients:
             try:
@@ -100,6 +121,7 @@ async def broadcast_eeg_sample(sample_data):
             except:
                 disconnected.add(client)
         
+        # Remove disconnected clients
         for client in disconnected:
             eeg_clients.discard(client)
 
@@ -124,7 +146,9 @@ def start_eeg_websocket_server(loop):
     loop.run_until_complete(start_server_async())
     loop.run_forever()
 
-# --- WebSocket Server Functions for Verdict ---
+# -------------------------------------------------------------------
+# WebSocket Server Functions for Verdict (Port 8766)
+# -------------------------------------------------------------------
 async def handle_verdict_client(websocket):
     """Handle WebSocket client connection for ML verdicts"""
     global verdict_clients
@@ -176,11 +200,11 @@ async def broadcast_verdict(verdict_data):
         message = json.dumps({
             'type': 'verdict',
             'timestamp': datetime.now().isoformat(),
-            'focus_state': verdict_data['state'],
+            'focus_state': verdict_data['focus_state'],
             'confidence': verdict_data['confidence'],
             'beta_activity': verdict_data['beta_activity'],
             'session': verdict_data['session'],
-            'analysis_timestamp': verdict_data['timestamp']
+            'analysis_timestamp': verdict_data['analysis_timestamp']
         })
         
         disconnected = set()
@@ -214,15 +238,152 @@ def start_verdict_websocket_server(loop):
     loop.run_until_complete(start_server_async())
     loop.run_forever()
 
-# --- Thread-safe communication functions ---
+# -------------------------------------------------------------------
+# --- NEW: Gaze Helper Functions (CPU-bound logic) ---
+# -------------------------------------------------------------------
+
+def decode_frame(base64_str):
+    """Decodes a Base64 string (from data:image/jpeg;base64,...) to an OpenCV image (numpy array)"""
+    try:
+        # Split the header from the data
+        header, data = base64_str.split(',', 1)
+        # Decode the Base64 data
+        decoded_data = base64.b64decode(data)
+        # Convert to numpy array
+        np_arr = np.frombuffer(decoded_data, np.uint8)
+        # Decode numpy array into OpenCV image
+        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        return img
+    except Exception as e:
+        log_result(f"Error decoding frame: {e}")
+        return None
+
+def process_frame_for_gaze(frame):
+    """
+    This is the SLOW, BLOCKING function.
+    It runs MediaPipe on a single frame and returns a text status.
+    """
+    gaze_text = "No Face"
+    try:
+        # We create a new FaceMesh instance *for this thread*
+        # This is safer than sharing one instance across threads
+        with mp_face_mesh.FaceMesh(
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5) as face_mesh:
+            
+            # Performance optimization
+            frame.flags.writeable = False
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            results = face_mesh.process(rgb_frame)
+
+            if results.multi_face_landmarks:
+                face_landmarks = results.multi_face_landmarks[0]
+                
+                # --- Simplified Gaze Calculation Logic ---
+                left_pupil_landmark = face_landmarks.landmark[473]
+                right_pupil_landmark = face_landmarks.landmark[468]
+                left_iris_coords = [face_landmarks.landmark[i] for i in range(474, 478)]
+                left_iris_center_x = sum(l.x for l in left_iris_coords) / len(left_iris_coords)
+                right_iris_coords = [face_landmarks.landmark[i] for i in range(469, 472)]
+                right_iris_center_x = sum(l.x for l in right_iris_coords) / len(right_iris_coords)
+                left_gaze_ratio = (left_pupil_landmark.x - left_iris_center_x) / (left_iris_coords[2].x - left_iris_coords[0].x)
+                right_gaze_ratio = (right_pupil_landmark.x - right_iris_center_x) / (right_iris_coords[2].x - right_iris_coords[0].x)
+                avg_gaze_ratio = (left_gaze_ratio + right_gaze_ratio) / 2
+
+                if avg_gaze_ratio > 0.02: gaze_text = "Looking Right"
+                elif avg_gaze_ratio < -0.02: gaze_text = "Looking Left"
+                else: gaze_text = "Looking Center"
+            
+            return gaze_text
+            
+    except Exception as e:
+        log_result(f"Error in gaze processing: {e}")
+        return "Error"
+
+# -------------------------------------------------------------------
+# --- MODIFIED: WebSocket Server Functions for Gaze (Port 8767) ---
+# -------------------------------------------------------------------
+async def handle_gaze_client(websocket):
+    """Handle 2-way Gaze connection. Receives frames, sends back results."""
+    global gaze_clients, latest_gaze
+    gaze_clients.add(websocket)
+    client_address = websocket.remote_address
+    print(f"\n🌐 [GAZE] Client connected: {client_address}")
+    log_result(f"Gaze client connected: {client_address}")
+    
+    loop = asyncio.get_event_loop()
+    
+    try:
+        # Send initial state
+        await websocket.send(json.dumps({
+            'type': 'connection', 'status': 'connected', 'message': 'Connected to Gaze Tracking Stream'
+        }))
+            
+        # This loop handles INCOMING messages (video frames)
+        async for message in websocket:
+            data = json.loads(message)
+            
+            if data.get('type') == 'video_frame':
+                # 1. Decode the frame
+                frame = decode_frame(data['data'])
+                if frame is None:
+                    continue
+                
+                # 2. Run the SLOW processing in a separate thread pool
+                #    so it doesn't block the asyncio server.
+                gaze_status = await loop.run_in_executor(
+                    None,  # Uses the default ThreadPoolExecutor
+                    process_frame_for_gaze, # The blocking function
+                    frame  # The argument to the function
+                )
+                
+                # 3. Send the result back to the client
+                if gaze_status != latest_gaze:
+                    latest_gaze = gaze_status
+                    response = {
+                        'type': 'gaze_update',
+                        'status': gaze_status,
+                        'timestamp': datetime.now().isoformat()
+                    }
+                    await websocket.send(json.dumps(response))
+
+    except websockets.exceptions.ConnectionClosed:
+        print(f"\n🌐 [GAZE] Client disconnected: {client_address}")
+        log_result(f"Gaze client disconnected: {client_address}")
+    finally:
+        gaze_clients.discard(websocket)
+
+def start_gaze_websocket_server(loop):
+    """Start WebSocket server for gaze data in the event loop"""
+    global gaze_loop
+    gaze_loop = loop
+    asyncio.set_event_loop(loop)
+    
+    async def start_server_async():
+        server = await websockets.serve(
+            handle_gaze_client, 
+            WEBSOCKET_HOST, 
+            GAZE_PORT,
+            ping_interval=20,
+            ping_timeout=10,
+            max_size=1_000_000  # Allow larger messages (1MB) for video frames
+        )
+        print(f"✓ Gaze WebSocket server (2-way) started on ws://{WEBSOCKET_HOST}:{GAZE_PORT}")
+        log_result(f"Gaze WebSocket server started on ws://{WEBSOCKET_HOST}:{GAZE_PORT}")
+        return server
+    
+    loop.run_until_complete(start_server_async())
+    loop.run_forever()
+
+# -------------------------------------------------------------------
+# --- Thread-safe communication (EEG & Verdict) ---
+# -------------------------------------------------------------------
 def send_eeg_sample_sync(value):
     """Thread-safe way to send EEG sample"""
     try:
-        eeg_sample_buffer.append({
-            'timestamp': datetime.now().isoformat(),
-            'value': float(value)
-        })
-        
         if eeg_clients and eeg_loop:
             asyncio.run_coroutine_threadsafe(
                 broadcast_eeg_sample(float(value)),
@@ -245,7 +406,12 @@ def send_verdict_sync(verdict_data):
     except Exception as e:
         log_result(f"Error sending verdict via WebSocket: {e}")
 
-# --- Helper Functions ---
+# (Gaze_sync sender is no longer needed, it's handled in the 2-way socket)
+
+# -------------------------------------------------------------------
+# --- Helper Functions (EEG) ---
+# -------------------------------------------------------------------
+
 def parse_classification_result(output_text):
     try:
         result = json.loads(output_text.strip())
@@ -352,24 +518,24 @@ def run_model_classification(filename, session_num):
         
         # Additional debug info
         print(f"DEBUG Parsed Results:")
-        print(f"   Focus State: {focus_state}")
-        print(f"   Confidence: {confidence}")
-        print(f"   Beta Activity: {beta_pct}\n")
+        print(f"    Focus State: {focus_state}")
+        print(f"    Confidence: {confidence}")
+        print(f"    Beta Activity: {beta_pct}\n")
         
         # Display notification ONCE
         display_focus_notification(focus_state, confidence, beta_pct, filename, DURATION_MIN)
         
         log_result(f"\nFINAL VERDICT: {focus_state}")
-        log_result(f"   Confidence: {confidence}")
-        log_result(f"   Beta Activity: {beta_pct}")
-        log_result(f"   Timestamp: {timestamp}")
+        log_result(f"    Confidence: {confidence}")
+        log_result(f"    Beta Activity: {beta_pct}")
+        log_result(f"    Timestamp: {timestamp}")
         
         # Send verdict via WebSocket (separate port)
         verdict_data = {
-            'state': focus_state,
+            'focus_state': focus_state,
             'confidence': confidence,
             'beta_activity': beta_pct,
-            'timestamp': timestamp,
+            'analysis_timestamp': timestamp,
             'session': session_num
         }
         send_verdict_sync(verdict_data)
@@ -398,7 +564,9 @@ def classify_file_async(filename, session_num):
     classification_thread.start()
     return classification_thread
 
+# -------------------------------------------------------------------
 # --- Main Script ---
+# -------------------------------------------------------------------
 ser = None
 active_threads = []
 
@@ -411,33 +579,30 @@ try:
         if response.lower() != 'y':
             exit()
     
-    # Start BOTH WebSocket servers in background threads
+    # --- Start ALL THREE WebSocket servers ---
     print("\n🌐 Starting WebSocket servers...")
     
-    # EEG Signal Server
+    # EEG Signal Server (8765)
     eeg_ws_loop = asyncio.new_event_loop()
-    eeg_ws_thread = threading.Thread(
-        target=start_eeg_websocket_server,
-        args=(eeg_ws_loop,),
-        daemon=True
-    )
+    eeg_ws_thread = threading.Thread(target=start_eeg_websocket_server, args=(eeg_ws_loop,), daemon=True)
     eeg_ws_thread.start()
     
-    # Verdict Server
+    # Verdict Server (8766)
     verdict_ws_loop = asyncio.new_event_loop()
-    verdict_ws_thread = threading.Thread(
-        target=start_verdict_websocket_server,
-        args=(verdict_ws_loop,),
-        daemon=True
-    )
+    verdict_ws_thread = threading.Thread(target=start_verdict_websocket_server, args=(verdict_ws_loop,), daemon=True)
     verdict_ws_thread.start()
     
-    time.sleep(1)  # Give servers time to start
+    # --- MODIFIED: Gaze Server (8767, 2-way) ---
+    gaze_ws_loop = asyncio.new_event_loop()
+    gaze_ws_thread = threading.Thread(target=start_gaze_websocket_server, args=(gaze_ws_loop,), daemon=True)
+    gaze_ws_thread.start()
+    
+    time.sleep(1) # Give servers time to start
+    
+    # --- (The eye_thread is NO LONGER started here) ---
     
     # Initialize results log
-    log_result("="*70)
-    log_result("EEG RECORDING AND CLASSIFICATION SESSION STARTED")
-    log_result("="*70)
+    log_result("="*70 + "\nHARDWARE SERVER SESSION STARTED (EEG + GAZE)" + "\n" + "="*70)
     
     # Establish Serial Connection
     print(f"\n🔌 Attempting to connect to port {COM_PORT} at {BAUD_RATE} bps...")
@@ -449,39 +614,32 @@ try:
     print("CONTINUOUS EEG MONITORING STARTED")
     print("="*70)
     print(f"⏱️  Analysis Interval: Every {DURATION_MIN} minutes")
-    print(f"📊 Files alternating: {FILENAME_1} ↔ {FILENAME_2}")
     print(f"🌐 EEG Signal WebSocket: ws://{WEBSOCKET_HOST}:{EEG_PORT}")
     print(f"🌐 Verdict WebSocket: ws://{WEBSOCKET_HOST}:{VERDICT_PORT}")
-    print(f"🔄 Will run continuously until stopped (Ctrl+C)")
-    print("="*70)
+    print(f"🌐 Gaze WebSocket (2-way): ws://{WEBSOCKET_HOST}:{GAZE_PORT}")
+    print(f"🔄 Will run continuously until stopped (Ctrl+C)" + "\n" + "="*70) # <-- FIX 2
     
     current_file_index = 1
     session_number = 0
     sample_counter = 0
     
-    # Main Continuous Loop
+    # Main Continuous Loop (for EEG)
     while True:
         session_number += 1
-        
         active_filename = FILENAME_1 if current_file_index == 1 else FILENAME_2
         previous_filename = FILENAME_2 if current_file_index == 1 else FILENAME_1
         
         print(f"\n{'='*70}")
-        print(f"SESSION #{session_number} - CONTINUOUS MONITORING")
+        print(f"SESSION #{session_number} - EEG MONITORING")
         print(f"{'='*70}")
         print(f"📝 Recording to: {active_filename}")
-        print(f"⏱️  Duration: {DURATION_MIN} minutes ({MAX_SAMPLES_PER_FILE} samples)")
         
         if session_number > 1:
-            print(f"\n🔍 Analyzing previous 4-minute recording: {previous_filename}")
-            print(f"   (Analysis runs in background while recording continues)")
-            print(f"   You will see the FINAL VERDICT shortly...")
-            
+            print(f"\n🔍 Analyzing previous recording: {previous_filename} (in background)")
             thread = classify_file_async(previous_filename, session_number - 1)
             active_threads.append(thread)
         else:
             print(f"\n📌 First session - no previous file to analyze yet")
-            print(f"   Next session will analyze this file")
         
         print(f"\n📊 Recording started at {datetime.now().strftime('%H:%M:%S')}")
         print(f"{'='*70}\n")
@@ -506,20 +664,14 @@ try:
                         samples_recorded += 1
                         sample_counter += 1
                         
-                        # Send EEG sample via WebSocket periodically (EEG port only)
+                        # Send EEG sample via WebSocket periodically
                         if sample_counter % EEG_SEND_RATE == 0:
                             send_eeg_sample_sync(value)
                         
-                        elapsed_time = time.time() - start_time
                         progress = (samples_recorded / MAX_SAMPLES_PER_FILE) * 100
-                        expected_time = (MAX_SAMPLES_PER_FILE / SAMPLE_RATE)
-                        remaining_time = expected_time - elapsed_time
-                        
                         print(f"📝 {active_filename} | "
                               f"Progress: {progress:.1f}% | "
-                              f"Samples: {samples_recorded}/{MAX_SAMPLES_PER_FILE} | "
-                              f"Time remaining: {remaining_time:.0f}s | "
-                              f"Value: {value:.2f}",
+                              f"Samples: {samples_recorded}/{MAX_SAMPLES_PER_FILE}",
                               end='\r')
                         
                     except ValueError:
@@ -531,32 +683,25 @@ try:
         
         elapsed_time = time.time() - start_time
         print(f"\n\n✓ Recording complete!")
-        print(f"   File: {active_filename}")
-        print(f"   Samples recorded: {samples_recorded}")
-        print(f"   Duration: {elapsed_time:.1f} seconds")
-        print(f"   File size: {os.path.getsize(active_filename) / 1024:.1f} KB")
+        print(f"    File: {active_filename}")
+        print(f"    Samples recorded: {samples_recorded}")
+        print(f"    Duration: {elapsed_time:.1f} seconds")
         
         log_result(f"Recording session #{session_number} completed: {active_filename} "
-                  f"({samples_recorded} samples in {elapsed_time:.1f}s)")
+                   f"({samples_recorded} samples in {elapsed_time:.1f}s)")
         
         current_file_index = 2 if current_file_index == 1 else 1
         
-        print(f"\n⏳ Switching to next file in 2 seconds...")
-        print(f"   Next recording: {'file_1' if current_file_index == 1 else 'file_2'}.csv")
+        print(f"\n⏳ Switching to next file...")
         time.sleep(2)
 
 except serial.SerialException as e:
     print(f"\n❌ Serial Error: Could not open port {COM_PORT}")
-    print(f"   Details: {e}")
+    print(f"    Details: {e}")
     print("\n💡 Troubleshooting:")
-    print("   1. Check if device is connected")
-    print("   2. Verify correct COM port")
-    print("   3. Close other programs using the port")
-    print("   4. Try unplugging and reconnecting the device")
-    print("\n📋 Available COM ports:")
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        print(f"   - {port}")
+    print("    1. Check if device is connected")
+    print("    2. Verify correct COM port")
+    print("    3. Close other programs using the port")
     log_result(f"Serial connection error: {e}")
 
 except KeyboardInterrupt:
@@ -572,7 +717,7 @@ except Exception as e:
 finally:
     print("\n" + "="*70)
     print("SHUTDOWN SEQUENCE")
-    print("="*70)
+    print("="*70) # <-- FIX 1
     
     if ser and ser.is_open:
         ser.close()
@@ -582,14 +727,9 @@ finally:
         print(f"\n⏳ Waiting for {len(active_threads)} classification thread(s) to complete...")
         for i, thread in enumerate(active_threads, 1):
             if thread.is_alive():
-                print(f"   Thread {i}: Waiting...")
                 thread.join(timeout=10)
-                if thread.is_alive():
-                    print(f"   Thread {i}: Timeout (still running in background)")
-                else:
-                    print(f"   Thread {i}: Completed")
     
-    # Clean up WebSocket servers
+    # --- MODIFIED: Clean up ALL THREE WebSocket servers ---
     if eeg_loop:
         print("\n🌐 Shutting down EEG WebSocket server...")
         eeg_loop.call_soon_threadsafe(eeg_loop.stop)
@@ -597,10 +737,12 @@ finally:
     if verdict_loop:
         print("🌐 Shutting down Verdict WebSocket server...")
         verdict_loop.call_soon_threadsafe(verdict_loop.stop)
+
+    if gaze_loop:
+        print("🌐 Shutting down Gaze WebSocket server...")
+        gaze_loop.call_soon_threadsafe(gaze_loop.stop)
     
-    log_result("="*70)
-    log_result("EEG RECORDING AND CLASSIFICATION SESSION ENDED")
-    log_result("="*70)
+    log_result("="*70 + "\nHARDWARE SERVER SESSION ENDED" + "\n" + "="*70)
     
     print(f"\n📊 Complete session log saved to: {RESULTS_LOG}")
     print("✓ Script terminated")

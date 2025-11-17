@@ -1810,3 +1810,338 @@ Raw model output:
 [2025-11-16 16:15:23] ======================================================================
 [2025-11-16 16:15:23] EEG RECORDING AND CLASSIFICATION SESSION ENDED
 [2025-11-16 16:15:23] ======================================================================
+[2025-11-17 13:17:32] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 13:17:32] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 13:17:33] ======================================================================
+[2025-11-17 13:17:33] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-17 13:17:33] ======================================================================
+[2025-11-17 13:18:09] Recording stopped by user
+[2025-11-17 13:18:09] ======================================================================
+[2025-11-17 13:18:09] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-17 13:18:09] ======================================================================
+[2025-11-17 13:18:23] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 13:18:23] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 13:18:24] ======================================================================
+[2025-11-17 13:18:24] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-17 13:18:24] ======================================================================
+[2025-11-17 13:18:58] Recording stopped by user
+[2025-11-17 13:18:58] ======================================================================
+[2025-11-17 13:18:58] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-17 13:18:58] ======================================================================
+[2025-11-17 13:19:06] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 13:19:06] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 13:19:06] ======================================================================
+[2025-11-17 13:19:06] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-17 13:19:06] ======================================================================
+[2025-11-17 13:19:44] Recording stopped by user
+[2025-11-17 13:19:44] ======================================================================
+[2025-11-17 13:19:44] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-17 13:19:44] ======================================================================
+[2025-11-17 13:20:42] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 13:20:42] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 13:20:43] ======================================================================
+[2025-11-17 13:20:43] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-17 13:20:43] ======================================================================
+[2025-11-17 13:20:56] Serial connection error: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+[2025-11-17 13:20:56] ======================================================================
+[2025-11-17 13:20:56] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-17 13:20:56] ======================================================================
+[2025-11-17 13:38:20] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 13:38:20] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 13:38:21] ======================================================================
+[2025-11-17 13:38:21] EEG RECORDING AND CLASSIFICATION SESSION STARTED
+[2025-11-17 13:38:21] ======================================================================
+[2025-11-17 13:40:37] Recording stopped by user
+[2025-11-17 13:40:37] ======================================================================
+[2025-11-17 13:40:37] EEG RECORDING AND CLASSIFICATION SESSION ENDED
+[2025-11-17 13:40:37] ======================================================================
+[2025-11-17 14:10:20] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 14:10:20] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 14:10:20] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 14:10:21] 👁️ Starting eye tracking thread...
+[2025-11-17 14:10:21] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 14:10:34] EEG client connected: ('127.0.0.1', 40696)
+[2025-11-17 14:10:34] Verdict client connected: ('127.0.0.1', 33920)
+[2025-11-17 14:10:34] Gaze client connected: ('127.0.0.1', 37416)
+[2025-11-17 14:11:40] Recording stopped by user
+[2025-11-17 14:11:40] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 14:53:54] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 14:53:54] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 14:53:54] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 14:53:55] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 14:54:43] EEG client connected: ('127.0.0.1', 36966)
+[2025-11-17 14:54:43] Verdict client connected: ('127.0.0.1', 57570)
+[2025-11-17 14:54:43] Gaze client connected: ('127.0.0.1', 51314)
+[2025-11-17 14:57:55] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-11-17 14:57:57] ======================================================================
+[2025-11-17 14:57:57] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-11-17 14:57:57] ======================================================================
+[2025-11-17 14:57:57] Analysis completed for eeg_recording_file_1.csv
+[2025-11-17 14:57:57] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 14:57:57] 
+FINAL VERDICT: ERROR
+[2025-11-17 14:57:57]     Confidence: N/A
+[2025-11-17 14:57:57]     Beta Activity: N/A
+[2025-11-17 14:57:57]     Timestamp: 2025-11-17 14:57:57
+[2025-11-17 14:57:57] ======================================================================
+
+[2025-11-17 14:59:35] Recording stopped by user
+[2025-11-17 14:59:35] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 14:59:38] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 14:59:38] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 14:59:38] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 14:59:39] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 15:00:03] EEG client connected: ('127.0.0.1', 35958)
+[2025-11-17 15:00:03] Verdict client connected: ('127.0.0.1', 42432)
+[2025-11-17 15:00:04] Gaze client connected: ('127.0.0.1', 40934)
+[2025-11-17 15:03:04] EEG client connected: ('127.0.0.1', 36760)
+[2025-11-17 15:03:04] Verdict client connected: ('127.0.0.1', 56936)
+[2025-11-17 15:03:04] Gaze client connected: ('127.0.0.1', 43018)
+[2025-11-17 15:03:39] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-11-17 15:03:40] EEG client connected: ('127.0.0.1', 59828)
+[2025-11-17 15:03:40] Verdict client connected: ('127.0.0.1', 43742)
+[2025-11-17 15:03:40] Gaze client connected: ('127.0.0.1', 40218)
+[2025-11-17 15:03:41] ======================================================================
+[2025-11-17 15:03:41] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-11-17 15:03:41] ======================================================================
+[2025-11-17 15:03:42] Analysis completed for eeg_recording_file_1.csv
+[2025-11-17 15:03:42] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 15:03:42] 
+FINAL VERDICT: ERROR
+[2025-11-17 15:03:42]     Confidence: N/A
+[2025-11-17 15:03:42]     Beta Activity: N/A
+[2025-11-17 15:03:42]     Timestamp: 2025-11-17 15:03:41
+[2025-11-17 15:03:42] ======================================================================
+
+[2025-11-17 15:07:05] Recording stopped by user
+[2025-11-17 15:07:05] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 15:07:09] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 15:07:09] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 15:07:09] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 15:07:10] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 15:07:44] EEG client connected: ('127.0.0.1', 42754)
+[2025-11-17 15:07:44] Verdict client connected: ('127.0.0.1', 33426)
+[2025-11-17 15:07:44] Gaze client connected: ('127.0.0.1', 37820)
+[2025-11-17 15:09:58] Recording stopped by user
+[2025-11-17 15:09:58] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 18:05:23] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 18:05:23] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 18:05:23] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 18:05:24] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 18:06:01] EEG client connected: ('127.0.0.1', 39564)
+[2025-11-17 18:06:01] Verdict client connected: ('127.0.0.1', 57408)
+[2025-11-17 18:06:01] Gaze client connected: ('127.0.0.1', 49554)
+[2025-11-17 18:07:52] Recording stopped by user
+[2025-11-17 18:07:52] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 18:08:21] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 18:08:21] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 18:08:21] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 18:08:22] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 18:09:08] EEG client connected: ('127.0.0.1', 38748)
+[2025-11-17 18:09:08] Verdict client connected: ('127.0.0.1', 60194)
+[2025-11-17 18:09:08] Gaze client connected: ('127.0.0.1', 57818)
+[2025-11-17 18:11:53] Recording stopped by user
+[2025-11-17 18:11:53] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 18:29:49] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 18:29:49] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 18:29:49] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 18:29:50] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 18:30:48] EEG client connected: ('127.0.0.1', 43888)
+[2025-11-17 18:30:48] Verdict client connected: ('127.0.0.1', 39746)
+[2025-11-17 18:30:48] Gaze client connected: ('127.0.0.1', 57038)
+[2025-11-17 18:31:14] EEG client connected: ('127.0.0.1', 41488)
+[2025-11-17 18:31:14] Verdict client connected: ('127.0.0.1', 59298)
+[2025-11-17 18:31:15] Gaze client connected: ('127.0.0.1', 37388)
+[2025-11-17 18:31:33] Recording stopped by user
+[2025-11-17 18:31:33] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 18:33:59] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 18:33:59] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 18:33:59] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 18:34:00] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 18:34:22] EEG client connected: ('127.0.0.1', 54464)
+[2025-11-17 18:34:23] Verdict client connected: ('127.0.0.1', 57590)
+[2025-11-17 18:34:23] Gaze client connected: ('127.0.0.1', 40480)
+[2025-11-17 18:34:31] Recording stopped by user
+[2025-11-17 18:34:31] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 18:35:11] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 18:35:11] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 18:35:11] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 18:35:12] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 18:36:15] EEG client connected: ('127.0.0.1', 58474)
+[2025-11-17 18:36:15] Verdict client connected: ('127.0.0.1', 50930)
+[2025-11-17 18:36:15] Gaze client connected: ('127.0.0.1', 49642)
+[2025-11-17 18:39:11] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-11-17 18:39:13] ======================================================================
+[2025-11-17 18:39:13] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-11-17 18:39:13] ======================================================================
+[2025-11-17 18:39:14] Analysis completed for eeg_recording_file_1.csv
+[2025-11-17 18:39:14] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 18:39:14] 
+FINAL VERDICT: ERROR
+[2025-11-17 18:39:14]     Confidence: N/A
+[2025-11-17 18:39:14]     Beta Activity: N/A
+[2025-11-17 18:39:14]     Timestamp: 2025-11-17 18:39:13
+[2025-11-17 18:39:14] ======================================================================
+
+[2025-11-17 18:43:11] Recording session #2 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-11-17 18:43:13] ======================================================================
+[2025-11-17 18:43:13] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-11-17 18:43:13] ======================================================================
+[2025-11-17 18:43:14] Analysis completed for eeg_recording_file_2.csv
+[2025-11-17 18:43:14] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 18:43:14] 
+FINAL VERDICT: ERROR
+[2025-11-17 18:43:14]     Confidence: N/A
+[2025-11-17 18:43:14]     Beta Activity: N/A
+[2025-11-17 18:43:14]     Timestamp: 2025-11-17 18:43:13
+[2025-11-17 18:43:14] ======================================================================
+
+[2025-11-17 18:46:33] EEG client connected: ('127.0.0.1', 50904)
+[2025-11-17 18:46:33] Verdict client connected: ('127.0.0.1', 48666)
+[2025-11-17 18:46:33] Gaze client connected: ('127.0.0.1', 51700)
+[2025-11-17 18:47:11] Recording session #3 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-11-17 18:47:13] ======================================================================
+[2025-11-17 18:47:13] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-11-17 18:47:13] ======================================================================
+[2025-11-17 18:47:14] Analysis completed for eeg_recording_file_1.csv
+[2025-11-17 18:47:14] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 18:47:14] 
+FINAL VERDICT: ERROR
+[2025-11-17 18:47:14]     Confidence: N/A
+[2025-11-17 18:47:14]     Beta Activity: N/A
+[2025-11-17 18:47:14]     Timestamp: 2025-11-17 18:47:13
+[2025-11-17 18:47:14] ======================================================================
+
+[2025-11-17 18:51:11] Recording session #4 completed: eeg_recording_file_2.csv (61440 samples in 238.0s)
+[2025-11-17 18:51:13] ======================================================================
+[2025-11-17 18:51:13] Analyzing 4-minute EEG recording: eeg_recording_file_2.csv
+[2025-11-17 18:51:13] ======================================================================
+[2025-11-17 18:51:14] Analysis completed for eeg_recording_file_2.csv
+[2025-11-17 18:51:14] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 18:51:14] 
+FINAL VERDICT: ERROR
+[2025-11-17 18:51:14]     Confidence: N/A
+[2025-11-17 18:51:14]     Beta Activity: N/A
+[2025-11-17 18:51:14]     Timestamp: 2025-11-17 18:51:13
+[2025-11-17 18:51:14] ======================================================================
+
+[2025-11-17 18:55:11] Recording session #5 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-11-17 18:55:13] ======================================================================
+[2025-11-17 18:55:13] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-11-17 18:55:13] ======================================================================
+[2025-11-17 18:55:14] Analysis completed for eeg_recording_file_1.csv
+[2025-11-17 18:55:14] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 18:55:14] 
+FINAL VERDICT: ERROR
+[2025-11-17 18:55:14]     Confidence: N/A
+[2025-11-17 18:55:14]     Beta Activity: N/A
+[2025-11-17 18:55:14]     Timestamp: 2025-11-17 18:55:13
+[2025-11-17 18:55:14] ======================================================================
+
+[2025-11-17 18:55:30] Recording stopped by user
+[2025-11-17 18:55:30] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================
+[2025-11-17 18:56:18] EEG WebSocket server started on ws://localhost:8765
+[2025-11-17 18:56:18] Verdict WebSocket server started on ws://localhost:8766
+[2025-11-17 18:56:18] Gaze WebSocket server started on ws://localhost:8767
+[2025-11-17 18:56:19] ======================================================================
+HARDWARE SERVER SESSION STARTED (EEG + GAZE)
+======================================================================
+[2025-11-17 18:57:38] EEG client connected: ('127.0.0.1', 34710)
+[2025-11-17 18:57:38] Verdict client connected: ('127.0.0.1', 32936)
+[2025-11-17 18:57:38] Gaze client connected: ('127.0.0.1', 45558)
+[2025-11-17 19:00:19] Recording session #1 completed: eeg_recording_file_1.csv (61440 samples in 238.0s)
+[2025-11-17 19:00:21] ======================================================================
+[2025-11-17 19:00:21] Analyzing 4-minute EEG recording: eeg_recording_file_1.csv
+[2025-11-17 19:00:21] ======================================================================
+[2025-11-17 19:00:22] Analysis completed for eeg_recording_file_1.csv
+[2025-11-17 19:00:22] 
+Raw model output:
+Traceback (most recent call last):
+  File "/home/tanmay-exits/NeuroLearn/backend/ml/predict4.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+[2025-11-17 19:00:22] 
+FINAL VERDICT: ERROR
+[2025-11-17 19:00:22]     Confidence: N/A
+[2025-11-17 19:00:22]     Beta Activity: N/A
+[2025-11-17 19:00:22]     Timestamp: 2025-11-17 19:00:21
+[2025-11-17 19:00:22] ======================================================================
+
+[2025-11-17 19:02:36] EEG client connected: ('127.0.0.1', 48762)
+[2025-11-17 19:02:36] Verdict client connected: ('127.0.0.1', 33016)
+[2025-11-17 19:02:36] Gaze client connected: ('127.0.0.1', 38034)
+[2025-11-17 19:03:33] Recording stopped by user
+[2025-11-17 19:03:33] ======================================================================
+HARDWARE SERVER SESSION ENDED
+======================================================================

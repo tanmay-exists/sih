@@ -1,4 +1,3 @@
-// StudentDashboard.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Header, ListenButton } from "./Common";
 import useFocusMode from "./useFocusMode";
@@ -7,17 +6,35 @@ import { AnimatePresence } from "framer-motion";
 import { QuizGame } from "./QuizGame";
 import { HeadsetAlert } from "./Components";
 import axios from "axios";
-import { IdleLayout, SelectingSubjectLayout, SelectingLessonLayout, FinishedLayout } from "./DashboardLayouts";
+import {
+  IdleLayout,
+  SelectingSubjectLayout,
+  SelectingLessonLayout,
+  FinishedLayout,
+} from "./DashboardLayouts";
 import { ActiveSession } from "./ActiveSession";
+
+// --- NEW: Gaze processing constants ---
+const GAZE_FRAME_RATE = 5; // Send 5 frames per second
+const GAZE_VIDEO_WIDTH = 320; // Send a small video frame
+const GAZE_VIDEO_HEIGHT = 240;
+const GAZE_UNFOCUSED_DURATION = 5000; // 5 seconds
 
 export const StudentDashboard = ({ onLogout, accessibility }) => {
   const [sessionState, setSessionState] = useState("idle");
   const [sessionTime, setSessionTime] = useState(0);
   const { isFocusMode, toggleFocusMode } = useFocusMode();
   const playerIframeRef = useRef(null);
-  const { eegData, connectionStatus, latestVerdict } = useWebSocketStream(
-    sessionState === "active" || sessionState === "quiz"
-  );
+
+  // --- MODIFIED: Destructure new 'sendGazeFrame' function ---
+  const { eegData, connectionStatus, latestVerdict, latestGaze, sendGazeFrame } =
+    useWebSocketStream(sessionState === "active" || sessionState === "quiz");
+
+  // --- NEW: Refs for video streaming ---
+  const videoRef = useRef(null); // Hidden video element
+  const canvasRef = useRef(null); // Hidden canvas for frame grabbing
+  const gazeIntervalRef = useRef(null); // To store the setInterval ID
+
   const [attention, setAttention] = useState(null);
   const [focusStreak, setFocusStreak] = useState(0);
   const [sessionEvents, setSessionEvents] = useState([]);
@@ -25,7 +42,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   const [showRefocusQuiz, setShowRefocusQuiz] = useState(false);
   const [showFocusAlert, setShowFocusAlert] = useState(null); // This is for warnings
   const [showHeadsetAlert, setShowHeadsetAlert] = useState(false);
-  const [history, setHistory] = useState({ recent_sessions: [], recent_quizzes: [] });
+  const [history, setHistory] = useState({
+    recent_sessions: [],
+    recent_quizzes: [],
+  });
   const [quizSubject, setQuizSubject] = useState(null);
   const [studyLesson, setStudyLesson] = useState(null);
   const [studyContentType, setStudyContentType] = useState("video");
@@ -51,8 +71,75 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   // State to hold the pre-fetched fact
   const [prefetchedFunFact, setPrefetchedFunFact] = useState(null);
 
-  const selectedSubject = subjects.find((s) => s.subject === selectedSubjectName);
-  const formatTime = (seconds) => `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  // --- NEW: State and Ref for Gaze Focus Timer ---
+  const [isGazeFocused, setIsGazeFocused] = useState(true);
+  const badGazeStartTimeRef = useRef(null);
+  // --- END NEW ---
+
+  const selectedSubject = subjects.find(
+    (s) => s.subject === selectedSubjectName
+  );
+  const formatTime = (seconds) =>
+    `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+
+  // --- NEW: Gaze Processing Functions ---
+
+  // 1. Starts the camera and the sending loop
+  const startGazeTracking = async () => {
+    try {
+      // A) Ask user for camera permission
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: GAZE_VIDEO_WIDTH, height: GAZE_VIDEO_HEIGHT },
+      });
+
+      // B) Attach stream to our hidden video element
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+
+      // C) Start the sending loop
+      if (gazeIntervalRef.current) {
+        clearInterval(gazeIntervalRef.current);
+      }
+      gazeIntervalRef.current = setInterval(() => {
+        captureAndSendFrame();
+      }, 1000 / GAZE_FRAME_RATE);
+    } catch (err) {
+      console.error("Error starting gaze tracking:", err);
+      setErrorMessage("Camera permission denied. Eye-tracking will not work.");
+    }
+  };
+
+  // 2. Stops the camera and the sending loop
+  const stopGazeTracking = () => {
+    // A) Stop the sending loop
+    if (gazeIntervalRef.current) {
+      clearInterval(gazeIntervalRef.current);
+      gazeIntervalRef.current = null;
+    }
+
+    // B) Stop the camera tracks
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  // 3. Captures one frame, converts it, and sends it
+  const captureAndSendFrame = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (video && canvas && video.readyState >= 3) {
+      // readyState 3 is 'HAVE_FUTURE_DATA'
+      const ctx = canvas.getContext("2d");
+      // Draw video frame to canvas
+      ctx.drawImage(video, 0, 0, GAZE_VIDEO_WIDTH, GAZE_VIDEO_HEIGHT);
+      // Get compressed JPEG as Base64 string
+      const frameData = canvas.toDataURL("image/jpeg", 0.5); // 0.5 quality is small
+      // Send it!
+      sendGazeFrame(frameData);
+    }
+  };
 
   const saveHistory = async (updater) => {
     try {
@@ -100,6 +187,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     }));
     setSessionState("finished");
     setQuizSubject(selectedSubjectName || "GK");
+    stopGazeTracking(); // --- MODIFIED: Stop camera on session end ---
   };
 
   const restartSession = () => {
@@ -129,12 +217,19 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     lowFocusAlertCounterRef.current = 0;
     isAlertOpenRef.current = false;
     lastLowFocusTriggerRef.current = 0;
-    
+
     setShowFunFact(false);
     // Reset pre-fetched fact
     setPrefetchedFunFact(null);
+    stopGazeTracking(); // --- MODIFIED: Stop camera on restart ---
+
+    // --- NEW ---
+    // Reset gaze tracking state
+    setIsGazeFocused(true);
+    badGazeStartTimeRef.current = null;
+    // --- END NEW ---
   };
-  
+
   // New function to pre-fetch the fun fact
   const prefetchFunFact = async (lessonId) => {
     if (!lessonId) return;
@@ -149,7 +244,9 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     } catch (err) {
       console.error("Error pre-fetching fun fact:", err);
       // If it fails, we'll just show the fallback later
-      setPrefetchedFunFact("Couldn't fetch a fun fact, but please take a moment to refocus!");
+      setPrefetchedFunFact(
+        "Couldn't fetch a fun fact, but please take a moment to refocus!"
+      );
     }
   };
 
@@ -161,7 +258,9 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     setStudyContentType("video");
     setSessionState("active");
     const now = Date.now();
-    setSessionEvents([{ timestamp: now, event: "Session Started", attention: 0, verdict: "N/A" }]);
+    setSessionEvents([
+      { timestamp: now, event: "Session Started", attention: 0, verdict: "N/A" },
+    ]);
     lastLogTimeRef.current = now;
     lastAttentionUpdateRef.current = now;
     setChatHistory([
@@ -170,9 +269,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         content: `Hi! I'm ready to answer any questions about "${lesson.lessonTitle}". Just ask!`,
       },
     ]);
-    
+
     // Call the pre-fetch function as soon as the session starts
     prefetchFunFact(lesson.lessonId);
+    startGazeTracking(); // --- MODIFIED: Start camera on session start ---
   };
 
   const handleChat = async () => {
@@ -185,15 +285,24 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/tools/chatbot",
-        { query: currentQuery, lesson_id: studyLesson ? studyLesson.lessonId : "GK" },
+        {
+          query: currentQuery,
+          lesson_id: studyLesson ? studyLesson.lessonId : "GK",
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const assistantMessage = { role: "assistant", content: response.data.response };
+      const assistantMessage = {
+        role: "assistant",
+        content: response.data.response,
+      };
       setChatHistory((prev) => [...prev, assistantMessage]);
       setErrorMessage(null);
     } catch (err) {
       console.error("Error in chatbot:", err);
-      const errorMessage = { role: "assistant", content: "Sorry, I couldn't process your query. Try again!" };
+      const errorMessage = {
+        role: "assistant",
+        content: "Sorry, I couldn't process your query. Try again!",
+      };
       setChatHistory((prev) => [...prev, errorMessage]);
       setErrorMessage("Failed to process chat query. Please try again.");
     } finally {
@@ -204,7 +313,11 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   const handleRefocusQuizFinish = (result) => {
     console.log("Quiz finished, resetting counter to 0");
     const subjectName = selectedSubjectName || "GK";
-    const withSubject = { timestamp: new Date(), subject: subjectName, score: `${result.score}/${result.total}` };
+    const withSubject = {
+      timestamp: new Date(),
+      subject: subjectName,
+      score: `${result.score}/${result.total}`,
+    };
     saveHistory((prev) => ({
       ...prev,
       recent_quizzes: [...(prev.recent_quizzes || []), withSubject],
@@ -216,6 +329,12 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     lastVerdictTimeRef.current = Date.now();
     lowFocusAlertCounterRef.current = 0;
     lastLowFocusTriggerRef.current = 0;
+    
+    // --- NEW ---
+    // Also reset gaze timer
+    setIsGazeFocused(true);
+    badGazeStartTimeRef.current = null;
+    // --- END NEW ---
   };
 
   const handleFocusAlertClose = () => {
@@ -229,88 +348,144 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     console.log(`Closing fun fact`);
     setShowFunFact(false);
     isAlertOpenRef.current = false;
-    // We don't reset the content, in case it pops up again
+    // --- NEW ---
+    // Also reset gaze timer
+    setIsGazeFocused(true);
+    badGazeStartTimeRef.current = null;
+    // --- END NEW ---
   };
+  
+  // --- NEW: Gaze Focus Timer ---
+  // This hook runs every second to check if gaze has been unfocused for 5s
+  useEffect(() => {
+    if (sessionState !== "active") {
+      // Reset on session stop
+      setIsGazeFocused(true);
+      badGazeStartTimeRef.current = null;
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const gazeStatus = latestGaze?.status;
+      // Gaze is "bad" if it's not Center AND not N/A (which is the starting value)
+      const isGazeBad = gazeStatus !== 'Looking Center' && gazeStatus !== 'N/A';
+      const now = Date.now();
+
+      if (isGazeBad) {
+        if (!badGazeStartTimeRef.current) {
+          // Gaze just became bad (or was bad on last check), start timer
+          badGazeStartTimeRef.current = now;
+        } else {
+          // Timer is running, check if 5s have passed
+          if (now - badGazeStartTimeRef.current > GAZE_UNFOCUSED_DURATION) {
+            if (isGazeFocused) {
+              console.log("GAZE: Unfocused for 5 seconds!");
+              setIsGazeFocused(false); // Only set state if it changed
+            }
+          }
+        }
+      } else {
+        // Gaze is good
+        if (!isGazeFocused) {
+          console.log("GAZE: Refocused!");
+          setIsGazeFocused(true); // Only set state if it changed
+        }
+        badGazeStartTimeRef.current = null;
+      }
+    }, 1000); // Check once per second
+
+    return () => clearInterval(interval);
+
+  }, [sessionState, latestGaze, isGazeFocused]);
+  // --- END NEW ---
 
 
   // --- MODIFIED ALERT LOGIC ---
   useEffect(() => {
-    console.log("Alert useEffect triggered");
     if (sessionState !== "active" || attention === null) {
-      console.log("Skipping alert logic: session not active or attention null");
       return;
     }
 
     const now = Date.now();
     const timeSinceLastTrigger = now - lastLowFocusTriggerRef.current;
+    
+    // --- NEW: Combine EEG and Gaze focus states ---
+    const eegIsFocused = attention >= 75;
+    const isFocused = eegIsFocused && isGazeFocused;
+    // --- END NEW ---
 
-    // 7-second debounce for new low-focus events
     if (timeSinceLastTrigger < 7000) {
-      console.log(`Debounce active, time since last trigger: ${timeSinceLastTrigger}ms`);
       return;
     }
 
-    console.log(`Processing attention: ${attention}, Counter: ${lowFocusAlertCounterRef.current}, AlertOpen: ${isAlertOpenRef.current}, Quiz: ${showRefocusQuiz}`);
-
-    // --- FIX 1: Set threshold to 75 ---
-    if (attention >= 75) {
+    // --- MODIFIED: Check combined 'isFocused' state ---
+    if (isFocused) {
       // Focus is good
       if (showFocusAlert) {
         console.log("Focus regained, clearing alert");
         setShowFocusAlert(null);
-        isAlertOpenRef.current = false; // Reset the flag
+        isAlertOpenRef.current = false;
       }
       
-      // --- FIX 2: Removed counter reset. Counter only resets after 4th warning. ---
-
-      // This is the key fix for the stuck flag
-      // If focus is good AND no modals are active, the ref MUST be false.
       if (!showFunFact && !showFocusAlert && !showRefocusQuiz) {
-          if (isAlertOpenRef.current) {
-             console.log("Focus is good and no modals are open, resetting alert flag.");
-             isAlertOpenRef.current = false;
-          }
+        if (isAlertOpenRef.current) {
+          isAlertOpenRef.current = false;
+        }
       }
     } else {
-      // Focus is low ( < 75 )
-      // Update check to include new showFunFact state
+      // Focus is low (either EEG or Gaze)
       if (isAlertOpenRef.current || showRefocusQuiz || showFunFact) {
-        console.log("Alert, quiz, or fun fact modal already open, skipping");
         return;
       }
 
       lowFocusAlertCounterRef.current += 1;
       lastLowFocusTriggerRef.current = now;
 
-      console.log(`Low focus detected, counter incremented to: ${lowFocusAlertCounterRef.current}`);
+      console.log(
+        `Low focus detected (EEG: ${eegIsFocused}, Gaze: ${isGazeFocused}), counter incremented to: ${lowFocusAlertCounterRef.current}`
+      );
 
-      // Replace quiz trigger with fun fact trigger
       if (lowFocusAlertCounterRef.current >= 4) {
         console.log("Triggering fun fact, resetting counter to 0");
-        setShowFunFact(true); // <-- Show the new modal
-        lowFocusAlertCounterRef.current = 0; // <-- Counter resets HERE, after triggering
-        isAlertOpenRef.current = true; // Block other alerts
+        setShowFunFact(true);
+        lowFocusAlertCounterRef.current = 0;
+        isAlertOpenRef.current = true;
       } else {
-        console.log(`Showing alert: Warning ${lowFocusAlertCounterRef.current}/3`);
-        setShowFocusAlert(
-          `Your attention dropped! Please refocus. (Warning ${lowFocusAlertCounterRef.current}/3)`
+        console.log(
+          `Showing alert: Warning ${lowFocusAlertCounterRef.current}/3`
         );
+        // --- NEW: More specific alert message ---
+        let alertMessage = `Your attention dropped! Please refocus. (Warning ${lowFocusAlertCounterRef.current}/3)`;
+        if (!eegIsFocused && !isGazeFocused) {
+          alertMessage = `EEG and Gaze show low focus! Please refocus. (Warning ${lowFocusAlertCounterRef.current}/3)`;
+        } else if (!isGazeFocused) {
+          alertMessage = `Please look at the screen to maintain focus. (Warning ${lowFocusAlertCounterRef.current}/3)`;
+        }
+        // --- END NEW ---
+        setShowFocusAlert(alertMessage);
         isAlertOpenRef.current = true;
       }
     }
-  // Update dependency array
-  }, [attention, sessionState, showRefocusQuiz, showFunFact]);
+  // --- MODIFIED: Add isGazeFocused to dependency array ---
+  }, [attention, isGazeFocused, sessionState, showRefocusQuiz, showFunFact]);
   // --- END MODIFIED ---
 
   // Logging and focus streak
   useEffect(() => {
     if (sessionState !== "active") return;
+
+    // --- NEW: Combine focus states for this hook ---
+    const eegIsFocused = attention === null || attention >= 75; // null is considered focused at start
+    const isFocused = eegIsFocused && isGazeFocused;
+    // --- END NEW ---
+
     const logInterval = setInterval(() => {
       const now = Date.now();
       const timeSinceLastLog = now - lastLogTimeRef.current;
-      if (attention !== null) {
-        // --- FIX 3: Set streak threshold to 75 ---
-        if (attention < 75) { 
+      
+      if (attention !== null) { // Only run streak logic once EEG data is available
+        // --- MODIFIED: Check combined 'isFocused' state ---
+        if (!isFocused) {
           setFocusStreak(0);
           lastVerdictTimeRef.current = now;
         } else {
@@ -318,23 +493,37 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
           setFocusStreak(Math.floor(timeSinceVerdict / 1000));
         }
       }
+
       if (timeSinceLastLog >= 5000) {
-        // --- FIX 4: Set logging threshold to 75 ---
-        const eventType = attention >= 75 ? "FOCUSED" : "NOT FOCUSED";
+        // --- MODIFIED: Check combined 'isFocused' state ---
+        const eventType = isFocused ? "FOCUSED" : "NOT FOCUSED";
+        
+        // --- NEW: Add more detail to log event ---
+        let eventDetail = eventType;
+        if (eventType === 'NOT FOCUSED') {
+          if (!eegIsFocused && !isGazeFocused) eventDetail = "LOW (EEG+GAZE)";
+          else if (!eegIsFocused) eventDetail = "LOW (EEG)";
+          else if (!isGazeFocused) eventDetail = "LOW (GAZE)";
+        }
+        // --- END NEW ---
+
         setSessionEvents((prev) => [
           {
             timestamp: now,
-            event: eventType,
+            event: eventDetail, // Use detailed event
             attention: attention !== null ? Math.round(attention) : 0,
-            verdict: eventType,
+            verdict: eventType, // Keep original verdict simple
           },
           ...prev,
         ]);
         lastLogTimeRef.current = now;
       }
     }, 1000);
+    
     return () => clearInterval(logInterval);
-  }, [sessionState, attention]);
+  // --- MODIFIED: Add attention and isGazeFocused to dependency array ---
+  }, [sessionState, attention, isGazeFocused]);
+  // --- END MODIFIED ---
 
   // Session timer
   useEffect(() => {
@@ -350,9 +539,12 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   useEffect(() => {
     const fetchCurriculum = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/curriculum/my", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:8000/curriculum/my",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setSubjects(
           response.data.subjects.map((s) => ({
             subject: s.subject,
@@ -394,7 +586,8 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   }, [token]);
 
   useEffect(() => {
-    if (sessionState !== "active" || !studyLesson || !studyLesson.lessonId) return;
+    if (sessionState !== "active" || !studyLesson || !studyLesson.lessonId)
+      return;
     const lessonId = studyLesson.lessonId;
     const fetchSummary = async () => {
       try {
@@ -407,16 +600,14 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         setErrorMessage(null);
       } catch (err) {
         console.error("Error fetching summary:", err);
-        setErrorMessage("Failed to load summary/quiz. Please check the backend endpoint.");
+        setErrorMessage(
+          "Failed to load summary/quiz. Please check the backend endpoint."
+        );
       }
     };
     fetchSummary();
   }, [sessionState, studyLesson, token]);
 
-  
-  // We no longer need the useEffect that fetched the fact when the modal opened.
-  // It is now pre-fetched.
-  
   // --- MODIFIED ATTENTION CALCULATION ---
   useEffect(() => {
     if (sessionState !== "active" || eegData.length === 0) return;
@@ -441,29 +632,36 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     attentionScore = Math.min(100, Math.max(10, attentionScore));
     console.log(`Calculated attention: ${attentionScore}`);
     setAttention(attentionScore);
-    setAttentionHistory((prev) => [...prev, { timestamp: Date.now(), attention: attentionScore }]);
+    setAttentionHistory((prev) => [
+      ...prev,
+      { timestamp: Date.now(), attention: attentionScore },
+    ]);
   }, [eegData, sessionState]);
   // --- END MODIFIED ---
 
   // --- MODIFIED IFRAME HANDLING ---
   useEffect(() => {
-    // --- FIX 5: Added showFunFact to the check and dependency array ---
-    if ((showRefocusQuiz || showFocusAlert || showFunFact) && playerIframeRef.current?.contentWindow) {
+    if (
+      (showRefocusQuiz || showFocusAlert || showFunFact) &&
+      playerIframeRef.current?.contentWindow
+    ) {
       try {
         console.log("Attempting to pause video via postMessage");
         playerIframeRef.current.contentWindow.postMessage(
           JSON.stringify({ event: "command", func: "pauseVideo", args: [] }),
-          "*" // Replace with specific origin if known, e.g., "https://www.youtube.com"
+          "*"
         );
       } catch (err) {
         console.error("Error in postMessage to iframe:", err);
       }
       if (document.fullscreenElement) {
         console.log("Exiting fullscreen");
-        document.exitFullscreen().catch((err) => console.error("Error exiting fullscreen:", err));
+        document
+          .exitFullscreen()
+          .catch((err) => console.error("Error exiting fullscreen:", err));
       }
     }
-  }, [showRefocusQuiz, showFocusAlert, showFunFact]); // Added showFunFact
+  }, [showRefocusQuiz, showFocusAlert, showFunFact]);
   // --- END MODIFIED ---
 
   // Render logic
@@ -554,9 +752,11 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
               restartSession();
             }}
             focusStats={() => ({
-              avg: attentionHistory.reduce((sum, d) => sum + d.attention, 0) / (attentionHistory.length || 1),
-              max: Math.max(...attentionHistory.map(d => d.attention)),
-              min: Math.min(...attentionHistory.map(d => d.attention)),
+              avg:
+                attentionHistory.reduce((sum, d) => sum + d.attention, 0) /
+                (attentionHistory.length || 1),
+              max: Math.max(...attentionHistory.map((d) => d.attention)),
+              min: Math.min(...attentionHistory.map((d) => d.attention)),
             })}
           />
         </main>
@@ -566,6 +766,24 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
 
   return (
     <>
+      {/* --- NEW: Hidden video/canvas elements for gaze tracking --- */}
+      <div style={{ display: "none" }}>
+        <video
+          ref={videoRef}
+          width={GAZE_VIDEO_WIDTH}
+          height={GAZE_VIDEO_HEIGHT}
+          autoPlay
+          muted
+          playsInline
+        />
+        <canvas
+          ref={canvasRef}
+          width={GAZE_VIDEO_WIDTH}
+          height={GAZE_VIDEO_HEIGHT}
+        />
+      </div>
+      {/* --- END NEW --- */}
+
       <Header
         user="Student"
         role="Learner"
@@ -590,12 +808,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         showFocusAlert={showFocusAlert}
         handleRefocusQuizFinish={handleRefocusQuizFinish}
         onCloseFocusAlert={handleFocusAlertClose}
-        
         showFunFact={showFunFact}
         // Pass the pre-fetched fact. If it's not ready, show "Generating..."
         funFactContent={prefetchedFunFact || "Generating..."}
         onCloseFunFact={handleFunFactClose}
-
         selectedSubjectName={selectedSubjectName}
         eegData={eegData}
         sessionEvents={sessionEvents}
@@ -605,6 +821,8 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         isChatLoading={isChatLoading}
         handleChat={handleChat}
         playerIframeRef={playerIframeRef}
+        // --- MODIFIED: Pass the new gaze status prop ---
+        gazeStatus={latestGaze?.status || "N/A"}
       />
     </>
   );

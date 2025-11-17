@@ -1,12 +1,10 @@
-// ActiveSession.jsx (Corrected with new prop)
+// ActiveSession.jsx
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, Button, MetricCard, ListenButton } from "./Common";
 
-// --- START OF FIX 1 ---
 // Import FunFactModal from ./Components
 import { EegStreamChart, SessionLog, DynamicFeedbackPanel, FocusAlert, FunFactModal } from "./Components";
-// --- END OF FIX 1 ---
 
 import { StudyContent } from "./StudyContent";
 import { RefocusQuizModal } from "./RefocusQuizModal";
@@ -34,15 +32,14 @@ export const ActiveSession = ({
   showRefocusQuiz, showFocusAlert, handleRefocusQuizFinish,
   onCloseFocusAlert, // This prop is correct
   
-  // --- START OF FIX 2 ---
   // Add the new props for the fun fact modal
   showFunFact, funFactContent, onCloseFunFact,
-  // --- END OF FIX 2 ---
 
   selectedSubjectName,
   eegData, sessionEvents,
   chatHistory, chatQuery, setChatQuery, isChatLoading, handleChat,
-  playerIframeRef
+  playerIframeRef,
+  gazeStatus // --- Prop for Gaze Status ---
 }) => {
   const displayAttention = attention !== null ? attention.toFixed(0) : "--";
   const chatHistoryRef = useRef(null);
@@ -76,7 +73,6 @@ export const ActiveSession = ({
           </div>
         )}
 
-        {/* --- START OF FIX 3 --- */}
         {/* Add this block to render the fun fact modal */}
         {showFunFact && (
           <FunFactModal
@@ -84,16 +80,26 @@ export const ActiveSession = ({
             onClose={onCloseFunFact}
           />
         )}
-        {/* --- END OF FIX 3 --- */}
 
       </AnimatePresence>
 
       <main className="container mx-auto px-8 py-10">
         {/* Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-6">
           <MetricCard title="Session Time" value={formatTime(sessionTime)} />
           <MetricCard title="Attention" value={displayAttention} unit="%" />
           <MetricCard title="Focus Streak" value={focusStreak.toFixed(0)} unit="s" />
+          
+          {/* --- MODIFIED: Custom card for Gaze to control text size --- */}
+          <Card className="text-center flex flex-col justify-between p-6">
+            <h3 className="text-lg font-semibold text-theme-primary/80">Eye Gaze</h3>
+            {/* Using text-2xl here instead of 3xl. Added mt-1 for spacing. */}
+            <p className="text-2xl font-bold text-theme-text mt-1 flex-grow flex items-center justify-center">
+              {gazeStatus}
+            </p>
+          </Card>
+          {/* --- END MODIFICATION --- */}
+          
           <Card className="flex items-center justify-center">
             <Button
               onClick={endSession}
