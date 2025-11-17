@@ -152,11 +152,13 @@ async def get_fun_fact(lesson_id: str, current_user=Depends(get_current_user), c
 
 @router.get("/summarize-and-quiz/{lesson_id}")
 async def summarize_and_quiz(lesson_id: str, current_user=Depends(get_current_user), client=Depends(get_db_client)):
-    """Fetch article, generate summary and 5 MCQs using Gemini."""
-    # Get lesson details
+    print(f"\n--- [DEBUG] summarize_and_quiz START for {lesson_id} ---")
+    
+    # ... (Database logic to find lesson remains the same) ...
     db = client["NLCurriculum"]
     curriculum = await db["curriculum"].find_one({"class": current_user["class_"]})
     if not curriculum:
+        print("--- [DEBUG] CRASH: Curriculum not found ---")
         raise HTTPException(status_code=404, detail="Curriculum not found")
     
     lesson = None
@@ -168,31 +170,44 @@ async def summarize_and_quiz(lesson_id: str, current_user=Depends(get_current_us
         if lesson:
             break
     if not lesson:
+        print("--- [DEBUG] CRASH: Lesson not found ---")
         raise HTTPException(status_code=404, detail="Lesson not found")
+    
+    print(f"--- [DEBUG] Lesson found: {lesson.lessonTitle}. Fetching URL: {lesson.articleUrl}")
 
-    # Fetch article content
-    article_content = await fetch_article_content(lesson.articleUrl)
-    if not article_content:
-        raise HTTPException(status_code=500, detail="No content extracted from article")
+    # --- SUSPECT #1: Article Scraping ---
+    article_content = ""
+    try:
+        article_content = await fetch_article_content(lesson.articleUrl)
+        if not article_content:
+            print("--- [DEBUG] CRASH: fetch_article_content returned NO content ---")
+            raise HTTPException(status_code=500, detail="No content extracted from article")
+        print(f"--- [DEBUG] Article fetched. Length: {len(article_content)} chars ---")
+    except Exception as e:
+        print(f"--- [DEBUG] CRASH at fetch_article_content: {str(e)} ---")
+        # Re-raise the exception to send the 500 error
+        raise e
 
     # Initialize Gemini
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel('gemini-2.5-flash')
     
-    # Generate summary
+    # --- SUSPECT #2: Summary Generation ---
+    summary = ""
     try:
-        # --- CORRECTION 2: Removed generation_config for full summary ---
+        print("--- [DEBUG] Generating summary... ---")
         summary_response = await model.generate_content_async(
             f"Summarize the following article concisely (200-250 words) for a student with ADHD, focusing on key points: {article_content}. Also mention formulas if any."
         )
-        # -----------------------------------------------------------------
         summary = summary_response.text
-        short_cues = summary[:200] + "..." if len(summary) > 200 else summary
+        print("--- [DEBUG] Summary generated successfully. ---")
     except Exception as e:
+        print(f"--- [DEBUG] CRASH at summary generation: {str(e)} ---")
         raise HTTPException(status_code=500, detail=f"Summary generation error: {str(e)}")
 
-    # Generate 5 MCQs
+    # --- SUSPECT #3: MCQ Generation & JSON Parsing ---
     try:
+        print("--- [DEBUG] Generating MCQs... ---")
         mcq_prompt = (
             f"Generate 5 multiple-choice questions based on the article content. "
             f"Each question should have 1 correct answer and 3 incorrect answers. "
@@ -200,19 +215,34 @@ async def summarize_and_quiz(lesson_id: str, current_user=Depends(get_current_us
             f"Content: {article_content}"
         )
         mcq_response = await model.generate_content_async(mcq_prompt)
-        # Ensure response is JSON-compatible
+        
         mcq_text = mcq_response.text.strip()
+        print(f"--- [DEBUG] RAW MCQ Response from Gemini: --- \n{mcq_text}\n----------------------------------")
+
         if mcq_text.startswith("```json") and mcq_text.endswith("```"):
-            mcq_text = mcq_text[7:-3].strip()  # Remove ```json and ```
+            mcq_text = mcq_text[7:-3].strip()
+        
+        # This is the most likely line to crash
         mcqs = json.loads(mcq_text)
+        print("--- [DEBUG] MCQs parsed successfully. ---")
+
         if not isinstance(mcqs, dict) or "questions" not in mcqs or len(mcqs["questions"]) != 5:
+            print("--- [DEBUG] CRASH: Invalid MCQ format (not dict or missing 'questions') ---")
             raise HTTPException(status_code=500, detail="Invalid MCQ format")
+    
+    except json.JSONDecodeError as e:
+        print(f"--- [DEBUG] CRASH at json.loads: {str(e)} ---")
+        print("--- [DEBUG] The RAW MCQ response above was not valid JSON. ---")
+        raise HTTPException(status_code=500, detail=f"MCQ JSON parsing error: {str(e)}")
     except Exception as e:
+        print(f"--- [DEBUG] CRASH at MCQ generation: {str(e)} ---")
         raise HTTPException(status_code=500, detail=f"MCQ generation error: {str(e)}")
 
+    print(f"--- [DEBUG] summarize_and_quiz END for {lesson_id} ---")
+    
     return {
         "summary": summary,
-        "short_cues": short_cues,
+        "short_cues": summary[:200] + "..." if len(summary) > 200 else summary,
         "mcqs": mcqs["questions"]
     }
 
