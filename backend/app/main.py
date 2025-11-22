@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, users, curriculum, tools
+from app.routers import auth, users, curriculum, tools, teacher
 from app.dependencies import get_db_client
 from app.routers import history
 from app.routers import neuro
@@ -24,6 +24,7 @@ app.include_router(curriculum.router, prefix="/curriculum", tags=["curriculum"])
 app.include_router(tools.router, tags=["tools"])
 app.include_router(history.router)
 app.include_router(neuro.router)
+app.include_router(teacher.router)
 
 @app.on_event("startup")
 async def set_main_loop():

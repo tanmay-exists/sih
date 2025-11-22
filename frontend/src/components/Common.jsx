@@ -1,3 +1,4 @@
+// Common.jsx
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Settings, User, UserCog, Volume2, VolumeX } from "lucide-react";
@@ -14,12 +15,21 @@ export const Card = ({ children, className = "" }) => (
   </motion.div>
 );
 
-export const MetricCard = ({ title, value, unit, className = "" }) => (
-  <Card className={`text-center ${className}`}>
-    <h3 className="text-lg font-semibold text-theme-primary/80">{title}</h3>
-    <p className="text-4xl font-bold text-theme-text">
-      {value}<span className="text-2xl text-theme-text/70 ml-1">{unit}</span>
-    </p>
+export const MetricCard = ({ title, value, unit, className = "", icon }) => (
+  <Card className={`flex flex-col justify-between ${className}`}>
+    <div className="flex items-start justify-between mb-2">
+      <h3 className="text-lg font-semibold text-theme-primary/80">{title}</h3>
+      {icon && (
+        <div className="p-2 bg-theme-primary/10 rounded-lg text-theme-primary">
+          {icon}
+        </div>
+      )}
+    </div>
+    <div className="flex items-baseline gap-1">
+      <p className="text-4xl font-bold text-theme-text">
+        {value}<span className="text-2xl text-theme-text/70 ml-1">{unit}</span>
+      </p>
+    </div>
   </Card>
 );
 
