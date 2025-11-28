@@ -123,7 +123,7 @@ export const DynamicFeedbackPanel = ({ attention, streak }) => {
 export const ClassRoster = ({ students, onStudentClick }) => {
   return (
     <Card className="z-10 overflow-hidden p-0 border-orange-200 shadow-lg shadow-orange-500/5">
-      <div className="px-6 py-5 border-b border-orange-100 bg-orange-50/50 flex justify-between items-center">
+      <div className="px-6 py-5 border-b border-orange-100 bg-orange-200 flex justify-between items-center rounded-2xl">
         <h2 className="text-lg font-bold text-stone-800">Student Roster</h2>
         <span className="text-xs font-medium text-orange-700 bg-orange-100 border border-orange-200 px-3 py-1 rounded-full">{students.length} Students</span>
       </div>
@@ -166,7 +166,7 @@ export const ClassRoster = ({ students, onStudentClick }) => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Button variant="ghost" className="!p-2 rounded-full hover:bg-orange-100 text-orange-400 hover:text-orange-600 inline-flex">
+                    <Button variant="ghost" className="!p-2 rounded-full !bg-orange-100 hover:bg-orange-300 text-orange-400 hover:text-orange-600 inline-flex">
                       <ChevronRight className="w-4 h-4" />
                     </Button>
                   </td>
@@ -233,7 +233,7 @@ export const ExportTool = ({ data, type }) => {
   };
 
   return (
-    <Card className="bg-stone-900 text-white flex items-center justify-between py-5 border-none shadow-2xl shadow-stone-900/20">
+    <Card className="!bg-gray-900 text-white flex items-center justify-between py-5 border-none shadow-2xl shadow-stone-900/20">
       <div>
         <h2 className="text-lg font-bold">Export Data</h2>
         <p className="text-stone-400 text-sm">Download PDF summary for {type === "single" ? "this student" : "the class"}.</p>

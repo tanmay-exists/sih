@@ -35,7 +35,7 @@ const HistoryTabs = ({ history }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-2 mb-6 px-2">
+      <div className="flex items-center gap-2 mb-6 mt-2 px-2">
         <div className="p-2 bg-orange-100 rounded-xl text-orange-600">
             <History size={20} />
         </div>

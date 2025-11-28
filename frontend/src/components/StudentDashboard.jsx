@@ -163,9 +163,17 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
     }
   };
 
+  // --- UPDATED SAVE HISTORY (Optimistic UI Update) ---
   const saveHistory = async (updater) => {
     try {
+      // 1. Calculate the new state immediately
       const next = typeof updater === "function" ? updater(history) : updater;
+      
+      // 2. Update the UI *before* the API call finishes
+      setHistory(next); 
+      setErrorMessage(null);
+
+      // 3. Sync with backend in background
       await axios.post(
         "http://localhost:8000/history/",
         {
@@ -176,15 +184,15 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setHistory(next);
-      setErrorMessage(null);
     } catch (err) {
       console.error("Error saving history:", err);
-      setErrorMessage("Failed to save history. Please try again.");
+      // Even if backend fails, the user sees the data locally.
+      // Optionally, we could set a subtle warning here, but we don't block the UI.
+      setErrorMessage("Note: History saved locally but couldn't reach server.");
     }
   };
 
-  const endSession = () => {
+  const endSession = async () => {
     setSessionEvents((prev) => [
       {
         timestamp: Date.now(),
@@ -194,7 +202,9 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       },
       ...prev,
     ]);
-    saveHistory((prev) => ({
+    
+    // Await the save (though UI updates instantly now)
+    await saveHistory((prev) => ({
       ...prev,
       __lastSavedFinishedAt: sessionTime,
       recent_sessions: [
@@ -207,6 +217,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         },
       ],
     }));
+
     setSessionState("finished");
     setQuizSubject(selectedSubjectName || "GK");
     stopGazeTracking(); // --- MODIFIED: Stop camera on session end ---
@@ -774,13 +785,15 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
               subject={quizSubject}
               questions={mcqs}
               attention={attention}
-              onFinish={(result) => {
+              // --- UPDATE: Make onFinish Async and Await the Save ---
+              onFinish={async (result) => {
                 const withSubject = {
                   timestamp: new Date(),
                   subject: quizSubject,
                   score: `${result.score}/${result.total}`,
                 };
-                saveHistory((prev) => ({
+                // Wait for the save (which is now optimistic) before leaving
+                await saveHistory((prev) => ({
                   ...prev,
                   recent_quizzes: [...(prev.recent_quizzes || []), withSubject],
                 }));

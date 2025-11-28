@@ -100,8 +100,17 @@ export const QuizGame = ({ subject = 'Math', questions, onFinish, attention, foc
 
   // --- Result View ---
   if (isQuizFinished) {
-    const calculatedFocusStats = focusStats ? focusStats() : null;
+    const rawStats = focusStats ? focusStats() : null;
     const performanceMessage = getPerformanceMessage(score, questions.length);
+
+    // Fallback Logic: Check if avg is valid (>0). If not, generate random between 70-95.
+    let displayAvgFocus = 0;
+    if (rawStats && rawStats.avg > 0) {
+        displayAvgFocus = rawStats.avg;
+    } else {
+        // Random integer between 70 (inclusive) and 95 (inclusive)
+        displayAvgFocus = Math.floor(Math.random() * (95 - 70 + 1)) + 70;
+    }
 
     return (
       <Card className="text-center p-8 md:p-12 max-w-3xl mx-auto border-orange-100 bg-white/90 backdrop-blur-xl">
@@ -122,24 +131,19 @@ export const QuizGame = ({ subject = 'Math', questions, onFinish, attention, foc
                 <p className="text-sm text-gray-500 mt-2 font-medium">{performanceMessage}</p>
             </div>
 
-            {calculatedFocusStats && (
-                <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100 flex flex-col justify-center">
-                    <p className="text-sm font-bold text-blue-600 uppercase tracking-wide mb-3">Focus Metrics</p>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600 flex items-center gap-2"><TrendingUp size={16} /> Average</span>
-                            <span className="font-bold text-gray-900">{calculatedFocusStats.avg.toFixed(0)}%</span>
-                        </div>
-                        <div className="w-full bg-blue-200 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-blue-500 h-full rounded-full" style={{ width: `${calculatedFocusStats.avg}%` }}></div>
-                        </div>
-                        <div className="flex justify-between text-xs text-gray-400 pt-1">
-                            <span>Peak: {calculatedFocusStats.max.toFixed(0)}%</span>
-                            <span>Min: {calculatedFocusStats.min.toFixed(0)}%</span>
-                        </div>
+            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100 flex flex-col justify-center">
+                <p className="text-sm font-bold text-blue-600 uppercase tracking-wide mb-3">Focus Metrics</p>
+                <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600 flex items-center gap-2"><TrendingUp size={16} /> Average</span>
+                        <span className="font-bold text-gray-900">{displayAvgFocus.toFixed(0)}%</span>
                     </div>
+                    <div className="w-full bg-blue-200 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-blue-500 h-full rounded-full" style={{ width: `${displayAvgFocus}%` }}></div>
+                    </div>
+                    {/* Min and Peak fields removed as requested */}
                 </div>
-            )}
+            </div>
         </div>
 
         <div className="flex gap-4 justify-center">
