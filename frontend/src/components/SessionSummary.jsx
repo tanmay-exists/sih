@@ -1,18 +1,24 @@
+// SessionSummary.jsx
 import React, { useMemo } from 'react';
 import { Card, Button } from './Common';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { Trophy, Clock, Activity, Home, RotateCcw, PlayCircle, Zap } from 'lucide-react';
 
 export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNew, onTakeQuiz, attentionHistory, attention }) => {
   const formatTime = (seconds) => `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  
   const analysis = useMemo(() => {
     const validHistory = attentionHistory.filter(e => typeof e.attention === 'number' && !isNaN(e.attention));
     const averageAttention = validHistory.length > 0
       ? validHistory.reduce((sum, point) => sum + point.attention, 0) / validHistory.length
       : (typeof attention === 'number' && !isNaN(attention) ? Math.round(attention) : 0);
+    
     let attentionData = validHistory.map(e => ({
       time: new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
       attention: e.attention,
     }));
+
+    // Fallback simulation if no data (for demo purposes)
     if (attentionData.length === 0) {
       const sessionStart = Date.now() - (sessionTime * 1000);
       const numPoints = Math.max(10, Math.floor(sessionTime / 5));
@@ -34,92 +40,105 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
         };
       });
     }
+
     let bestContentType = "You maintained a consistent and balanced focus. Well done!";
     if (averageAttention > 70) {
-      bestContentType = "You excelled with interactive content. Quizzes and activities seem to boost your focus significantly!";
+      bestContentType = "You excelled with interactive content. Quizzes and activities boost your focus significantly!";
     } else if (averageAttention < 50) {
-      bestContentType = "Your focus was low during this session. Try minimizing distractions or taking short breaks to improve attention.";
+      bestContentType = "Focus was lower than usual. Try shorter sessions or minimizing external distractions.";
     } else {
-      bestContentType = "Your focus varied during the session. Consistent engagement with the material can help maintain steady attention.";
+      bestContentType = "Your focus varied. Regular engagement with the material can help maintain steady attention.";
     }
     return { attentionData, bestContentType, averageAttention };
   }, [attentionHistory, attention, sessionTime]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-warmGray-100">
-      <Card className="w-full max-w-4xl text-center bg-amber-50 p-8 rounded-xl shadow-lg border border-amber-200">
-        <h2 className="text-3xl font-bold text-orange-800 mb-4">Focus Session Complete!</h2>
-        <p className="text-xl text-warmGray-700 mb-6">Total Time: <strong>{formatTime(sessionTime)}</strong></p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mb-8">
-          <div className="bg-amber-100 p-4 rounded-lg border border-amber-200">
-            <h3 className="font-bold text-lg text-orange-800 mb-2">Performance Insight</h3>
-            <p className="text-warmGray-700 leading-relaxed">{analysis.bestContentType}</p>
-            <p className="text-warmGray-700 mt-2">Average Attention: <strong>{Math.round(analysis.averageAttention)}%</strong></p>
+    <Card className="w-full max-w-5xl mx-auto p-0 border-0 bg-white/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+      
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-8 text-center text-white">
+        <div className="mx-auto w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-md shadow-inner">
+            <Trophy size={32} className="text-white" />
+        </div>
+        <h2 className="text-3xl font-extrabold mb-1">Session Complete!</h2>
+        <p className="opacity-90 font-medium">Great job sticking with your study plan.</p>
+      </div>
+
+      <div className="p-8">
+        {/* Key Metrics Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100 flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl text-orange-600 shadow-sm"><Clock size={24} /></div>
+                <div>
+                    <p className="text-xs font-bold text-orange-400 uppercase tracking-wide">Total Time</p>
+                    <p className="text-2xl font-black text-gray-900">{formatTime(sessionTime)}</p>
+                </div>
+            </div>
+            <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl text-blue-600 shadow-sm"><Activity size={24} /></div>
+                <div>
+                    <p className="text-xs font-bold text-blue-400 uppercase tracking-wide">Avg Attention</p>
+                    <p className="text-2xl font-black text-gray-900">{Math.round(analysis.averageAttention)}%</p>
+                </div>
+            </div>
+            <div className="bg-purple-50 p-5 rounded-2xl border border-purple-100 flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl text-purple-600 shadow-sm"><Zap size={24} /></div>
+                <div>
+                    <p className="text-xs font-bold text-purple-400 uppercase tracking-wide">Focus Score</p>
+                    <p className="text-2xl font-black text-gray-900">{Math.min(100, Math.round(analysis.averageAttention * 1.1))}</p>
+                </div>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* Insight Column */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 h-full">
+                <h3 className="font-bold text-lg text-gray-900 mb-3 flex items-center gap-2">
+                    <span className="text-xl">💡</span> AI Insight
+                </h3>
+                <p className="text-gray-600 leading-relaxed text-sm">
+                    {analysis.bestContentType}
+                </p>
+            </div>
           </div>
-          <div className="bg-amber-100 p-4 rounded-lg border border-amber-200">
-            <h3 className="font-bold text-lg text-orange-800 mb-2">Attention Timeline</h3>
-            <div className="h-48 min-h-[12rem] text-xs">
+
+          {/* Chart Column */}
+          <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-lg text-gray-900 mb-4">Attention Timeline</h3>
+            <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={analysis.attentionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <AreaChart data={analysis.attentionData}>
                   <defs>
-                    <linearGradient id="colorAttention" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.8} />
+                    <linearGradient id="colorSummary" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.2} />
                       <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis
-                    dataKey="time"
-                    stroke="#4b5563"
-                    tick={{ fill: '#4b5563' }}
-                    interval="preserveStartEnd"
-                    tickFormatter={(time) => time.split(':').slice(0, 2).join(':')}
-                    minTickGap={50}
-                  />
-                  <YAxis
-                    domain={[0, 100]}
-                    stroke="#4b5563"
-                    tick={{ fill: '#4b5563' }}
-                    tickFormatter={(value) => `${value}%`}
-                  />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#fef3c7', border: '1px solid #d97706' }}
-                    labelFormatter={(label) => label}
-                    formatter={(value) => [`${value}%`, 'Attention']}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="attention"
-                    stroke="#f97316"
-                    fillOpacity={1}
-                    fill="url(#colorAttention)"
-                    strokeWidth={2}
-                    dot={false}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                  <XAxis dataKey="time" stroke="#9ca3af" tick={{ fontSize: 10 }} tickFormatter={(time) => time.split(':').slice(0, 2).join(':')} interval="preserveStartEnd" />
+                  <YAxis stroke="#9ca3af" tick={{ fontSize: 10 }} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                  <Area type="monotone" dataKey="attention" stroke="#f97316" strokeWidth={3} fillOpacity={1} fill="url(#colorSummary)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Button
-            onClick={onGoHome}
-            className="bg-amber-400 hover:bg-amber-500 text-warmGray-800 w-full px-6 py-3 text-lg rounded-lg hover:scale-105 transition-transform"
-          >
-            Go to Home
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 border-t border-gray-100">
+          <Button onClick={onGoHome} variant="ghost" className="text-gray-500" icon={<Home size={18} />}>
+            Home
           </Button>
-          <Button
-            onClick={onStartNew}
-            className="bg-orange-500 hover:bg-orange-600 text-white w-full px-6 py-3 text-lg rounded-lg hover:scale-105 transition-transform"
-          >
-            Start New Session
+          <Button onClick={onStartNew} variant="outline" icon={<RotateCcw size={18} />}>
+            New Session
           </Button>
-          <Button
-            onClick={onTakeQuiz}
-            className="bg-orange-400 hover:bg-orange-500 text-white w-full px-6 py-3 text-lg rounded-lg hover:scale-105 transition-transform"
-          >
-            Take a Quiz
+          <Button onClick={onTakeQuiz} className="px-8 shadow-xl shadow-orange-500/20" icon={<PlayCircle size={18} />}>
+            Take Quiz
           </Button>
         </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 };

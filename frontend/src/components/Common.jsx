@@ -1,54 +1,90 @@
 // Common.jsx
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Settings, User, UserCog, Volume2, VolumeX } from "lucide-react";
+import { Brain, Settings, Volume2, VolumeX, LogOut, LayoutTemplate, Type } from "lucide-react";
 import useTTS from "./useTTS";
 
-export const Card = ({ children, className = "" }) => (
+// --- Reusable Card Component (High Contrast) ---
+export const Card = ({ children, className = "", onClick }) => (
   <motion.div
-    className={`bg-theme-surface border border-theme-border rounded-2xl p-6 shadow-md ${className}`}
+    onClick={onClick}
+    className={`bg-white border border-orange-200 rounded-3xl p-6 shadow-xl shadow-orange-900/5 backdrop-blur-sm ${className}`}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
+    whileHover={onClick ? { 
+      y: -4, 
+      borderColor: "rgb(251 146 60)", // orange-400
+      boxShadow: "0 20px 25px -5px rgb(234 88 12 / 0.15), 0 8px 10px -6px rgb(234 88 12 / 0.1)" 
+    } : {}}
   >
     {children}
   </motion.div>
 );
 
+// --- Metric Card (Pop Colors) ---
 export const MetricCard = ({ title, value, unit, className = "", icon }) => (
-  <Card className={`flex flex-col justify-between ${className}`}>
-    <div className="flex items-start justify-between mb-2">
-      <h3 className="text-lg font-semibold text-theme-primary/80">{title}</h3>
-      {icon && (
-        <div className="p-2 bg-theme-primary/10 rounded-lg text-theme-primary">
-          {icon}
-        </div>
-      )}
+  <Card className={`relative overflow-hidden group bg-gradient-to-br from-white to-orange-50/50 ${className}`}>
+    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500 text-orange-600">
+      {icon}
     </div>
-    <div className="flex items-baseline gap-1">
-      <p className="text-4xl font-bold text-theme-text">
-        {value}<span className="text-2xl text-theme-text/70 ml-1">{unit}</span>
-      </p>
+    <div className="flex flex-col h-full justify-between relative z-10">
+      <div className="flex items-center gap-2 mb-3">
+        {icon && (
+          <div className="p-2 bg-orange-100 rounded-xl text-orange-700 shadow-sm border border-orange-200">
+            {React.cloneElement(icon, { size: 18 })}
+          </div>
+        )}
+        <h3 className="text-[11px] font-bold text-orange-900/60 uppercase tracking-widest">{title}</h3>
+      </div>
+      <div className="flex items-baseline gap-1">
+        <p className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+          {value}
+        </p>
+        <span className="text-lg text-orange-400 font-medium font-mono">{unit}</span>
+      </div>
     </div>
   </Card>
 );
 
-export const Button = ({ children, onClick, className = "", icon, disabled }) => (
-  <motion.button
-    onClick={onClick}
-    disabled={disabled}
-    className={`px-6 py-3 font-semibold text-white rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 text-lg ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-    whileHover={!disabled ? { scale: 1.05, y: -2 } : {}}
-    whileTap={!disabled ? { scale: 0.95 } : {}}
-  >
-    {icon && <span>{icon}</span>}
-    <span>{children}</span>
-  </motion.button>
-);
+// --- Button Component ---
+export const Button = ({ children, onClick, className = "", icon, disabled, variant = "primary" }) => {
+  const hasCustomBg = className.includes("bg-");
 
+  const variants = {
+    primary: hasCustomBg 
+      ? "text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 border-transparent hover:-translate-y-0.5"
+      : "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-600/20 hover:shadow-orange-600/30 border-orange-500 hover:-translate-y-0.5",
+    
+    outline: "bg-white text-orange-900 border-orange-200 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 shadow-sm",
+    ghost: "bg-transparent text-stone-600 hover:bg-orange-100/50 hover:text-orange-700 border-transparent shadow-none",
+    danger: "bg-red-500 text-white hover:bg-red-600 border-red-500 hover:shadow-lg hover:shadow-red-500/10"
+  };
+
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 
+        flex items-center justify-center gap-2 border
+        ${variants[variant] || variants.primary}
+        ${disabled ? 'opacity-50 cursor-not-allowed grayscale' : ''}
+        ${className}
+      `}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+    >
+      {icon && <span className="flex-shrink-0">{icon}</span>}
+      <span>{children}</span>
+    </motion.button>
+  );
+};
+
+// --- Listen Button ---
 export const ListenButton = ({ text, className = "" }) => {
   const { speak, cancel, isSpeaking } = useTTS();
-  const handleToggleSpeech = () => {
+  const handleToggleSpeech = (e) => {
+    e.stopPropagation();
     if (isSpeaking) {
       cancel();
     } else {
@@ -56,48 +92,72 @@ export const ListenButton = ({ text, className = "" }) => {
     }
   };
   return (
-    <button
+    <motion.button
       onClick={handleToggleSpeech}
-      className={`p-2 rounded-full transition-colors hover:bg-theme-border/50 ${className}`}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className={`p-2 rounded-full transition-colors border ${
+        isSpeaking 
+        ? "bg-orange-100 text-orange-700 border-orange-200 shadow-inner" 
+        : "text-stone-400 border-transparent hover:bg-orange-50 hover:text-orange-600 hover:border-orange-100"
+      } ${className}`}
       aria-label={isSpeaking ? "Stop reading" : "Read text aloud"}
     >
-      {isSpeaking ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-    </button>
+      {isSpeaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+    </motion.button>
   );
 };
 
-export const Header = ({ user, role, onLogout, accessibility, focusMode, attention }) => {
+// --- Header (Solid & Contrast) ---
+export const Header = ({ user, role, onLogout, accessibility }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { isFocusMode, toggleFocusMode } = focusMode || {};
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-theme-surface/80 backdrop-blur-lg border-b border-theme-border z-50">
-      <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-        <div className="flex items-center gap-3 text-theme-primary">
-          <Brain className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">NeuroLearn</h1>
+    <header className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
+      {/* Floating Glass Box */}
+      <div className="pointer-events-auto container mx-auto bg-white/95 backdrop-blur-xl border border-orange-100 ring-1 ring-orange-900/5 rounded-2xl shadow-xl shadow-orange-900/5 px-6 py-3 flex justify-between items-center transition-all duration-300">
+        
+        {/* Logo */}
+        <div className="flex items-center gap-3 cursor-pointer group">
+          <div className="bg-gradient-to-br from-orange-500 to-amber-600 p-2.5 rounded-xl shadow-lg shadow-orange-500/20 group-hover:rotate-12 transition-transform duration-300">
+            <Brain className="h-5 w-5 text-white" />
+          </div>
+          <h1 className="text-xl font-black tracking-tight text-stone-800">
+            Neuro<span className="text-orange-600">Learn</span>
+          </h1>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-theme-text hidden sm:block text-lg">
-            Welcome, {user} ({role === "Learner" ? <User className="inline h-5 w-5" /> : <UserCog className="inline h-5 w-5" />})
-          </span>
+
+        {/* User Actions */}
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex flex-col items-end">
+            <span className="text-xs font-bold text-orange-600 uppercase tracking-wider">Student</span>
+            <span className="text-sm font-bold text-stone-800">{user}</span>
+          </div>
+          
           {accessibility && (
             <div className="relative">
               <motion.button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="p-2 rounded-full hover:bg-theme-border/50 transition-colors"
-                aria-label="Open accessibility settings"
-                whileHover={{ scale: 1.1 }}
+                className={`p-2 rounded-xl transition-all border ${isSettingsOpen ? 'bg-orange-50 border-orange-200 text-orange-700' : 'bg-stone-50 border-stone-100 text-stone-500 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-100'}`}
+                whileHover={{ rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Settings className="h-6 w-6" />
+                <Settings className="h-5 w-5" />
               </motion.button>
               <AnimatePresence>
-                {isSettingsOpen && <AccessibilityPanel accessibility={accessibility} />}
+                {isSettingsOpen && <AccessibilityPanel accessibility={accessibility} onClose={() => setIsSettingsOpen(false)} />}
               </AnimatePresence>
             </div>
           )}
-          <Button onClick={onLogout} className="bg-theme-accent hover:bg-theme-accent/90 text-sm py-2 px-4">
+          
+          <div className="h-8 w-px bg-stone-200 mx-1 hidden sm:block"></div>
+
+          <Button 
+            onClick={onLogout} 
+            variant="ghost"
+            className="hidden sm:flex text-xs px-4 py-2 hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-transparent"
+            icon={<LogOut className="w-4 h-4" />}
+          >
             Logout
           </Button>
         </div>
@@ -106,18 +166,26 @@ export const Header = ({ user, role, onLogout, accessibility, focusMode, attenti
   );
 };
 
+// --- Accessibility Panel ---
 const AccessibilityPanel = ({ accessibility }) => {
   const { theme, setTheme, fontSize, setFontSize, letterSpacing, setLetterSpacing, fontFamily, setFontFamily } = accessibility;
 
-  const SettingButton = ({ label, value, options, setter }) => (
-    <div>
-      <label className="text-xs font-semibold text-theme-text/70">{label}</label>
-      <div className="flex gap-1 mt-1">
-        {options.map(opt => (
+  const SettingSection = ({ icon, label, value, options, setter }) => (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+        {icon}
+        {label}
+      </div>
+      <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
+        {options.map((opt) => (
           <button
             key={opt.value}
             onClick={() => setter(opt.value)}
-            className={`flex-1 text-xs rounded py-1 transition-colors ${value === opt.value ? 'bg-theme-primary text-white' : 'bg-theme-border/50 hover:bg-theme-border'}`}
+            className={`flex-1 text-[11px] py-1.5 px-2 rounded-lg transition-all font-semibold ${
+              value === opt.value 
+                ? "bg-white text-orange-700 shadow-sm ring-1 ring-orange-900/5" 
+                : "text-stone-500 hover:text-stone-700 hover:bg-stone-200/50"
+            }`}
           >
             {opt.label}
           </button>
@@ -128,39 +196,61 @@ const AccessibilityPanel = ({ accessibility }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      className="absolute right-0 mt-2 w-64 bg-theme-surface border border-theme-border rounded-lg shadow-xl p-3 origin-top-right space-y-4"
+      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: 10 }}
+      transition={{ duration: 0.2 }}
+      className="absolute right-0 mt-3 w-72 bg-white/95 backdrop-blur-xl border border-orange-100 ring-1 ring-orange-900/5 rounded-2xl shadow-2xl p-5 origin-top-right z-50 pointer-events-auto"
     >
-      <div>
-        <p className="text-sm font-bold text-theme-primary">Accessibility</p>
-        <p className="text-xs text-theme-text/70 mb-2 border-b border-theme-border pb-2">Customize your experience.</p>
+      <div className="mb-4 pb-4 border-b border-orange-50">
+        <h3 className="font-bold text-stone-900">Display Settings</h3>
+        <p className="text-xs text-stone-500">Customize your learning interface.</p>
       </div>
-      <SettingButton
-        label="Theme"
-        value={theme}
-        setter={setTheme}
-        options={[{ value: 'root', label: 'Peach' }, { value: 'theme-orange', label: 'Orange' }, { value: 'theme-yellow', label: 'Yellow' }]}
-      />
-      <SettingButton
-        label="Font Size"
-        value={fontSize}
-        setter={setFontSize}
-        options={[{ value: 'text-base', label: 'S' }, { value: 'text-lg', label: 'M' }, { value: 'text-xl', label: 'L' }]}
-      />
-      <SettingButton
-        label="Letter Spacing"
-        value={letterSpacing}
-        setter={setLetterSpacing}
-        options={[{ value: 'tracking-normal', label: 'Std' }, { value: 'tracking-wide', label: 'Wide' }, { value: 'tracking-wider', label: 'Max' }]}
-      />
-      <SettingButton
-        label="Font Family"
-        value={fontFamily}
-        setter={setFontFamily}
-        options={[{ value: 'font-sans', label: 'Default' }, { value: 'font-lexend', label: 'Dyslexia Friendly' }]}
-      />
+      
+      <div className="space-y-5">
+        <SettingSection
+          icon={<LayoutTemplate className="w-3 h-3" />}
+          label="Theme"
+          value={theme}
+          setter={setTheme}
+          options={[
+            { value: "root", label: "Light" },
+            { value: "theme-orange", label: "Warm" },
+            { value: "theme-yellow", label: "Focus" },
+          ]}
+        />
+        <SettingSection
+          icon={<Type className="w-3 h-3" />}
+          label="Font Size"
+          value={fontSize}
+          setter={setFontSize}
+          options={[
+            { value: "text-base", label: "Aa" },
+            { value: "text-lg", label: "Aa+" },
+            { value: "text-xl", label: "Aa++" },
+          ]}
+        />
+        <SettingSection
+          icon={<Type className="w-3 h-3 rotate-90" />}
+          label="Spacing"
+          value={letterSpacing}
+          setter={setLetterSpacing}
+          options={[
+            { value: "tracking-normal", label: "Norm" },
+            { value: "tracking-wide", label: "Wide" },
+          ]}
+        />
+        <SettingSection
+          icon={<Brain className="w-3 h-3" />}
+          label="Typeface"
+          value={fontFamily}
+          setter={setFontFamily}
+          options={[
+            { value: "font-sans", label: "Modern" },
+            { value: "font-lexend", label: "Dyslexia" },
+          ]}
+        />
+      </div>
     </motion.div>
   );
 };

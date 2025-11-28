@@ -1,5 +1,5 @@
 # schemas/user.py
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime
 
@@ -9,14 +9,15 @@ class RegisterForm(BaseModel):
     firstName: str
     lastName: str
     password: str
-    class_: str  # e.g., "10"
+    # FIX 1: Map incoming JSON "class" to python variable "class_"
+    class_: str = Field(alias="class") 
 
 # New: Login form
 class LoginForm(BaseModel):
     email: EmailStr
     password: str
 
-# Existing models (kept for DB & Google flow)
+# Existing models
 class Name(BaseModel):
     firstName: str
     lastName: str
@@ -25,7 +26,13 @@ class UserBase(BaseModel):
     username: str
     name: Name
     email: EmailStr
-    class_: str
+    # FIX 2: Tell Pydantic that 'class_' in Python comes from 'class' in DB
+    class_: str = Field(alias="class")
+
+    class Config:
+        # FIX 3: This allows Pydantic to read 'class' from the DB
+        # and assign it to the 'class_' variable automatically.
+        populate_by_name = True 
 
 class UserCreate(UserBase):
     password: Optional[str] = None
@@ -33,8 +40,9 @@ class UserCreate(UserBase):
 
 class UserInDB(UserBase):
     userId: str
-    password: Optional[str]
-    googleId: Optional[str]
+    # FIX 4: Add '= None' so it doesn't crash if the field is missing in DB
+    password: Optional[str] = None 
+    googleId: Optional[str] = None
     role: str = "student"
     completedLessons: List[str] = []
     createdAt: datetime
@@ -43,7 +51,8 @@ class UserInDB(UserBase):
 
 class UserUpdate(BaseModel):
     name: Optional[Name] = None
-    class_: Optional[str] = None
+    # FIX 5: Same alias fix for updates
+    class_: Optional[str] = Field(default=None, alias="class")
 
 class Token(BaseModel):
     access_token: str
@@ -51,12 +60,12 @@ class Token(BaseModel):
 
 class Session(BaseModel):
     timestamp: datetime
-    duration: int  # in seconds
+    duration: int
 
 class Quiz(BaseModel):
     timestamp: datetime
     subject: str
-    score: str  # e.g., "3/5"
+    score: str
 
 class History(BaseModel):
     recent_sessions: List[Session]

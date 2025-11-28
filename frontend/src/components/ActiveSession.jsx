@@ -1,50 +1,56 @@
 // ActiveSession.jsx
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, Button, MetricCard, ListenButton } from "./Common";
+import { Card, MetricCard, ListenButton } from "./Common";
+import { 
+  Clock, Zap, Target, Eye, MessageSquare, StopCircle, 
+  ArrowRight, PlayCircle, BookOpen, Activity 
+} from "lucide-react";
 
-// Import FunFactModal from ./Components
+// Import Components
 import { EegStreamChart, SessionLog, DynamicFeedbackPanel, FocusAlert, FunFactModal } from "./Components";
-
 import { StudyContent } from "./StudyContent";
 import { RefocusQuizModal } from "./RefocusQuizModal";
-import { MarkdownRenderer } from "./MarkdownRenderer"; // KEEP THIS IMPORT
+import { MarkdownRenderer } from "./MarkdownRenderer"; 
 
-// Content sliding animation variants (left/right)
+// --- Helpers & Variants ---
 const slideVariants = {
-  initialLeft: { x: -24, opacity: 0 },
-  initialRight: { x: 24, opacity: 0 },
+  initialLeft: { x: -20, opacity: 0 },
+  initialRight: { x: 20, opacity: 0 },
   animate: { x: 0, opacity: 1 },
+  exit: { opacity: 0 }
 };
 
+const formatTime = (seconds) => {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}m ${s.toString().padStart(2, '0')}s`;
+};
+
+// --- FIX: Added Missing Tabs Definition ---
 const tabs = [
-  { id: "video", label: "Video" },
-  { id: "article", label: "Article" },
+  { id: "video", label: "Video Lesson" },
+  { id: "article", label: "Reading Material" },
 ];
 
-// Helper to format time
-const formatTime = (seconds) => `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
-
+// --- Main Component ---
 export const ActiveSession = ({
   sessionState, studyLesson, studyContentType, setStudyContentType,
   sessionTime, attention, focusStreak, endSession,
   summary, mcqs,
   showRefocusQuiz, showFocusAlert, handleRefocusQuizFinish,
-  onCloseFocusAlert, // This prop is correct
-  
-  // Add the new props for the fun fact modal
+  onCloseFocusAlert, 
   showFunFact, funFactContent, onCloseFunFact,
-
   selectedSubjectName,
   eegData, sessionEvents,
   chatHistory, chatQuery, setChatQuery, isChatLoading, handleChat,
   playerIframeRef,
-  gazeStatus // --- Prop for Gaze Status ---
+  gazeStatus 
 }) => {
   const displayAttention = attention !== null ? attention.toFixed(0) : "--";
   const chatHistoryRef = useRef(null);
 
-  // Scroll to bottom of chat when history changes
+  // Scroll to bottom of chat
   React.useEffect(() => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
@@ -52,252 +58,273 @@ export const ActiveSession = ({
   }, [chatHistory]);
 
   const onTabClick = (id) => {
-    if (id !== studyContentType) {
-      setStudyContentType(id);
-    }
+    if (id !== studyContentType) setStudyContentType(id);
   };
 
   return (
-    <div className="min-h-screen pt-32 bg-warmGray-100">
+    // --- DESIGN UPDATE: High Contrast Warm Gradient Background ---
+    <div className="min-h-screen bg-stone-50 pt-28 pb-12 selection:bg-orange-200">
+      
+      {/* Background Ambience - Vivid Warmth */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-orange-50 via-amber-50 to-stone-100 opacity-80" />
+          <div className="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] bg-orange-300/20 rounded-full blur-[100px]" />
+          <div className="absolute bottom-[10%] left-[-10%] w-[30rem] h-[30rem] bg-amber-200/20 rounded-full blur-[80px]" />
+      </div>
+
+      {/* --- Overlays --- */}
       <AnimatePresence>
         {showRefocusQuiz && (
           <RefocusQuizModal
-            subject={selectedSubjectName || "GK"}
+            subject={selectedSubjectName || "General Knowledge"}
             attention={attention || 50}
             onFinish={handleRefocusQuizFinish}
           />
         )}
         {showFocusAlert && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-900/40 backdrop-blur-sm p-4">
             <FocusAlert message={showFocusAlert} onClose={onCloseFocusAlert} />
           </div>
         )}
-
-        {/* Add this block to render the fun fact modal */}
         {showFunFact && (
           <FunFactModal
             content={funFactContent}
             onClose={onCloseFunFact}
           />
         )}
-
       </AnimatePresence>
 
-      <main className="container mx-auto px-8 py-10">
-        {/* Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-6">
-          <MetricCard title="Session Time" value={formatTime(sessionTime)} />
-          <MetricCard title="Attention" value={displayAttention} unit="%" />
-          <MetricCard title="Focus Streak" value={focusStreak.toFixed(0)} unit="s" />
+      <main className="container mx-auto px-4 md:px-6 relative z-10">
+        
+        {/* --- Top Metrics Row --- */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mb-8">
+          <MetricCard 
+            title="Session Time" 
+            value={formatTime(sessionTime)} 
+            icon={<Clock className="text-blue-500" />} 
+          />
+          <MetricCard 
+            title="Attention" 
+            value={displayAttention} 
+            unit="%" 
+            icon={<Zap className="text-yellow-500" />} 
+            className={attention < 50 && attention !== null ? "ring-2 ring-red-200 bg-red-50/50" : ""}
+          />
+          <MetricCard 
+            title="Focus Streak" 
+            value={focusStreak.toFixed(0)} 
+            unit="s" 
+            icon={<Target className="text-green-500" />} 
+          />
           
-          {/* --- MODIFIED: Custom card for Gaze to control text size --- */}
-          <Card className="text-center flex flex-col justify-between p-6">
-            <h3 className="text-lg font-semibold text-theme-primary/80">Eye Gaze</h3>
-            {/* Using text-2xl here instead of 3xl. Added mt-1 for spacing. */}
-            <p className="text-2xl font-bold text-theme-text mt-1 flex-grow flex items-center justify-center">
-              {gazeStatus}
-            </p>
+          {/* Gaze Card */}
+          <Card className="hidden md:flex flex-col justify-between items-center text-center p-4 shadow-xl shadow-purple-100/30 border-purple-100/50">
+             <div className="flex items-center gap-2 text-purple-600 mb-1">
+                <Eye size={18} />
+                <span className="text-xs font-black uppercase tracking-wider opacity-60">Eye Gaze</span>
+             </div>
+             <div className={`text-xl font-bold px-3 py-1 rounded-full border ${
+                 gazeStatus === "Looking Away" ? "bg-red-50 text-red-700 border-red-100" : "bg-green-50 text-green-700 border-green-100"
+             }`}>
+                {gazeStatus}
+             </div>
           </Card>
-          {/* --- END MODIFICATION --- */}
           
-          <Card className="flex items-center justify-center">
-            <Button
-              onClick={endSession}
-              className="bg-red-500 hover:bg-red-600 text-white w-full px-6 py-3 text-lg rounded-lg"
-            >
-              End Session
-            </Button>
+          {/* End Session Button */}
+          <Card className="col-span-2 md:col-span-1 lg:col-span-1 flex items-center justify-center p-0 overflow-hidden border-red-200 group cursor-pointer hover:shadow-red-500/10 transition-all bg-white" onClick={endSession}>
+            <div className="absolute inset-0 bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="relative flex flex-col items-center gap-2 text-red-600">
+                <StopCircle className="w-8 h-8 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-sm">End Session</span>
+            </div>
           </Card>
         </div>
 
-        {/* Content Toggle and Viewer */}
-        <div className="mb-6">
-          <div className="relative inline-flex bg-amber-200 rounded-full p-1">
-            <div className="flex relative">
-              {tabs.map((t) => {
-                const isActive = studyContentType === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => onTabClick(t.id)}
-                    className={`relative z-10 px-6 md:px-8 py-2 md:py-3 text-sm md:text-base font-medium rounded-full transition-colors ${
-                      isActive ? "text-amber-900" : "text-amber-700 hover:text-amber-800"
-                    }`}
-                    style={{ WebkitTapHighlightColor: "transparent" }}
-                    aria-pressed={isActive}
-                  >
-                    {t.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="tab-pill"
-                        className="absolute inset-0 -z-10 bg-white rounded-full shadow"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
+        {/* --- Main Content Area --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Left Column: Learning Content (8 cols) */}
+            <div className="lg:col-span-8 flex flex-col gap-6">
+                
+                {/* Content Tabs */}
+                <div className="flex justify-center md:justify-start">
+                    <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-orange-200 inline-flex">
+                        {tabs.map((t) => {
+                            const isActive = studyContentType === t.id;
+                            return (
+                                <button
+                                    key={t.id}
+                                    onClick={() => onTabClick(t.id)}
+                                    className={`relative px-6 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                                        isActive ? "text-orange-900 shadow-sm" : "text-stone-500 hover:text-stone-700 hover:bg-white/50"
+                                    }`}
+                                >
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="activeTab"
+                                            className="absolute inset-0 bg-white rounded-xl shadow-sm border border-orange-100"
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
+                                    <span className="relative z-10 flex items-center gap-2">
+                                        {t.id === 'video' ? <PlayCircle size={16} /> : <BookOpen size={16} />}
+                                        {t.label}
+                                    </span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Content Viewer (Contrast Boost) */}
+                <Card className="p-0 overflow-hidden min-h-[500px] relative bg-white border-2 border-orange-100 shadow-2xl shadow-orange-900/10">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={studyContentType}
+                            initial={studyContentType === 'video' ? "initialLeft" : "initialRight"}
+                            animate="animate"
+                            exit="exit"
+                            variants={slideVariants}
+                            transition={{ duration: 0.3 }}
+                            className="w-full h-full"
+                        >
+                            <StudyContent 
+                                lesson={studyLesson} 
+                                type={studyContentType} 
+                                videoRef={playerIframeRef} 
+                                style={{ height: '100%', minHeight: '500px' }}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+                </Card>
+
+                {/* AI Summary Card (Highlight) */}
+                {summary && (
+                    <Card className="bg-gradient-to-br from-white to-amber-50 border-orange-200 shadow-lg shadow-orange-500/5">
+                        <div className="flex items-center gap-2 mb-4 border-b border-orange-200/50 pb-3">
+                            <div className="bg-orange-100 p-1.5 rounded-lg border border-orange-200">
+                                <Zap className="w-5 h-5 text-orange-600" />
+                            </div>
+                            <h2 className="text-lg font-black text-stone-800">Smart Summary</h2>
+                        </div>
+                        <MarkdownRenderer content={summary} className="prose prose-orange prose-sm max-w-none text-stone-700 font-medium" />
+                    </Card>
+                )}
             </div>
-          </div>
 
-          <div className="relative mt-6 overflow-hidden">
-            {/* Video Content */}
-            <motion.div
-              key="video-pane"
-              initial={false}
-              animate={studyContentType === "video" ? "animate" : "initialRight"}
-              variants={slideVariants}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className={`${studyContentType === "video" ? "relative" : "absolute top-0 left-0 w-full"} ${
-                studyContentType === "video" ? "pointer-events-auto" : "pointer-events-none"
-              }`}
-              style={{
-                visibility: studyContentType === "video" ? "visible" : "hidden",
-              }}
-              aria-hidden={studyContentType !== "video"}
-            >
-              <StudyContent lesson={studyLesson} type="video" videoRef={playerIframeRef} />
-            </motion.div>
+            {/* Right Column: Chat & Stats (4 cols) */}
+            <div className="lg:col-span-4 flex flex-col gap-6">
+                
+                {/* Chat Interface (Warm & Distinct) */}
+                <Card className="p-0 flex flex-col h-[500px] shadow-2xl shadow-orange-900/10 border-orange-200 bg-white">
+                    <div className="p-4 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-white flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-orange-500/20 border-2 border-white">
+                                <MessageSquare size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-stone-900 text-sm">NeuroBot</h3>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                    <span className="text-xs text-stone-500 font-medium">Online & Learning</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            {/* Article Content */}
-            <motion.div
-              key="article-pane"
-              initial={false}
-              animate={studyContentType === "article" ? "animate" : "initialLeft"}
-              variants={slideVariants}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className={`${studyContentType === "article" ? "relative" : "absolute top-0 left-0 w-full"} ${
-                studyContentType === "article" ? "pointer-events-auto" : "pointer-events-none"
-              }`}
-              style={{
-                visibility: studyContentType === "article" ? "visible" : "hidden",
-                maxHeight: "700px"
-              }}
-              aria-hidden={studyContentType !== "article"}
-            >
-              <StudyContent lesson={studyLesson} type="article" videoRef={null} style={{maxHeight: "600px"}} />
-            </motion.div>
-          </div>
+                    <div ref={chatHistoryRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-stone-50/50 custom-scrollbar">
+                        {chatHistory.map((msg, idx) => {
+                            const isUser = msg.role === "user";
+                            return (
+                                <motion.div 
+                                    key={idx} 
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+                                >
+                                    <div className={`max-w-[85%] rounded-2xl p-3.5 shadow-sm text-sm leading-relaxed ${
+                                        isUser 
+                                        ? "bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-tr-none shadow-orange-500/20 font-medium" 
+                                        : "bg-white text-stone-700 border border-stone-200 rounded-tl-none shadow-sm font-medium"
+                                    }`}>
+                                        <MarkdownRenderer content={msg.content} className={isUser ? "chat-bubble" : ""} />
+                                        {!isUser && (
+                                            <div className="mt-2 flex justify-end opacity-70">
+                                                 <ListenButton text={msg.content} className="hover:bg-gray-100 text-gray-400" />
+                                            </div>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            )
+                        })}
+                        {isChatLoading && (
+                            <div className="flex justify-start">
+                                <div className="bg-white border border-stone-200 rounded-2xl rounded-tl-none p-3 shadow-sm">
+                                    <div className="flex gap-1.5">
+                                        {[0, 1, 2].map(i => (
+                                            <motion.div 
+                                                key={i}
+                                                animate={{ y: [0, -5, 0] }}
+                                                transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1 }}
+                                                className="w-2 h-2 bg-stone-400 rounded-full"
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="p-3 bg-white border-t border-orange-100">
+                        <div className="relative flex items-center gap-2">
+                             <input
+                                type="text"
+                                value={chatQuery}
+                                onChange={(e) => setChatQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && !isChatLoading && handleChat()}
+                                placeholder="Ask about the lesson..."
+                                className="w-full bg-stone-50 text-stone-800 text-sm rounded-xl pl-4 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:bg-white focus:border-orange-200 transition-all placeholder:text-stone-400 border border-stone-200 font-medium"
+                                disabled={isChatLoading}
+                            />
+                            <button 
+                                onClick={handleChat}
+                                disabled={!chatQuery.trim() || isChatLoading}
+                                className="absolute right-2 p-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white rounded-lg transition-all disabled:opacity-50 shadow-md shadow-orange-500/20"
+                            >
+                                <ArrowRight size={16} />
+                            </button>
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Live Analysis */}
+                <div className="space-y-6">
+                    <Card className="p-0 overflow-hidden border-orange-200 shadow-lg shadow-orange-500/5">
+                         <div className="px-5 py-3 border-b border-orange-100 bg-orange-50/30 flex items-center justify-between">
+                             <h3 className="font-bold text-stone-800 text-sm">Live Brainwaves</h3>
+                             <Activity className="w-4 h-4 text-orange-500" />
+                         </div>
+                         <div className="p-2 h-40">
+                             <EegStreamChart data={eegData} />
+                         </div>
+                    </Card>
+
+                    <DynamicFeedbackPanel attention={attention || 0} streak={focusStreak} />
+                    
+                    <Card className="p-0 max-h-[300px] flex flex-col shadow-lg shadow-orange-500/5 border-orange-200">
+                        <div className="px-5 py-3 border-b border-orange-100 bg-stone-50 flex items-center justify-between">
+                            <h3 className="font-bold text-stone-800 text-sm">Session Events</h3>
+                            <MessageSquare className="w-4 h-4 text-stone-400" />
+                        </div>
+                        <div className="flex-grow overflow-hidden">
+                             <SessionLog events={sessionEvents} />
+                        </div>
+                    </Card>
+                </div>
+
+            </div>
         </div>
 
-        {/* AI Summary */}
-        {summary && (
-          <Card className="mt-4 bg-amber-50 p-6 rounded-xl shadow-lg border border-amber-200">
-            <h2 className="text-xl font-bold text-orange-800 mb-3">
-              Quick Summary for the Test
-            </h2>
-            <MarkdownRenderer content={summary} />
-          </Card>
-        )}
-
-        {/* Chatbot */}
-        <Card
-          className="mt-6 bg-amber-50 p-0 rounded-xl shadow-lg border border-amber-200 flex flex-col overflow-hidden"
-          style={{ maxHeight: "700px" }}
-        >
-          <h2 className="text-xl font-bold text-orange-800 p-4 border-b border-amber-200 shrink-0">
-            Ask NeuroLearn
-          </h2>
-
-          {/* Chat History */}
-          <div ref={chatHistoryRef} className="flex-1 p-4 space-y-4 overflow-y-auto scroll-smooth" style={{ maxHeight: "600px" }}>
-            {chatHistory.map((msg, index) => {
-              const isUser = msg.role === "user";
-              return (
-                <div key={index} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`relative max-w-xs md:max-w-md p-3 rounded-lg shadow-sm ${
-                      isUser
-                        ? "bg-orange-500 text-white"
-                        : "bg-amber-100 text-warmGray-800 border border-amber-200"
-                    }`}
-                  >
-                    {/* Bubble pointer */}
-                    <span
-                      className={`absolute top-4 ${
-                        isUser ? "right-[-6px]" : "left-[-6px]"
-                      } w-0 h-0 border-y-[6px] border-y-transparent ${
-                        isUser
-                          ? "border-l-[6px] border-l-orange-500"
-                          : "border-r-[6px] border-r-amber-100"
-                      }`}
-                    />
-                    <MarkdownRenderer
-                      content={msg.content}
-                      className="text-sm md:text-base whitespace-pre-wrap chat-bubble"
-                    />
-
-                    {/* Listen Button for assistant messages */}
-                    {!isUser && (
-                      <div className="mt-2 pt-2 border-t border-amber-300/50">
-                        <ListenButton text={msg.content} />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-            {isChatLoading && (
-              <div className="flex justify-start">
-                <div className="p-3 rounded-lg bg-amber-100 text-warmGray-800 border border-amber-200">
-                  <div className="flex space-x-1">
-                    <span className="h-2 w-2 bg-amber-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
-                    <span className="h-2 w-2 bg-amber-400 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
-                    <span className="h-2 w-2 bg-amber-400 rounded-full animate-pulse"></span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Chat Input */}
-          <div className="p-4 border-t border-amber-200 bg-amber-50/80 rounded-b-xl shrink-0">
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                value={chatQuery}
-                onChange={(e) => setChatQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && !isChatLoading && handleChat()}
-                placeholder="Ask about the lesson..."
-                className="flex-1 p-3 rounded-lg bg-white text-warmGray-800 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                disabled={isChatLoading}
-              />
-              <Button
-                onClick={handleChat}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg disabled:opacity-50 transition-colors"
-                disabled={isChatLoading || !chatQuery.trim()}
-                title="Send"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 rotate-90"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                  />
-                </svg> 
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* EEG & Feedback Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          <div className="lg:col-span-2">
-            <EegStreamChart data={eegData} />
-          </div>
-          <div className="space-y-6">
-            <DynamicFeedbackPanel attention={attention || 0} streak={focusStreak} />
-            <SessionLog events={sessionEvents} />
-          </div>
-        </div>
       </main>
     </div>
   );

@@ -1,8 +1,9 @@
+// StudentDashboard.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Header, ListenButton } from "./Common";
 import useFocusMode from "./useFocusMode";
 import useWebSocketStream from "./useWebSocketStream";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { QuizGame } from "./QuizGame";
 import { HeadsetAlert } from "./Components";
 import axios from "axios";
@@ -55,6 +56,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   const [mcqs, setMcqs] = useState([]);
   const [chatQuery, setChatQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  
+  // --- NEW: Username State ---
+  const [username, setUsername] = useState("Student"); 
+
   const sessionTimeRef = useRef(0);
   const lastVerdictTimeRef = useRef(Date.now());
   const lastLogTimeRef = useRef(Date.now());
@@ -81,6 +86,23 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
   );
   const formatTime = (seconds) =>
     `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+
+  // --- NEW: Fetch User Profile ---
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:8000/users/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // Prefer First Name, fallback to username, fallback to "Student"
+        const displayName = data.name?.firstName || data.username || "Student";
+        setUsername(displayName);
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
+    if (token) fetchProfile();
+  }, [token]);
 
   // --- NEW: Gaze Processing Functions ---
 
@@ -472,10 +494,10 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
 
   // Logging and focus streak
   useEffect(() => {
-    if (sessionState !== "active") return;
+    if (sessionState !== "active" || attention === null) return; // Wait for attention
 
     // --- NEW: Combine focus states for this hook ---
-    const eegIsFocused = attention === null || attention >= 75; // null is considered focused at start
+    const eegIsFocused = attention >= 75; 
     const isFocused = eegIsFocused && isGazeFocused;
     // --- END NEW ---
 
@@ -676,6 +698,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         setSessionState={setSessionState}
         setShowHeadsetAlert={setShowHeadsetAlert}
         showHeadsetAlert={showHeadsetAlert}
+        username={username} // Pass username
       />
     );
   }
@@ -689,6 +712,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         setSelectedSubjectName={setSelectedSubjectName}
         setSessionState={setSessionState}
         restartSession={restartSession}
+        username={username} // Pass username
       />
     );
   }
@@ -701,6 +725,7 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         selectedSubjectName={selectedSubjectName}
         startStudySession={startStudySession}
         setSessionState={setSessionState}
+        username={username} // Pass username
       />
     );
   }
@@ -716,49 +741,56 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
         selectedSubjectName={selectedSubjectName}
         attentionHistory={attentionHistory}
         attention={attention}
+        username={username} // Pass username
       />
     );
   }
   if (sessionState === "quiz") {
     return (
-      <div className="min-h-screen pt-32 bg-warmGray-100 relative">
-        <img
-          src="https://png.pngtree.com/thumb_back/fw800/background/20240104/pngtree-trendy-doodle-texture-flat-vector-illustration-of-hand-drawn-abstract-shapes-image_13915914.png"
-          alt="Quiz background"
-          className="absolute inset-0 w-full h-full z-0 opacity-5 object-cover pointer-events-none"
-        />
+      // --- UPDATED QUIZ WRAPPER ---
+      <div className="min-h-screen bg-stone-50 pt-28 pb-12 selection:bg-orange-200 relative overflow-hidden">
+        {/* Consistent Warm Background */}
+        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-orange-50 via-amber-50 to-stone-100 opacity-80 pointer-events-none" />
+        <div className="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] bg-orange-300/20 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-[10%] left-[-10%] w-[30rem] h-[30rem] bg-amber-200/20 rounded-full blur-[80px] pointer-events-none" />
+        
         <Header
-          user="Student"
+          user={username} // Pass username
           role="Learner"
           onLogout={onLogout}
           accessibility={accessibility}
-          className="h-24 bg-orange-100 text-amber-900 shadow-md"
         />
-        <main className="container mx-auto px-8 py-10 max-w-4xl relative z-10">
-          <QuizGame
-            subject={quizSubject}
-            questions={mcqs}
-            attention={attention}
-            onFinish={(result) => {
-              const withSubject = {
-                timestamp: new Date(),
-                subject: quizSubject,
-                score: `${result.score}/${result.total}`,
-              };
-              saveHistory((prev) => ({
-                ...prev,
-                recent_quizzes: [...(prev.recent_quizzes || []), withSubject],
-              }));
-              restartSession();
-            }}
-            focusStats={() => ({
-              avg:
-                attentionHistory.reduce((sum, d) => sum + d.attention, 0) /
-                (attentionHistory.length || 1),
-              max: Math.max(...attentionHistory.map((d) => d.attention)),
-              min: Math.min(...attentionHistory.map((d) => d.attention)),
-            })}
-          />
+        <main className="container mx-auto px-4 md:px-8 max-w-4xl relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <QuizGame
+              subject={quizSubject}
+              questions={mcqs}
+              attention={attention}
+              onFinish={(result) => {
+                const withSubject = {
+                  timestamp: new Date(),
+                  subject: quizSubject,
+                  score: `${result.score}/${result.total}`,
+                };
+                saveHistory((prev) => ({
+                  ...prev,
+                  recent_quizzes: [...(prev.recent_quizzes || []), withSubject],
+                }));
+                restartSession();
+              }}
+              focusStats={() => ({
+                avg:
+                  attentionHistory.reduce((sum, d) => sum + d.attention, 0) /
+                  (attentionHistory.length || 1),
+                max: Math.max(...attentionHistory.map((d) => d.attention)),
+                min: Math.min(...attentionHistory.map((d) => d.attention)),
+              })}
+            />
+          </motion.div>
         </main>
       </div>
     );
@@ -785,13 +817,12 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
       {/* --- END NEW --- */}
 
       <Header
-        user="Student"
+        user={username} // Pass username
         role="Learner"
         onLogout={onLogout}
         accessibility={accessibility}
         focusMode={{ isFocusMode, toggleFocusMode }}
         attention={attention}
-        className="h-24 bg-orange-100 text-amber-900 shadow-md"
       />
       <ActiveSession
         sessionState={sessionState}
