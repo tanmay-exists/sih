@@ -151,12 +151,12 @@ export const Header = ({ user, role, onLogout, accessibility }) => {
             </div>
           )}
           
-          <div className="h-8 w-px bg-stone-200 mx-1 hidden sm:block"></div>
+          <div className="h-8 w-[2px] bg-stone-400 mx-1 hidden sm:block"></div>
 
           <Button 
             onClick={onLogout} 
-            variant="ghost"
-            className="hidden sm:flex text-xs px-4 py-2 hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-transparent"
+            variant="danger"
+            className="hidden sm:flex text-xs px-4 py-2 hover:bg-red-50 hover:text-white border border-transparent"
             icon={<LogOut className="w-4 h-4" />}
           >
             Logout

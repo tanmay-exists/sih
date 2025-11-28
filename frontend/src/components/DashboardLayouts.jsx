@@ -8,7 +8,7 @@ import { History, Clock, BookOpen, ChevronRight, ArrowLeft, PlayCircle, Trophy, 
 
 // --- Background Component ---
 const DashboardBackground = () => (
-  <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+  <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-gradient-to-br from-amber-100 via-yellow-300 to-orange-400 opacity-30">
     <div className="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] bg-orange-300/20 rounded-full blur-[100px]" />
     <div className="absolute bottom-[10%] left-[-10%] w-[30rem] h-[30rem] bg-amber-200/30 rounded-full blur-[80px]" />
     <div className="absolute top-[40%] left-[20%] w-[20rem] h-[20rem] bg-yellow-200/20 rounded-full blur-[60px]" />
@@ -70,10 +70,10 @@ const HistoryTabs = ({ history }) => {
               </div>
             ) : (
               sortedRecentQuizzes.map((q, i) => (
-                <div key={i} className="group flex justify-between items-center p-4 bg-white/60 border border-orange-100/50 rounded-2xl hover:bg-white hover:border-orange-200 hover:shadow-md transition-all">
+                <div key={i} className="group flex justify-between items-center p-4 bg-yellow-100 border border-orange-200 rounded-2xl hover:bg-yellow-200 hover:border-orange-200 hover:shadow-md transition-all">
                   <div className="flex flex-col">
                     <span className="font-bold text-gray-800">{q.subject}</span>
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <span className="text-xs text-gray-700 flex items-center gap-1">
                         <Calendar size={10} /> {formatDateTime(q.timestamp)}
                     </span>
                   </div>
@@ -95,10 +95,10 @@ const HistoryTabs = ({ history }) => {
               </div>
             ) : (
               sortedRecentSessions.map((s, i) => (
-                <div key={i} className="group flex justify-between items-center p-4 bg-white/60 border border-orange-100/50 rounded-2xl hover:bg-white hover:border-orange-200 hover:shadow-md transition-all">
+                <div key={i} className="group flex justify-between items-center p-4 bg-yellow-100 border border-orange-200 rounded-2xl hover:bg-yellow-200 hover:border-orange-200 hover:shadow-md transition-all">
                   <div className="flex flex-col">
                     <span className="font-bold text-gray-800">{s.subject || "General Study"}</span>
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <span className="text-xs text-gray-700 flex items-center gap-1">
                         <Calendar size={10} /> {formatDateTime(s.timestamp)}
                     </span>
                   </div>
@@ -130,7 +130,7 @@ export const IdleLayout = ({ onLogout, accessibility, errorMessage, subjects, hi
         
         {/* Welcome Card */}
         <div className="lg:col-span-7 flex flex-col justify-center">
-            <Card className="p-8 md:p-12 border-orange-100 bg-white/80 backdrop-blur-xl shadow-2xl shadow-orange-500/10">
+            <Card className="p-8 md:p-12 border-orange-100 bg-white/80 backdrop-blur-xl shadow-2xl shadow-orange-100">
                 <div className="mb-6 inline-flex p-3 bg-orange-100 rounded-2xl text-orange-600 shadow-sm">
                     <BookOpen size={32} />
                 </div>
@@ -194,12 +194,12 @@ export const SelectingSubjectLayout = ({ onLogout, accessibility, errorMessage, 
       <div className="mb-8">
         <button 
             onClick={restartSession}
-            className="group flex items-center gap-2 text-gray-500 hover:text-orange-600 transition-colors mb-4"
+            className="group flex items-center gap-4 text-gray-600 hover:text-orange-600 transition-colors mb-4"
         >
             <div className="p-2 bg-white/80 rounded-full shadow-sm group-hover:shadow-md transition-all">
-                <ArrowLeft size={16} />
+                <ArrowLeft size={20} />
             </div>
-            <span className="font-bold text-sm">Back to Home</span>
+            <span className="font-bold text-md">Back to Home</span>
         </button>
         <h2 className="text-3xl font-extrabold text-gray-900">Select a Subject</h2>
         <p className="text-gray-500 mt-2">Choose what you want to master today.</p>
@@ -229,7 +229,7 @@ export const SelectingSubjectLayout = ({ onLogout, accessibility, errorMessage, 
             <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl flex items-center justify-center text-orange-600 mb-6 group-hover:scale-110 transition-transform duration-300 shadow-inner">
                <span className="font-bold text-lg">{s.subject.charAt(0)}</span>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-1">{s.subject}</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-1">{s.subject}</h3>
             <p className="text-sm text-gray-500">{s.lessons.length} Lessons Available</p>
             
             <div className="mt-6 flex items-center text-orange-600 font-bold text-sm group-hover:translate-x-2 transition-transform">
@@ -257,12 +257,12 @@ export const SelectingLessonLayout = ({ onLogout, accessibility, selectedSubject
       <div className="mb-8">
         <button 
             onClick={() => setSessionState("selecting-subject")}
-            className="group flex items-center gap-2 text-gray-500 hover:text-orange-600 transition-colors mb-4"
+            className="group flex items-center gap-4 text-gray-600 hover:text-orange-600 transition-colors mb-4"
         >
             <div className="p-2 bg-white/80 rounded-full shadow-sm group-hover:shadow-md transition-all">
-                <ArrowLeft size={16} />
+                <ArrowLeft size={20} />
             </div>
-            <span className="font-bold text-sm">Back to Subjects</span>
+            <span className="font-bold text-md">Back to Subjects</span>
         </button>
         <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-100 rounded-xl text-orange-600">
@@ -285,7 +285,7 @@ export const SelectingLessonLayout = ({ onLogout, accessibility, selectedSubject
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={() => startStudySession(lesson)}
-                className="w-full flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl hover:border-orange-200 hover:bg-orange-50/30 hover:shadow-lg hover:shadow-orange-500/5 transition-all group text-left"
+                className="w-full flex items-center justify-between p-5 bg-white border border-gray-200 rounded-2xl hover:border-orange-200 hover:bg-orange-50/30 hover:shadow-lg hover:shadow-orange-500/5 transition-all group text-left"
               >
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold text-sm group-hover:bg-orange-500 group-hover:text-white transition-colors">

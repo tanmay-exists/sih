@@ -61,6 +61,7 @@ class Token(BaseModel):
 class Session(BaseModel):
     timestamp: datetime
     duration: int
+    subject: str = "General Study" 
 
 class Quiz(BaseModel):
     timestamp: datetime

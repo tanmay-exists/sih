@@ -11,15 +11,17 @@ class HistoryInput(BaseModel):
     sessions: List[Session] = []
     quizzes: List[Quiz] = []
 
+# Updated to accept subject (defaulting to General Study if missing)
 @router.post("/sessions")
-async def save_session(duration: int, current_user=Depends(get_current_user), client=Depends(get_db_client)):
+async def save_session(duration: int, subject: str = "General Study", current_user=Depends(get_current_user), client=Depends(get_db_client)):
     db = client["NLHistory"]
     collection = db["sessions"]
     
     session_dict = {
         "userId": current_user["userId"],
         "timestamp": datetime.utcnow(),
-        "duration": duration
+        "duration": duration,
+        "subject": subject  # <--- NEW: Saving subject
     }
     await collection.insert_one(session_dict)
     return {"message": "Session saved"}
@@ -61,7 +63,12 @@ async def save_history(history: HistoryInput, current_user=Depends(get_current_u
     await db["sessions"].delete_many({"userId": user_id})
     if history.sessions:
         await db["sessions"].insert_many([
-            {"userId": user_id, "timestamp": s.timestamp, "duration": s.duration}
+            {
+                "userId": user_id, 
+                "timestamp": s.timestamp, 
+                "duration": s.duration,
+                "subject": s.subject # <--- NEW: Include subject in bulk insert
+            }
             for s in history.sessions
         ])
     
@@ -69,7 +76,12 @@ async def save_history(history: HistoryInput, current_user=Depends(get_current_u
     await db["quizzes"].delete_many({"userId": user_id})
     if history.quizzes:
         await db["quizzes"].insert_many([
-            {"userId": user_id, "timestamp": q.timestamp, "subject": q.subject, "score": q.score}
+            {
+                "userId": user_id, 
+                "timestamp": q.timestamp, 
+                "subject": q.subject, 
+                "score": q.score
+            }
             for q in history.quizzes
         ])
     
