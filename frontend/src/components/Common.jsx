@@ -129,9 +129,10 @@ export const Header = ({ user, role, onLogout, accessibility }) => {
 
         {/* User Actions */}
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex flex-col items-end">
-            <span className="text-xs font-bold text-orange-600 uppercase tracking-wider">Student</span>
-            <span className="text-sm font-bold text-stone-800">{user}</span>
+          
+          {/* --- MODIFIED: Single row welcome message --- */}
+          <div className="hidden md:flex items-center">
+            <span className="text-sm font-bold text-stone-800">Welcome, {user}</span>
           </div>
           
           {accessibility && (

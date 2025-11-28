@@ -274,8 +274,12 @@ export const StudentDashboard = ({ onLogout, accessibility }) => {
 
   const startStudySession = (lesson) => {
     console.log("Starting study session, resetting counter to 0");
+    // --- FIX: Capture the current subject name before restartSession wipes it ---
+    const currentSubjectName = selectedSubjectName;
     restartSession();
-    setSelectedSubjectName(selectedSubjectName); // This was a bug, should be the param
+    // --- FIX: Restore the subject name ---
+    setSelectedSubjectName(currentSubjectName);
+    
     setStudyLesson(lesson);
     setStudyContentType("video");
     setSessionState("active");

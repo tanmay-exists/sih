@@ -472,7 +472,8 @@ export const StudentDetailView = ({ student }) => {
                 <div className="max-h-64 overflow-y-auto space-y-3 custom-scrollbar pr-2">
                     {student.sessions.map((s, i) => (
                     <div key={i} className="flex justify-between items-center p-3 bg-stone-50 rounded-xl border border-stone-200 hover:border-orange-200 transition-colors">
-                        <span className="text-sm font-medium text-stone-600">Focus Session</span>
+                        {/* --- MODIFIED: Show Dynamic Subject Name --- */}
+                        <span className="text-sm font-medium text-stone-600">{s.subject || "Focus Session"}</span>
                         <div className="flex items-center gap-3">
                             <span className="text-xs text-stone-400">{formatDate(s.timestamp)}</span>
                             <span className="font-bold text-stone-800 text-sm">{(s.duration / 60).toFixed(1)} m</span>
