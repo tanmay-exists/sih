@@ -57,7 +57,7 @@ export const ActiveSession = ({
     // --- LAYOUT UPDATE: Fixed Height Screen with Internal Scroll ---
     <div className="h-screen bg-stone-50 overflow-hidden flex flex-col relative selection:bg-orange-200">
       
-      {/* Background Ambience - Richer Yellow/Amber */}
+      {/* Background Ambience */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 opacity-80" />
           <div className="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] bg-orange-300/20 rounded-full blur-[100px]" />
@@ -86,11 +86,7 @@ export const ActiveSession = ({
         )}
       </AnimatePresence>
 
-      {/* --- SCROLLABLE CONTAINER ---
-          mt-24 creates the physical gap for the fixed header.
-          h-[calc(100vh-6rem)] ensures the container fills the rest of the screen.
-          This makes the scrollbar start exactly below the header.
-      */}
+      {/* --- SCROLLABLE CONTAINER --- */}
       <main className="mt-24 h-[calc(100vh-6rem)] overflow-y-auto pb-12 px-4 md:px-6 relative z-10 custom-scrollbar">
         <div className="container mx-auto">
         
@@ -101,39 +97,40 @@ export const ActiveSession = ({
           <MetricCard 
             title="Session Time" 
             value={formatTime(sessionTime)} 
-            icon={<Clock className="text-blue-500" />} 
+            icon={<Clock className="text-orange-500" />} 
           />
           <MetricCard 
             title="Attention" 
             value={displayAttention} 
             unit="%" 
-            icon={<Zap className="text-yellow-500" />} 
+            icon={<Zap className="text-orange-500" />} 
             className={attention < 50 && attention !== null ? "ring-2 ring-red-200 bg-red-50/50" : ""}
           />
           <MetricCard 
             title="Focus Streak" 
             value={focusStreak.toFixed(0)} 
             unit="s" 
-            icon={<Target className="text-green-500" />} 
+            icon={<Target className="text-orange-500" />} 
           />
           
-          {/* Gaze Card */}
-          <Card className="hidden md:flex flex-col justify-between items-center text-center p-4 shadow-xl shadow-purple-100/30 border-purple-100/50">
-             <div className="flex items-center gap-2 text-purple-600 mb-1">
-                <Eye size={18} />
-                <span className="text-xs font-black uppercase tracking-wider opacity-60">Eye Gaze</span>
-             </div>
-             <div className={`text-xl font-bold px-3 py-1 rounded-full border ${
-                 gazeStatus === "Looking Away" ? "bg-red-50 text-red-700 border-red-100" : "bg-green-50 text-green-700 border-green-100"
-             }`}>
-                {gazeStatus}
-             </div>
-          </Card>
+          {/* UPDATED: Eye Gaze Card using MetricCard for consistent alignment */}
+          <MetricCard 
+             title="Eye Gaze"
+             value={gazeStatus}
+             // No unit for this one, or you could move 'Gaze' here if preferred
+             unit=""
+             icon={<Eye className="text-orange-500" />}
+             // Added text resizing logic if the status text is very long
+             className={`${gazeStatus.length > 10 ? '[&_p]:!text-2xl' : ''}`}
+          />
           
-          {/* End Session Button */}
-          <Card className="col-span-2 md:col-span-1 lg:col-span-1 flex items-center justify-center p-0 overflow-hidden border-red-200 group cursor-pointer hover:shadow-red-500/10 transition-all bg-white" onClick={endSession}>
-            <div className="absolute inset-0 bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative flex flex-col items-center gap-2 text-red-600">
+          {/* UPDATED: End Session Button - Darker Red Hover */}
+          <Card 
+            className="col-span-2 md:col-span-1 lg:col-span-1 flex items-center justify-center p-0 overflow-hidden border-red-600 group cursor-pointer !bg-red-500 hover:!bg-red-700 hover:border-red-700 transition-colors duration-200" 
+            onClick={endSession}
+          >
+            {/* Removed the inner 'bg-red-50' div that was washing out the color */}
+            <div className="relative flex flex-col items-center gap-2 text-white">
                 <StopCircle className="w-8 h-8 group-hover:scale-110 transition-transform" />
                 <span className="font-bold text-sm">End Session</span>
             </div>
@@ -141,19 +138,19 @@ export const ActiveSession = ({
         </div>
 
         {/* =========================================================
-            ROW 2: LEARNING CONTENT (Full Width & PERSISTENT)
+            ROW 2: LEARNING CONTENT
            ========================================================= */}
         <div className="flex flex-col gap-4 mb-8">
             {/* Tabs */}
             <div className="flex justify-start">
-                <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-orange-200 inline-flex">
+                <div className="bg-white/80 backdrop-blur-md p-2 rounded-2xl shadow-sm border border-orange-200 inline-flex">
                     {tabs.map((t) => {
                         const isActive = studyContentType === t.id;
                         return (
                             <button
                                 key={t.id}
                                 onClick={() => onTabClick(t.id)}
-                                className={`relative px-6 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                                className={`relative px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
                                     isActive ? "text-orange-900 shadow-sm" : "text-stone-500 hover:text-stone-700 hover:bg-white/50"
                                 }`}
                             >
@@ -175,24 +172,26 @@ export const ActiveSession = ({
             </div>
 
             {/* Content Viewer */}
-            <Card className="p-0 overflow-hidden min-h-[600px] relative bg-white border-2 border-orange-100 shadow-2xl shadow-orange-900/10">
-                <div style={{ display: studyContentType === 'video' ? 'block' : 'none' }} className="w-full h-full min-h-[600px]">
+            {/* ADDED: !p-0 to eliminate white edges around the video/content */}
+            <Card className="overflow-hidden relative bg-white border-2 border-orange-100 shadow-2xl shadow-orange-900/10">
+                <div style={{ display: studyContentType === 'video' ? 'block' : 'none', height: '600px' }} className="w-full">
                     <StudyContent 
                         lesson={studyLesson} 
                         type="video" 
                         videoRef={playerIframeRef} 
-                        style={{ height: '100%', minHeight: '600px' }}
+                        style={{ height: '100%' }}
                     />
                 </div>
-                {/* Added [&_.prose]:max-w-none to override Tailwind's default prose width limit (65ch).
-                    This forces the text content to expand to the full width of the container. 
-                */}
-                <div style={{ display: studyContentType === 'article' ? 'block' : 'none' }} className="w-full h-full min-h-[600px] [&_.prose]:max-w-none [&_article]:max-w-none">
+                
+                <div 
+                    style={{ display: studyContentType === 'article' ? 'block' : 'none', height: '600px' }} 
+                    className="w-full overflow-y-auto custom-scrollbar p-6 
+                    prose prose-orange max-w-none [&_*]:max-w-none [&_div]:max-w-none [&_p]:max-w-none"
+                >
                     <StudyContent 
                         lesson={studyLesson} 
                         type="article" 
                         videoRef={null} 
-                        style={{ height: '100%', minHeight: '600px' }}
                     />
                 </div>
             </Card>
@@ -268,7 +267,7 @@ export const ActiveSession = ({
                                     <MarkdownRenderer content={msg.content} className={isUser ? "chat-bubble" : ""} />
                                     {!isUser && (
                                         <div className="mt-2 flex justify-end opacity-70">
-                                                <ListenButton text={msg.content} className="hover:bg-gray-100 text-gray-400" />
+                                            {/* <ListenButton text={msg.content} className="hover:bg-gray-100 text-gray-400" /> */}
                                         </div>
                                     )}
                                 </div>
@@ -335,7 +334,7 @@ export const ActiveSession = ({
                 
                 {/* Session Log (Fills remaining space) */}
                 <div className="flex-1 overflow-hidden">
-                     <SessionLog events={sessionEvents} />
+                      <SessionLog events={sessionEvents} />
                 </div>
             </div>
 

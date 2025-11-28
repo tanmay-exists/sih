@@ -56,7 +56,7 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
     <Card className="w-full max-w-5xl mx-auto p-0 border-0 bg-white/90 backdrop-blur-xl shadow-2xl overflow-hidden">
       
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-8 text-center text-white">
+      <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-8 text-center text-white rounded-2xl">
         <div className="mx-auto w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-md shadow-inner">
             <Trophy size={32} className="text-white" />
         </div>
@@ -93,7 +93,7 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Insight Column */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 h-full">
+            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 h-full">
                 <h3 className="font-bold text-lg text-gray-900 mb-3 flex items-center gap-2">
                     <span className="text-xl">💡</span> AI Insight
                 </h3>
@@ -104,7 +104,7 @@ export const SessionSummary = ({ sessionTime, sessionEvents, onGoHome, onStartNe
           </div>
 
           {/* Chart Column */}
-          <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+          <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
             <h3 className="font-bold text-lg text-gray-900 mb-4">Attention Timeline</h3>
             <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">

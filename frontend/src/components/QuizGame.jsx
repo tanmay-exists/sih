@@ -69,7 +69,7 @@ export const QuizGame = ({ subject = 'Math', questions, onFinish, attention, foc
     const isAnswerCorrect = option === correctAnswerText;
 
     if (selectedAnswer === null) {
-        return "bg-white border-gray-200 hover:border-orange-300 hover:bg-orange-50 text-gray-700";
+        return "bg-yellow-50 border-yellow-200 hover:border-orange-300 hover:bg-orange-100 text-gray-700";
     }
 
     if (isAnswerCorrect) {
@@ -107,7 +107,7 @@ export const QuizGame = ({ subject = 'Math', questions, onFinish, attention, foc
       <Card className="text-center p-8 md:p-12 max-w-3xl mx-auto border-orange-100 bg-white/90 backdrop-blur-xl">
         <motion.div 
             initial={{ scale: 0 }} animate={{ scale: 1 }} 
-            className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-orange-500/30 text-white"
+            className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-orange-500/30 text-white"
         >
             <Trophy size={48} />
         </motion.div>
@@ -168,7 +168,7 @@ export const QuizGame = ({ subject = 'Math', questions, onFinish, attention, foc
             <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-md uppercase tracking-wider">
                 Question {currentQuestionIndex + 1} of {questions.length}
             </span>
-            <h2 className="text-lg font-bold text-gray-400 mt-2">{subject}</h2>
+            <h2 className="text-lg font-bold text-gray-700 mt-2 mx-2">{subject}</h2>
         </div>
         <ListenButton text={currentQuestion.question} />
       </div>

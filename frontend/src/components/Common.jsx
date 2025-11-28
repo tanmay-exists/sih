@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Settings, Volume2, VolumeX, LogOut, LayoutTemplate, Type } from "lucide-react";
 import useTTS from "./useTTS";
 
-// --- Reusable Card Component (High Contrast) ---
+// --- Reusable Card Component ---
 export const Card = ({ children, className = "", onClick }) => (
   <motion.div
     onClick={onClick}
-    className={`bg-white border border-orange-200 rounded-3xl p-6 shadow-xl shadow-orange-900/5 backdrop-blur-sm ${className}`}
+    className={`bg-white border border-orange-200 rounded-3xl p-4 shadow-xl shadow-orange-900/5 backdrop-blur-sm ${className}`}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.4, ease: "easeOut" }}
@@ -22,12 +22,9 @@ export const Card = ({ children, className = "", onClick }) => (
   </motion.div>
 );
 
-// --- Metric Card (Pop Colors) ---
+// --- Metric Card (Fixed: No Double Icon) ---
 export const MetricCard = ({ title, value, unit, className = "", icon }) => (
-  <Card className={`relative overflow-hidden group bg-gradient-to-br from-white to-orange-50/50 ${className}`}>
-    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500 text-orange-600">
-      {icon}
-    </div>
+  <Card className={`relative overflow-hidden bg-gradient-to-br from-white to-orange-50/50 ${className}`}>
     <div className="flex flex-col h-full justify-between relative z-10">
       <div className="flex items-center gap-2 mb-3">
         {icon && (
@@ -80,7 +77,7 @@ export const Button = ({ children, onClick, className = "", icon, disabled, vari
   );
 };
 
-// --- Listen Button ---
+// --- Listen Button (Fixed: Simple structure to prevent ghosting) ---
 export const ListenButton = ({ text, className = "" }) => {
   const { speak, cancel, isSpeaking } = useTTS();
   const handleToggleSpeech = (e) => {
@@ -92,32 +89,28 @@ export const ListenButton = ({ text, className = "" }) => {
     }
   };
   return (
-    <motion.button
+    <button
       onClick={handleToggleSpeech}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      className={`p-2 rounded-full transition-colors border ${
+      className={`p-2 rounded-full transition-colors inline-flex items-center justify-center ${
         isSpeaking 
-        ? "bg-orange-100 text-orange-700 border-orange-200 shadow-inner" 
-        : "text-stone-400 border-transparent hover:bg-orange-50 hover:text-orange-600 hover:border-orange-100"
+        ? "bg-orange-100 text-orange-700 ring-1 ring-orange-200" 
+        : "text-stone-400 hover:bg-orange-50 hover:text-orange-600"
       } ${className}`}
       aria-label={isSpeaking ? "Stop reading" : "Read text aloud"}
     >
-      {isSpeaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-    </motion.button>
+      {isSpeaking ? <VolumeX size={16} /> : <Volume2 size={16} />}
+    </button>
   );
 };
 
-// --- Header (Solid & Contrast) ---
+// --- Header ---
 export const Header = ({ user, role, onLogout, accessibility }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
-      {/* Floating Glass Box */}
       <div className="pointer-events-auto container mx-auto bg-white/95 backdrop-blur-xl border border-orange-100 ring-1 ring-orange-900/5 rounded-2xl shadow-xl shadow-orange-900/5 px-6 py-3 flex justify-between items-center transition-all duration-300">
         
-        {/* Logo */}
         <div className="flex items-center gap-3 cursor-pointer group">
           <div className="bg-gradient-to-br from-orange-500 to-amber-600 p-2.5 rounded-xl shadow-lg shadow-orange-500/20 group-hover:rotate-12 transition-transform duration-300">
             <Brain className="h-5 w-5 text-white" />
@@ -127,10 +120,7 @@ export const Header = ({ user, role, onLogout, accessibility }) => {
           </h1>
         </div>
 
-        {/* User Actions */}
         <div className="flex items-center gap-4">
-          
-          {/* --- MODIFIED: Single row welcome message --- */}
           <div className="hidden md:flex items-center">
             <span className="text-sm font-bold text-stone-800">Welcome, {user}</span>
           </div>
